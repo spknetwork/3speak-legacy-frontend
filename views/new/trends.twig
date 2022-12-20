@@ -1,0 +1,70 @@
+{%  extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Trending Videos</h1>
+{% endblock %}
+
+{% block body %}
+    {% for row in recommended %}
+        <div class="row" {% if loop.last == true %}id="videoContainer"{% endif %}>
+            {% for video in row %}
+                {% include './widgets/bigVideoCard.twig' with video %}
+            {% endfor %}
+        </div>
+
+        {% if loop.index % 4 == 0 %}
+            <div class="row">
+                <div class="col text-center">
+                    {% include './widgets/advert.twig' with {zone: adZone, revive: adRevive} %} {#Check layout.twig for consts#}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+  {% include './widgets/cardTemplate7s.twig' %}
+  <script>
+    $(() => {
+      let skip = 64;
+
+      var loading = false;
+
+      const $win = $(window);
+
+      $win.scroll(function () {
+        if ($(window).scrollTop() + $(window).height() > $(document).height() - 300 && loading === false) {
+          loading = true;
+
+          $.ajax({
+            url: '/api/trends/more',
+            data: {
+              skip
+            },
+            success: (res) => {
+              if (res.trends.length > 0) {
+
+                for (let index = 0; index < res.trends.length; index++) {
+                  // let arr_index = index - maxLoad;
+                  let video = res.trends[index];
+                  console.log(video)
+                  video.created = timeSince(new Date(video.created));
+                  video.title = filterXSS(video.title);
+                  let minutes = Math.floor(video.duration / 60);
+                  let seconds = Math.round(video.duration - minutes * 60);
+                  video.duration = minutes + ':' + seconds;
+                  $('#videoContainer').append(window.tpl.video_card({video, index,APP_IMAGE_CDN_DOMAIN: globals.APP_IMAGE_CDN_DOMAIN}))
+
+                }
+                refreshDataPayout();
+              }
+              loading = false;
+              skip += 64;
+            }
+          });
+        }
+      });
+    })
+  </script>
+{% endblock %}

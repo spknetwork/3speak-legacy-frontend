@@ -1,0 +1,80 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Notification Settings</h1>
+    <h5 class="text-dark font-weight-bolder">If you would like to receive E-Mail notifications from 3Speak fill out the form below.</h5>
+{% endblock %}
+
+{% block body %}
+
+    {% if settings.disabledThrougBounce == true %}
+        <p class="alert alert-danger">
+            <i class="fa fa-times-circle text-danger"></i> Notifications for you are disabled because we
+            could not deliver E-Mails to the given address.
+        </p>
+    {% endif %}
+
+    {% if settings.error is defined %}
+        {% if settings.error == 'invalidEmail' %}
+            <p class="alert alert-danger">
+                <i class="fa fa-times-circle text-danger"></i> The E-Mail you entered is not valid. Please enter a valid E-Mail address and try again.
+            </p>
+        {% endif %}
+        {% if settings.error == 'invalidVerificationToken' %}
+            <p class="alert alert-danger">
+                <i class="fa fa-times-circle text-danger"></i> The verification link you used is invalid or expired. Please request a new one with the form below.
+            </p>
+        {% endif %}
+
+    {% endif %}
+    {% if settings.info is defined %}
+        {% if settings.info == 'verify' %}
+            <p class="alert alert-info">
+                <i class="fa fa-exclamation-circle text-info"></i> We sent an E-Mail to the given address. Please confirm the ownership by clicking the link in that E-Mail.
+            </p>
+        {% endif %}
+        {% if settings.info == 'verified' %}
+            <p class="alert alert-success">
+                <i class="fa fa-exclamation-circle text-success"></i> Your E-Mail address was verified. From now on you will receive E-Mail notifications about updates on 3Speak.
+            </p>
+        {% endif %}
+        {% if settings.error == 'disabled' %}
+            <p class="alert alert-success">
+                <i class="fa fa-exclamation-circle text-success"></i> You successfully disabled E-Mail notifications for your account.
+            </p>
+        {% endif %}
+
+    {% endif %}
+
+
+    {% if settings.allDisabled == true %}
+        <p class="alert alert-danger">
+            <i class="fa fa-times-circle text-danger"></i> An administrator has disabled notifications for
+            your account.
+        </p>
+    {% else %}
+
+        <div class="col-3 ml-0 pl-0">
+            <form action="/settings/notifications" method="post">
+                <div class="form-group">
+                    <label for="email">E-Mail:</label>
+                    <input type="email" name="email" value="{{ settings.email }}" class="form-control">
+                    <div class="pt-1">
+                        {% if settings.verified == true %}
+                            <i class="fa fa-check-circle text-success"></i> E-Mail Verified!
+                        {% else %}
+                            <i class="fa fa-times-circle text-danger"></i> E-Mail Not Verified!
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-dark btn-sm" value="Save Changes">
+                    {% if settings.verified == true %}
+                        <a href="/settings/api/disableNotifications" class="btn btn-light btn-sm">Disable Notifications</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+    {% endif %}
+{% endblock %}

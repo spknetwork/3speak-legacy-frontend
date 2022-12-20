@@ -1,0 +1,180 @@
+{% extends './layout.twig' %}
+
+{% block style %}
+  <link href="https://vjs.zencdn.net/7.5.4/video-js.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.5.6/plyr.css"/>
+  <style>
+    .plyr__progress__container, .plyr__time {
+      display: none;
+    }
+
+    .sidebar-toggled .single-channel-page {
+      padding: 0px 0px 0px 90px;
+      padding-top: 0px;
+      padding-right: 0px;
+      padding-bottom: 0px;
+      padding-left: 0px;
+    }
+  </style>
+{% endblock %}
+
+
+{% block meta %}
+  <meta property="og:title" content="{{ lsTitle|escape }} by {{ channel.username }} - {{ APP_PAGE_DOMAIN }}">
+  <meta property="og:image"
+        content="https://live-pro.3speak.co/thumbnail.png?name={{ channel.username }}&t={{ ""|date("U") }}">
+  <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/user/{{ channel.username }}/live">
+  <meta property="og:site_name" content="3Speak">
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@3speakonline">
+  <meta name="twitter:title" content="{{ lsTitle|escape }}">
+  <meta name="twitter:image"
+        content="https://live-pro.3speak.co/thumbnail.png?name={{ channel.username }}&t={{ ""|date("U") }}">
+
+{% endblock %}
+
+{% block header %}
+  {% include 'new/channel_header.twig' with {active_menu: active_menu, showLoginButton: true} %}
+{% endblock %}
+
+{% block widelayout %}
+  <div id="content-wrapper">
+    <div class="container-fluid  ">
+      <div class="video-block section-padding  ">
+        <div class="row">
+          <div class="col-12 col-md-8" id="playerCon">
+            {% if isLive == true %}
+              <video id='player'
+                     poster="https://live-pro.3speak.co/thumbnail.png?name={{ channel.username }}&t={{ ""|date("U") }}"
+                     muted="muted"></video>
+            {% else %}
+              <img src="https://live-pro.3speak.co/thumbnail.png?name={{ channel.username }}"
+                   style="width: 100%; height: auto" alt="">
+            {% endif %}
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="single-video-right {% if user.nickname != "guest-account" %}h-100{% endif %}">
+              <div class="row {% if user.nickname != "guest-account" %}h-100{% endif %}">
+                <div class="col-md-12 {% if user.nickname != "guest-account" %}h-100{% endif %}">
+                  {% if user.nickname == "guest-account" %}
+                    <p class="alert alert-info">
+                      Guest accounts can not use the livestream chat.
+                    </p>
+                  {% endif %}
+                  <iframe id="chat"
+                          style="min-height: {% if user.nickname == "guest-account" %}450{% else %}500{% endif %}px"
+                          src="//{{ APP_CHAT_DOMAIN }}/channel/{{ channel.username }}{% if user.nickname != "guest-account" %}?access_token={{ chatToken }}{% endif %}"
+                          frameborder="0"
+                          class="w-100 mt-3 mt-md-0 {% if user.nickname != "guest-account" %}h-100{% endif %}"></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="col-12">
+            <div class="single-video-title box mb-3 clearfix">
+              <div class="float-left">
+                <h2><a href="#" id="streamTitle">{{ lsTitle|escape }}</a></h2>
+                <p class="mb-0">
+                  <i class="fas fa-eye"></i> <span id="views"><i
+                      class="fa fa-spin fa-spinner"></i></span>
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+
+  </div>
+{% endblock %}
+{% block footercss %}style="margin-top: 90px;"{% endblock %}
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/mobile-detect@1.4.3/mobile-detect.min.js"></script>
+  <script src="https://cdn.jwplayer.com/libraries/j7Kz0Rae.js"></script>
+  <script>
+
+
+    async function view() {
+      const views = await (await fetch('https://live-pro.3speak.co/views?name={{ channel.username }}')).json();
+      $('#views').empty().text(views.viewer);
+    }
+
+
+    $(() => {
+
+
+      view();
+      setInterval(() => {
+        view();
+      }, 1000 * 5);
+      {% if isLive == true %}
+      const player = jwplayer('player').setup({
+        "playlist": [
+          {
+            "sources": [
+              {
+                "default": false,
+                "type": "hls",
+                "file": "{{ streamData.assets.hls }}",
+                "label": "0"
+              }
+            ]
+          }
+        ],
+        "primary": "html5",
+        "hlshtml": true,
+        image: 'https://live-pro.3speak.co/thumbnail.png?name={{ channel.username }}',
+        // playbackRateControls: [0.75, 1, 1.25, 1.5, 2],
+
+        "advertising": {
+          "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.co%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
+          "client": "googima",
+          "vpaidmode": "insecure"
+        },
+        abouttext: "Powered by 3Speak",
+        aboutlink: "https://{{ APP_PAGE_DOMAIN }}/?utm_source=player_context",
+        cast: {},
+        autostart: true,
+        muted: true,
+        floating: {
+          dismissible: true
+        },
+        logo: {
+          "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
+          "link": "https://{{ APP_PAGE_DOMAIN }}/?utm_souce=player_brand",
+          "hide": "true",
+          "position": "top-left"
+        },
+        sharing: {
+          {# code: '{{ streamData.assets.iframe }}', #}
+          sites: ["facebook", "twitter", "reddit", "email"]
+        },
+        // hlsLabels: { "3300": "1080p", "4096" : "720p", "1024":"480p" },
+      });
+
+      player.on('error', error => {
+        console.log(error)
+      })
+
+      player.on('firstFrame', () => {
+        {% if user.nickname == "guest-account" %}
+
+        $('#chat').height($('#player').height() - 50)
+
+        {% else %}
+        $('#chat').height($('#player').height())
+        {% endif %}
+      })
+
+      window.player = player;
+      {% endif %}
+    })
+  </script>
+
+{% endblock %}

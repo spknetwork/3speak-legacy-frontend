@@ -1,0 +1,23 @@
+{%  extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">your feed</h1>
+{% endblock %}
+
+{% block body %}
+    {% for row in feed %}
+        <div class="row marg_top1 marg_bot3">
+            {% for video in row %}
+                {% include './widgets/bigVideoCard.twig' with video %}
+            {% endfor %}
+        </div>
+
+        {% if loop.index % 4 == 0 %}
+            <div class="row">
+                <div class="col text-center">
+                    {% include './widgets/advert.twig' with {zone: adZone, revive: adRevive} %} {#Check layout.twig for consts#}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

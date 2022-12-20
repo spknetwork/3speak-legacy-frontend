@@ -1,0 +1,1204 @@
+{% extends './layout.twig' %}
+
+{% block title %}{{ video.title|escape }} - {% endblock %}
+
+{% block meta %}
+  <meta property="og:title" content="{{ video.title|escape }} by {{ video.owner }} - {{ APP_PAGE_DOMAIN }}">
+  <meta property="og:image"
+        content="{{ video.baseThumbUrl }}">
+  <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/watch?v={{ video.owner }}/{{ video.permlink }}">
+  <meta property="og:site_name" content="3Speak">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+  <meta property="ogvideo" content="{{APP_VIDEO_CDN_DOMAIN}}/{{video.permlink}}/default.m3u8">
+  
+
+  <meta name="twitter:card" content="player">
+  <meta name="twitter:site" content="@3speakonline">
+  <meta name="twitter:title" content="{{ video.title|escape }}">
+  <meta name="twitter:description" content="{{ video.description|escape|substr(0,128) }}">
+  <meta name="twitter:image" content="{{ video.baseThumbUrl }}">
+  <meta name="twitter:player" content="https://{{ APP_PAGE_DOMAIN }}/embed?v={{ video.owner }}/{{ video.permlink }}">
+  <meta name="twitter:player:height" content="720">
+  <meta name="twitter:player:width" content="1280">
+
+
+  <meta name="title" content="{{ video.title|escape }} by {{ video.owner }}">
+  <meta name="description" content="{{ video.description|escape|substr(0,128) }}">
+  <meta name="robots" content="index, follow">
+  <script type="text/javascript" src="https://d.buzz/buzzWidget.js"></script>
+{% endblock %}
+
+{% block style %}
+  <style>
+    html, body {
+      margin-right: 0px;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100% !important;
+    }
+
+    .plyr {
+      max-height: 720px;
+    }
+
+
+    .buzz-btn {
+      display: inline-block !important;
+    }
+
+    .buzz-fix {
+      margin-top: -10px
+    }
+
+  </style>
+  <style>
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 30px;
+      height: 17px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 13px;
+      width: 13px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #bb0000;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #bb0000;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(13px);
+      -ms-transform: translateX(13px);
+      transform: translateX(13px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+      border-radius: 17px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+  </style>
+  <link rel="stylesheet" href="https://unpkg.com/plyr@3/dist/plyr.css" type="text/css">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+{% endblock %}
+
+{% block smallHeaderHTML %}{% endblock %}
+
+{% block widelayout %}
+  <div class="container-fluid pb-0">
+    <div class="video-block section-padding">
+      <div class="row">
+        <div class="col-md-8" id="playerCol" style="padding-left: 0px !important;">
+          <div class="single-video-left">
+            <div class="single-video-title box mb-3 clearfix">
+              <div class="single-video">
+                <div style="width: 100%;">
+                  {# <video id='player' class='video-js vjs-16-9'></video> #}
+                  {# <iframe src="https://embed.3speak.co/v2/?v={{ video.owner }}/{{ video.permlink }}&autoplay=true" style="width: 100%; min-height: 720px" frameborder="0"></iframe> #}
+
+                  <video style="width: 100%" controls="controls"
+                        poster="{{ APP_IMAGE_CDN_DOMAIN }}/{{ video.permlink }}/poster.png"
+                        id="player"></video>
+                </div>
+              </div>
+              <div style="display: flex; padding-right: 0px;">
+                <div class="row container-fluid">
+                  <div class="float-left">
+                    <h1 class="mt-2">{{ video.title|striptags }}</h1>
+                    <p class="mb-2">
+                      <span class="mr-1">
+                          <i class="fas fa-eye"></i>
+                          {{ video.views }}
+                      </span>
+                      {% if video.hive is defined and video.owner != 'guest-account' %}
+                        <span class="mr-1">
+                        <i class="fas fa-users"></i>
+                        <span data-community="{{ video.hive|striptags }}"></span>
+                      </span>
+                      {% endif %}
+                    </p>
+                  </div>
+                <div class="text-right d-inline-block float-right mt-3" style="margin-left: auto; margin-top: 1rem; width: 95%;">
+
+                  {% if user.nickname !=  'guest-account' %}
+
+                    {% include './widgets/vote.twig' with {post, depth: 0, user: user.nickname} %}
+
+                    {% if user is defined and user.isSteem == true %}
+                      <div class="btn btn-sm btn-light" data-reblog="{{ video.owner }}/{{ video.permlink }}">Reblog <i
+                          class="fas fa-retweet"></i>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+
+                  {# <button class="btn btn-sm btn-secondary " #}
+                  {# data-dislike="{{ video.owner }}/{{ video.permlink }}"> #}
+                  {# <i class="fa fa-thumbs-down"></i> 0 #}
+                  {# </button> #}
+                  <br>
+                  {% if video.ipfs %}
+                  <a onclick="toggleIpfs()" class="m-1">
+                    <label>IPFS</label>
+                    <label class="switch">
+                      <input id="ipfsToggle" type="checkbox" onclick="toggleIpfs()">
+                      <span class="slider round"></span>
+                      <br><br>
+                    </label>
+                  </a>
+                  {% endif %}
+
+                  <a target="_blank"
+                    href="/openDapp?uri=hive:{{ video.owner }}:{{ video.permlink }}"
+                    class="btn btn-light btn-sm m-1">
+                    Open in the desktop app
+                  </a>
+                  {% include './widgets/addToPlaylist.twig' with {video: video, user: user} %}
+                  {% if video.donations %}
+                  <div class="dropdown m-1">
+                    <button id="donate-crypto" type="button" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" class="btn btn-secondary btn-sm dropdown-toggle">
+                      Donate crypto
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="donate-crypto">
+                      {% for donation in donations %}
+                        <div class="dropdown-item" onclick="donationModal('{{ donation.ticker|escape }}', '{{ donation.address|escape }}')">{{ donation.ticker|escape }}</div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  {% endif %}
+                  <div class="dropdown d-inline-block mt-1">
+                    <button id="videoOptions" type="button" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false" class="btn btn-secondary btn-sm dropdown-toggle">
+                      <i class="fa fa-cogs"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="videoOptions">
+                      <a class="dropdown-item" data-report="{{ video.owner }}/{{ video.permlink }}"
+                        href="mailto:helpdesk@3speak.tv?subeject=Report%20Video&body=Author:%20{{ video.owner|url_encode }}%0d%0aPermlink:%20{{ video.permlink|url_encode }}%0d%0aTitle:%20{{ video.title|url_encode }}%0d%0a%0d%0aReason of Report:%0d%0a"><i
+                          class="fas fa-fw fa-exclamation-triangle "></i> &nbsp; Report</a>
+                      {# <div class="dropdown-divider" id="divide"></div> #}
+                      {# <a class="dropdown-item text-muted d-none" id="unicorn"> #}
+                      {# <small>🦄 Believe in your dreams!</small> #}
+                      {# </a> #}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              </div>
+            </div>
+            <div class="single-video-author box mb-3">
+              <div class="float-right" id="video-action">
+                <div class="d-inline buzz-fix">
+                  {{ video.badges|video_badges }}
+
+                  {# <a target="_blank" id="donationStart" #}
+                  {# class="btn d-none d-md-inline-block btn-light btn-sm"> #}
+                  {# <i class="fa fa-coins"></i> Donate #}
+                  {# </a> #}
+
+                  {{ video.owner|subscription(user_id) }}
+
+                  {% include './widgets/subscribe.twig' with {'creator': video, 'subscribed': subscribed, 'notifications': notifications} %}
+                  {# <button class="btn btn btn-outline-danger" type="button"><i class="fas fa-bell"></i> #}
+                  {# </button> #}
+                </div>
+
+
+                <div class="btn btn-sm" style="box-shadow: none !important;">
+                  <a class="dbuzz-share-button" href="https://d.buzz/#/intent/buzz"
+                     data-text="I just watched this video on 3speak.tv" data-size="large"
+                     data-hashtags="threespeak,video,{{ video.owner }}">Buzz</a>
+                </div>
+              </div>
+              <img class="img-fluid" src="{{ owner.username|avatar }}" alt="">
+              <p><a href="/user/{{ video.owner }}"><strong>{{ video.owner }}</strong></a>
+                {% if owner.verified == true %}
+                  <span title=""
+                        data-placement="top"
+                        data-toggle="tooltip"
+                        data-original-title="Verified"><i
+                      class="fas fa-check-circle text-success"></i></span>
+                {% endif %}
+              </p>
+              <small>Published on {{ video.created|date("M d, Y") }}</small>
+            </div>
+            <div class="single-video-info-content box mb-3">
+              <h6>About :</h6>
+              <div id="videoAbout">
+                {# {% if user.nickname == video.owner %} #}
+                {# <span class="float-right btn btn-primary text-light ml-1 mb-1" data-edit="{{ video.owner }}/{{ video.permlink }}">Edit</span> #}
+                {# {% endif %} #}
+                <span class="description">{{ video.description }}</span>
+              </div>
+              <div class="text-center collapsed" id="videoAboutCollapse"
+                   style="cursor: pointer; border-top: 1px solid rgba(0,0,0,0.2)">
+                <i class="fa fa-chevron-down"></i> Show more
+              </div>
+
+              {% if noAds is not defined %}
+                <div class="text-center mb-1 mt-1">
+                  {% include './widgets/advert.twig' with {zone: adZone, revive: adRevive} %} {# Check layout.twig for consts #}
+                </div>
+              {% endif %}
+
+              <h6>Tags :</h6>
+              <p class="tags mb-0" style="display: flex; flex-wrap: wrap; flex-direction: row;">
+                {% for tag in video.tags|split(",") %}
+                  <span style="padding: 0.125rem;"><a href="/t/{{ tag|escape }}" class="text-white">{{ tag|escape }}</a></span>
+                {% endfor %}
+              </p>
+            </div>
+            {% if video.owner != 'guest-account' %}
+              <div id="proxyNotification" class="alert alert-success d-none" style="font-size: large;">
+                {% if user.nickname == video.owner %}
+                  <strong>Congratulations!</strong>
+                  You are now able to upvote comments on your
+                  videos using 3speak's stake, just upvote comments like normal and you will be
+                  given an option to upvote through us.
+                  <br><br>
+                  We suggest that you let your followers from other platforms know about this
+                  feature and bring them over to enjoy the benefits.
+                  We also kindly ask that you <b>only</b> upvote <b>quality</b> comments and
+                  <b>do not</b> self-vote.
+                  <br><br>Your limit for today is <b>${{ owner.limit }}!</b>
+                  You have <b id="upvHoursRemaining"></b> hours remaining.
+                {% else %}
+                  <strong>Woo!</strong>
+                  This creator can upvote comments using 3speak's stake today because they are a top performing creator!
+                  Leave a quality comment relating to their content and you could receive an upvote
+                  worth at least a dollar.<br><br>Their limit for today is <b>${{ owner.limit }}!</b>
+                {% endif %}
+              </div>
+              <div id="comments">
+                <table class="box mb-2" id="">
+                  <h6 class="comment-count">Comments:</h6>
+                  <!-- /container -->
+                  <table
+                    class="upvoteCountdown {% if user and user.darkMode == true %}text-dark{% endif %} d-none table table-striped table-bordered"
+                    data-author="{{ video.owner }}">
+                    <tr class="info table-danger">
+                      <td colspan="4">Time
+                        until {% if user.nickname == video.owner %}you{% else %}{{ video.owner }}{% endif %}
+                        can <b>give away</b> ${{ owner.limit }} to their commenters.
+                      </td>
+                    </tr>
+                    <tr class="info table-danger">
+                      <td><span id="days">0</span> Days</td>
+                      <td><span id="hours">0</span> Hours</td>
+                      <td><span id="minutes">0</span> Minutes</td>
+                      <td><span id="seconds">0</span> Seconds</td>
+                    </tr>
+                  </table>
+                </table>
+
+                {% if user.nickname == 'guest-account' %}
+                  <p class=" mt-1 mb-2 alert alert-info">
+                    You can not write comments while logged in with a guest account.
+                  </p>
+                {% else %}
+                  <div id="new-comment" class="box mt-1 mb-2">
+                    <div>
+                      <div>
+                        <div class="col-12 clearfix"><h6 class="text-muted">Reply:</h6>
+                          {% if user.isSteem %}
+                            <textarea id="new-comment-body" placeholder="Comment here..." class="form-control w-100"
+                                      maxlength="25000"></textarea>
+                            <button id="new-comment-btn" data-new-comment="{{ video.owner }}/{{ video.permlink }}"
+                                    class="btn mt-1 {% if new == true %}btn-dark btn-sm{% else %}btn-primary{% endif %} float-right">
+                              Comment
+                            </button>
+                          {% else %}
+
+                            <p class="alert alert-info">To comment on this video please connect a HIVE account to your
+                              profile:
+                              <a href="/settings/identities">Connect HIVE Account</a></p>
+
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+              </div>
+            {% else %}
+              <div class="mt-2 mb-2">
+                <p class="alert alert-info">
+                  Comments are not available for videos uploaded through the guest account.
+                </p>
+              </div>
+            {% endif %}
+            {% if noAds is not defined %}
+              <div class="text-center mb-1 mt-1">
+                <!--<script async
+                        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>-->
+                <!-- 3speak-top-lg -->
+                <!--<ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2784600041331572"
+                     data-ad-slot="6776429328"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>
+                  (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>-->
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+        <div class="col-md-4" id="sidebarCol" {% if user and user.darkMode == true %}style="background-color: #444;"{% else %}{% if user and user.darkMode == false %}style="background-color: #fff;"{% endif %}
+        {% endif%}>
+          <div class="single-video-right">
+            <div class="row">
+              {% if video.playlist and video.playlist.next is not null %}
+                <div class="col-md-12">
+                  {# <div class="adblock"> #}
+                  {# <div class="img"> #}
+                  {# Google AdSense<br> #}
+                  {# 336 x 280 #}
+                  {# </div> #}
+                  {# </div> #}
+                  <div class="main-title" style="font-size: medium; margin-top: 8px;">
+                    <a href="/watch?v={{ video.playlist.owner }}/{{video.playlist.id}}&i={{ video.playlist.next.index }}"><h6>Next Video in Playlist:</h6>
+                    </a>
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  {% include './widgets/sideVideoCard.twig' with {video: video.playlist.next, playlist: true, index: video.playlist.next.index, playlistInfo: video.playlist} %}
+                </div>
+              {% endif %}
+              <div class="col-md-12 mt-2">
+                {# <div class="adblock"> #}
+                {# <div class="img"> #}
+                {# Google AdSense<br> #}
+                {# 336 x 280 #}
+                {# </div> #}
+                {# </div> #}
+                <div class="main-title" style="font-size: medium;">
+                  <a href="/user/{{ video.owner }}"><h4 {% if user and user.darkMode == true %}style="color: white;"{% else %}{% if user and user.darkMode == false %}style="color: #333;"{% endif %}
+                  {% endif%}>More from {{ video.owner }}</h4></a>
+                </div>
+
+              </div>
+              <div class="col-md-12">
+                {% if otherVideos|length == 0 %}
+                  <p class="alert alert-dark">
+                    {{ video.owner }} has no more videos yet.
+                  </p>
+                {% endif %}
+                {% for nextVideo in otherVideos %}
+                  {% include './widgets/sideVideoCard.twig' with {video: nextVideo} %}
+                {% endfor %}
+
+                {% if noAds is not defined %}
+                  <div style="" class="text-center d-none d-md-block mb-1 mt-1">
+                    <!-- 3Speak Right Mobile -->
+                    <ins class="adsbygoogle"
+                        style="display:inline-block;width:970px;height:90px"
+                        data-ad-client="ca-pub-8397845832901188"
+                        data-ad-slot="8884703638"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                  </div>
+                  <div class="text-center d-md-none mb-1 mt-1">
+                    <script async
+                            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- 3speak-menu -->
+                    <ins class="adsbygoogle"
+                        style="display:block"
+                        data-ad-format="fluid"
+                        data-ad-layout-key="-f9+4o+8n-f4+35"
+                        data-ad-client="ca-pub-8397845832901188"
+                        data-ad-slot="8727138576"></ins>
+                    <script>
+                      (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                  </div>
+                {% endif %}
+                <!-- hr -->
+                <div class="main-title mb-1" style="font-size: medium;">
+                  <h4>More Videos</h4>
+                </div>
+                {% for nextVideo in otherVideosByOthers %}
+                  {% include './widgets/sideVideoCard.twig' with {video: nextVideo} %}
+                {% endfor %}
+
+
+                {% if noAds is not defined %}
+                  <div style="" class="text-center d-none d-md-block mb-1 mt-1">
+                    <script async
+                            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- 3speak_top -->
+                    <ins class="adsbygoogle"
+                        style="display:inline-block;width:970px;height:90px"
+                        data-ad-client="ca-pub-8397845832901188"
+                        data-ad-slot="8884703638"></ins>
+                    <script>
+                      (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                  </div>
+                  <div style="" class="text-center d-md-none mb-1 mt-1">
+                    <script async
+                            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- 3speak-menu -->
+                    <ins class="adsbygoogle"
+                        style="display:block"
+                        data-ad-format="fluid"
+                        data-ad-layout-key="-f9+4o+8n-f4+35"
+                        data-ad-client="ca-pub-8397845832901188"
+                        data-ad-slot="8727138576"></ins>
+                    <script>
+                      (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                  </div>
+                {% endif %}
+                {# <div class="adblock mt-0"> #}
+                {# <div class="img"> #}
+                {# Google AdSense<br> #}
+                {# 336 x 280 #}
+                {# </div> #}
+                {# </div> #}
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="votePopovers" class="d-none"></div>
+
+
+  {% if user is defined %}
+    <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="replyTo"></h5>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="author">
+            <input type="hidden" id="permlink">
+            <textarea name="comment" id="comment" cols="30" rows="10" class="form-control"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="closeCMD" type="button" data-dismiss="modal">Cancel
+            </button>
+            <button class="btn btn-primary" id="cmd">Comment</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if user is defined and user.isSteem == true %}
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit</h5>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editAuthor">
+            <input type="hidden" id="editPermlink">
+            <textarea name="edit" id="editText" cols="30" rows="10" class="form-control"></textarea>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="editClose" type="button" data-dismiss="modal">Cancel
+            </button>
+            <button class="btn btn-primary" id="editUpdate"><i class="mr-1"></i>Update</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if user is defined and user.isSteem == true and user.nickname == video.owner %}
+    <div class="modal fade" id="voteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="voteWith">Vote with the @threespeak account?</h5>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="authorToLike">
+            <input type="hidden" id="permlinkToLike">
+            <div class="container col-md-12">
+              <div id="postAgeWarning" class="alert alert-warning d-none">
+                <strong>Warning!</strong> This post is older than 7 days, this means the author will
+                no longer recieve rewards from upvotes on it.
+              </div>
+              <div class="row">
+                {# <div class="col-sm">
+                  <h6>Your upvote value:</h6> $<span id="ownerUpvVal" class="ml-1">0</span>
+                  <hr>
+                  <button class="btn btn-secondary" id="castOwnVote" type="button"
+                          data-dismiss="modal">
+                    Vote with your own account
+                  </button>
+                </div> #}
+                <div class="col-sm boarder-dark">
+                  <h6>Free upvotes from @threespeak:</h6>
+                  <hr>
+                  <button id="3sUpvote1" class="btn btn-secondary cast3sVote" type="button"
+                          data-dollars=1 data-dismiss="modal">Vote $1
+                  </button>
+                  <button id="3sUpvote2" class="btn btn-secondary cast3sVote" type="button"
+                          data-dollars=2 data-dismiss="modal">Vote $2
+                  </button>
+                  <button id="3sUpvote3" class="btn btn-secondary cast3sVote" type="button"
+                          data-dollars=3 data-dismiss="modal">Vote $3
+                  </button>
+                  <button id="3sUpvote4" class="btn btn-secondary cast3sVote" type="button"
+                          data-dollars=4 data-dismiss="modal">Vote $4
+                  </button>
+
+                  You have $<span id="remaining3sVote">0</span> worth of upvotes remaining for today.
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--<textarea name="comment" id="comment" cols="30" rows="10" class="form-control"></textarea>-->
+          <div class="modal-footer">
+            <button class="btn btn-secondary" id="closeCreatorVote" type="button" data-dismiss="modal">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="modal" tabindex="-1" id="voteModal" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Upvote</h5>
+            <button id="closeVoteModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group" data-children-count="1">
+              <label for="voteStrength">Strength <span id="votePercent"></span></label>
+              <input type="range" min="1" max="100" value="75" class="form-control-range" id="voteStrength">
+              <span>0%</span><span class="float-right">100%</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="castUpvote">Upvote</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+  <div class="modal" tabindex="-1" id="donateModal" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Donate</h5>
+          <button id="closeVoteModal" type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body text-center">
+          <div id="qrcode"></div>
+          <div id="donationAddress"></div>
+          <div id="donationOutput"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Done</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+  <script src="https://cdn.jsdelivr.net/npm/cdnbye@latest"></script>
+  <script src="https://cdn.jwplayer.com/libraries/j7Kz0Rae.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  {#<script src="https://unpkg.com/steem-content-renderer"></script>#}
+  <script src="https://kit.fontawesome.com/fd381cc3f6.js" crossorigin="anonymous"></script>
+
+  <script src="/js/donate.js"></script>
+  {#<script src="https://cdn.jsdelivr.net/npm/webtorrent@latest/webtorrent.min.js"></script>#}
+  <script src="https://unpkg.com/plyr@3"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="/js/comment2.js"></script>
+  <script src="/js/qrcode.js"></script>
+  {#<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>#}
+  <script>
+
+    const VIDEO = {
+      hiveUser: '{{ video.owner }}',
+      permlink: '{{ video.permlink }}'
+    }
+
+    $(() => {
+      if (!localStorage.getItem('ipfsToggle_v2')) {
+        if (Math.random() < 0.99) {
+          localStorage.setItem('ipfsToggle_v2', 'true');
+        } else {
+          localStorage.setItem('ipfsToggle_v2', 'false');
+        }
+      }
+      if (JSON.parse(localStorage.getItem('ipfsToggle_v2'))) {
+        $('#ipfsToggle').attr('checked', 'checked');
+      }
+
+      $('#voteStrength').on('input', function () {
+        $('#votePercent').text($(this).val() + '%')
+      })
+
+      $('#videoAboutCollapse').click(() => {
+        if ($('#videoAboutCollapse').hasClass('collapsed')) {
+          $('#videoAbout').css("max-height", "initial");
+          $('#videoAboutCollapse').removeClass('collapsed').html(' <i class="fa fa-chevron-up"></i> Show less')
+        } else {
+          $('#videoAbout').css("max-height", "200px");
+          $('#videoAboutCollapse').addClass('collapsed').html(' <i class="fa fa-chevron-down"></i> Show more')
+        }
+      });
+
+      if (window.threespeak && window.threespeak.isDesktopApp() === true) {
+        {% if video.hasTorrent == true %}
+        {# window.threespeak.addTorrent("{{ APP_VIDEO_CDN_DOMAIN }}/{{ video.permlink }}/{{ video.filename }}.torrent") #}
+        {% endif %}
+      } else {
+        {% if video.hasTorrent == true %}
+        try {
+          const torrentClient = new WebTorrent()
+          window.torrentClient = torrentClient;
+          {# torrentClient.add("{{ APP_VIDEO_CDN_DOMAIN }}/{{ video.permlink }}/{{ video.filename }}.torrent", function (torrent) {}) #}
+        } catch (e) {
+          console.error(e)
+          // videoFallback()
+        }
+
+        {% endif %}
+      }
+    })
+
+    function toggleIpfs() {
+      if (JSON.parse(localStorage.getItem('ipfsToggle_v2'))) {
+        localStorage.setItem('ipfsToggle_v2', 'false');
+      } else {
+        localStorage.setItem('ipfsToggle_v2', 'true');
+      }
+      window.location.reload()
+    }
+
+    let qrcode;
+
+    function donationModal(ticker, address) {
+      if (qrcode) {
+        qrcode.clear()
+        qrcode.makeCode(address);
+      } else {
+        qrcode = new QRCode(document.getElementById("qrcode"), address);
+        $('#qrcode img').addClass('mx-auto')
+      }
+      $('#donationAddress').text(address)
+      $('#donateModal').modal()
+
+      /*switch(ticker) {
+        case 'Ethereum':
+          const ethEnabled = async () => {
+            if (window.ethereum) {
+              await window.ethereum.send('eth_requestAccounts');
+              window.web3 = new Web3(window.ethereum);
+              return true;
+            }
+            return false;
+          }
+          if (ethEnabled()) {
+            console.log(ethereum.selectedAddress)
+            const transactionParameters = {
+              to: address, // Required except during contract publications.
+              from: ethereum.selectedAddress, // must match user's active address.
+              value: '0x9184e72a'
+            };
+
+            const txHash = ethereum.request({
+              method: 'eth_sendTransaction',
+              params: [transactionParameters],
+            });
+          }
+          break;
+      }*/
+    }
+
+    function getIcon(provider) {
+      if (typeof provider === "string") {
+        if (provider.indexOf("|") > -1) {
+          if (provider.indexOf("facebook") > -1) {
+            return '<i class="fab fa-facebook-square"></i>';
+          }
+          if (provider.indexOf("instagram") > -1) {
+            return '<i class="fab fa-instagram"></i></i>';
+          }
+          if (provider.indexOf("twitter") > -1) {
+            return '<i class="fab fa-twitter-square"></i>';
+          }
+          if (provider.indexOf("google") > -1) {
+            return '<i class="fab fa-google-plus-square"></i>';
+          }
+        }
+
+        if (provider === "facebook") {
+          return '<i class="fab fa-facebook-square"></i>';
+        }
+        if (provider === "instagram") {
+          return '<i class="fab fa-instagram"></i></i>';
+        }
+        if (provider === "twitter") {
+          return '<i class="fab fa-twitter-square"></i>';
+        }
+        if (provider === "google") {
+          return '<i class="fab fa-google-plus-square"></i>';
+        }
+
+      }
+      return ''
+    }
+
+    function countdown(event) {
+      let now = new Date();
+
+      let currentTime = now.getTime();
+
+      let eventTime = event.getTime();
+
+      let remTime = eventTime - currentTime;
+
+      let s = Math.floor(remTime / 1000);
+      let m = Math.floor(s / 60);
+      let h = Math.floor(m / 60);
+      let d = Math.floor(h / 24);
+
+      h %= 24;
+      m %= 60;
+      s %= 60;
+
+      h = (h < 10) ? "0" + h : h;
+      m = (m < 10) ? "0" + m : m;
+      s = (s < 10) ? "0" + s : s;
+
+      $('#days').html(d);
+      $('#hours').html(h);
+      $('#minutes').html(m);
+      $('#seconds').html(s);
+
+      setTimeout(() => {
+        countdown(event)
+      }, 1000);
+    }
+
+    async function getCommunity() {
+      let comNode = $('[data-community]')
+      let communityId = comNode.data('community');
+      let reqBody = {
+        "jsonrpc": "2.0",
+        "method": "bridge.get_community",
+        "params": {"name": communityId, observer: "threespeak"},
+        "id": 1
+      };
+      let community = await (await fetch(`${globals.HIVE_SECURE_NODE_PREFIX}://${globals.HIVE_DEFAULT_NODE}`, {
+        method: 'post',
+        body: JSON.stringify(reqBody),
+        headers: {'Content-Type': 'application/json'},
+      })).json();
+
+      community = JSON.parse(JSON.stringify(community));
+      comNode.html('<a href="/c/{{ video.hive|escape }}">' + community.result.title + '</a>')
+    }
+
+    $(() => {
+
+      try {
+        __dbuzzwidget.init();
+      } catch (e) {
+      }
+      const esixPost = JSON.parse('{{ post|json_encode()|escape('js') }}')
+      createVotePopover(esixPost, 'root')
+      initPopover()
+      {# hive.api.getContentAsync('{{ video.owner }}', '{{ video.permlink }}', function (err, res) { #}
+      {# $('.comment-count').append(' (' + res.children + ')'); #}
+      {# addCommentLikeBtn("{{ video.owner }}", "{{ video.permlink }}"); #}
+      {# }); #}
+
+
+      initComments();
+      initVoting();
+      getCommunity();
+
+
+      const player = jwplayer('player').setup({
+        file: '{{video.playUrl}}',
+        //file: {% if video.ipfs %}JSON.parse(localStorage.getItem('ipfsToggle_v2')) ? `https://ipfs-3speak.b-cdn.net/ipfs/{{video.ipfs}}/default.m3u8` : {% endif %}`{{APP_VIDEO_CDN_DOMAIN}}/{{video.permlink}}/default.m3u8`,
+        image: "{{ video.baseThumbUrl }}",
+        playbackRateControls: [0.75, 1, 1.25, 1.5, 1.75, 2],
+        autostart: true,
+        muted: true,
+        {% if user.nickname != 'threespeak' %}
+        /*"advertising": {
+          "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.co%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
+          "client": "googima",
+          "vpaidmode": "insecure"
+        },*/
+        {% endif %}
+        abouttext: "Powered by 3Speak",
+        aboutlink: "https://3speak.tv/?utm_source=player_context",
+        cast: {},
+        ga: {},
+        floating: {
+          dismissible: true
+        },
+        related: {
+          onclick: 'link',
+          oncomplete: 'show',
+          //file: '/apiv2/recommended?v={{ video.owner }}/{{ video.permlink }}'
+        },
+        logo: {
+          "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
+          "link": "https://3speak.tv/?utm_souce=player_brand",
+          "hide": "true",
+          "position": "top-left"
+        },
+        sharing: {
+          code: '<iframe width="560" height="315" src="https://3speak.tv/embed?v={{ video.owner }}/{{ video.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+          sites: ["facebook", "twitter", "reddit", "email"]
+        }
+      });
+      window.player = player;
+      const author = '{{ video.owner }}';
+      const permlink = '{{ video.permlink }}'
+      let watched = false;
+      let midroll = false;
+      let seconds = 0;
+      let duration = 0;
+      let t;
+      let running = false;
+
+      player.on('adError', (event) => {
+        console.log("Ad Request Error: \n" + event.message)
+      });
+      player.on('adComplete', (event) => {
+        timer()
+      });
+
+      /*player.on('time', (event) => {
+        if ((event.position / event.duration) * 100 >= 50) {
+          if (midroll === false) {
+            midroll = true;
+            // player.playAd("https://advertise.3speakcontent.online/www/api/v2/vast/?zone=6")
+          }
+        }
+      });*/
+
+
+      function add() {
+        if (running === true) {
+          seconds++;
+        }
+
+        if (seconds >= 1 && watched === false) {
+          running = false;
+          watched = true;
+
+
+        }
+
+        if (watched === false) {
+          timer();
+        }
+      }
+
+      function timer() {
+        t = setTimeout(add, 1000);
+      }
+
+      player.on("pause", (event) => {
+        running = false
+      });
+
+      player.on("stop", (event) => {
+        running = false
+      });
+
+      player.on("play", () => {
+        running = true;
+      });
+
+      player.on("firstFrame", (event) => {
+        duration = player.getDuration();
+        timer()
+        grecaptcha.execute('6Le5G3MaAAAAAKXzr4reX2i2Bss8abc6CrrlEo-Z', {action: 'view'}).then(token => {
+          $.ajax({
+            url: '/video/api/view',
+            data: {
+              v: '{{ video.owner }}/{{ video.permlink }}',
+              token
+            }
+          });
+        });
+        running = true
+      });
+
+      $('[data-reblog]').on('click', function () {
+        let btn = $(this);
+        btn.html('reblog <i class="fas fa-spinner fa-spin"></i>');
+        let [author, permlink] = btn.data('reblog').split('/');
+        $.ajax({
+          url: '/user/api/reblog',
+          data: {author, permlink},
+          type: 'post',
+          success: () => {
+            btn.html('reblog <i class="fas fa-check text success"></i>')
+          }
+        })
+      });
+
+      {# {% if user %} #}
+      $.ajax({
+        url: '/user/api/creator/vote/day',
+        type: 'post',
+        data: {creator: "{{ video.owner }}"},
+        success: (res => {
+          if (!res.error) {
+            if (res.upvoteEnabled === true) {
+              $('#proxyNotification').removeClass('d-none');
+              $('#upvHoursRemaining').html(res.diff);
+            } else if (res.upvoteEnabled === false) {
+              //nothing
+            } else {
+              $('.upvoteCountdown').removeClass('d-none');
+              countdown(new Date(res.date));
+            }
+          }
+        })
+      });
+      {# {% endif %} #}
+
+
+      $("#new-comment-btn").click((e) => {
+        {% if user is defined %}
+        $.ajax({
+          url: "/user/api/comment",
+          type: "post",
+          data: {
+            author: '{{ video.owner }}',
+            permlink: '{{ video.permlink }}',
+            comment: $('#new-comment-body')[0].value
+          },
+          success: (res) => {
+            if (res.error) {
+              cmd.text("Comment");
+              return alert(res.error)
+            }
+            $('#commentModal').modal('hide')
+            $('#new-comment-body').val();
+            $('#comments').html('<div class="box mb-2" id=""><h6>Comments:</h6></div>');
+            initComments()
+          }
+        })
+        {% else %}
+        $('#loginModal').modal();
+        {% endif %}
+      });
+    });
+  </script>
+
+
+
+  {% if user is defined and user.nickname == video.owner and owner.canProxyUpvote == true %}
+    <script>
+      const videoOwner = {{ video.owner|json_encode() }}
+
+        $(document).on("click", "[data-vote]", function (err) {
+
+
+          /*let created_ago = $(id).data('created').replace(' ago', '');
+          //check for units lager than or equal to days
+          if (['years', 'months', 'weeks', 'days'].some(timeframe => created_ago.includes(timeframe))) {
+            if (created_ago.includes('days')) {
+              //if number of days is larger than 7
+              if (parseInt(created_ago.split(' ')[0]) > 7) {
+                $('#postAgeWarning').removeClass('d-none')
+              }
+            } else {
+              $('#postAgeWarning').removeClass('d-none')
+            }
+          }*/
+
+          $.ajax({
+            url: 'user/api/creator/can-proxy-vote',
+            type: "post",
+            data: {videoOwner: videoOwner},
+            success: (res) => {
+
+              console.log('HELLO', res)
+              console.log($(this).data('vote'), videoOwner)
+
+              if (res.proxy_vote === true && videoOwner !== $(this).data("vote").split("/")[0]) {
+                //$("#voteWith").text('Vote ' + weight / 100 + '% with your own account or the @threespeak account?');
+
+                /*$.ajax({
+                  url: '/user/api/upvote-value',
+                  data: {
+                    weight: weight,
+                    username: '{{ video.owner }}',
+                  },
+                  method: "post",
+                  success: (res) => {
+                    console.log(res)
+                    $("#ownerUpvVal").text(res.sbd.toFixed(3))
+                  },
+                  error: (e) => {
+                    console.log(e.responseJSON.error);
+                  }
+                });*/
+
+
+                $.ajax({
+                  url: '/user/api/creator/remaining-proxy',
+                  method: "post",
+                  success: (res) => {
+                    console.log('HELLO', res)
+                    $("#remaining3sVote").text(res.total);
+                    if (res.total < 4) {
+                      $("#3sUpvote4").attr('disabled', true).addClass('disabled');
+                    }
+                    if (res.total < 3) {
+                      $("#3sUpvote3").attr('disabled', true).addClass('disabled');
+                    }
+                    if (res.total < 2) {
+                      $("#3sUpvote2").attr('disabled', true).addClass('disabled');
+                    }
+                    if (res.total < 1) {
+                      $("#3sUpvote1").attr('disabled', true).addClass('disabled');
+                    }
+                  }
+                });
+
+                $(id).addClass('awaiting-decision');
+                $('#voteModal').modal()
+              } else {
+                $.notify('You cannot vote yourself using threespeak`s stake', 'error')
+                $('#voteModal').modal('hide')
+              }
+            },
+            error: (e) => {
+              console.log(e)
+            }
+          })
+        });
+
+      $(document).on("click", "#castOwnVote", function (err) {
+        let id = '#' + $('.awaiting-decision').attr('id');
+        normalVote(id);
+      });
+
+      $(document).on("click", ".cast3sVote", function (err) {
+        let vote = localStorage.getItem("vote");
+
+        let author = vote.split("/")[0];
+        let permlink = vote.split("/")[1];
+        let dollars = $(this).data('dollars');
+        $(this).addClass('fa fa-spin fa-spinner').html('');
+        $.notify("Casting 3speak vote.", 'info');
+
+        $.ajax({
+          url: '/user/api/creator/vote',
+          data: {
+            videoOwner: "{{ video.owner }}",
+            videoPermlink: "{{ video.permlink }}",
+            author: author,
+            estimate: dollars,
+            username: 'threespeak',
+            permlink: permlink,
+          },
+          method: "post",
+          success: async (res) => {
+            if (res.error) {
+              $.notify(res.error, 'error')
+            } else {
+              $.notify("Successful vote.", 'success');
+              initVoting()
+            }
+          },
+          error: (e) => {
+            console.log(e);
+          }
+        });
+      });
+
+      $(document).on("hidden.bs.modal", "#voteModal", function (err) {
+        $('.awaiting-decision').removeClass('awaiting-decision');
+        $('#postAgeWarning').addClass('d-none')
+      });
+
+    </script>
+  {% else %}
+    <script>
+      $(document).on("click", ".steem-upvote-cast", function (e) {
+        let id = '#' + $(this).closest('.steem-like').attr('id').replace('.', '\\.');
+        normalVote(id);
+      })
+    </script>
+  {% endif %}
+{% endblock %}
+
+
+
+{% block tracking %}
+  _paq.push(['trackEvent', 'Video', 'Play', '{{ video.title|url_encode|trim("'") }}']);
+{% endblock %}

@@ -1,0 +1,41 @@
+{#{% extends 'embed/layout.twig' %}#}
+
+<!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/css/bootstrap.min.css">-->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.2.1/materia/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.js"></script>
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.8.2/css/all.css"
+      integrity="sha384-xVVam1KS4+Qt2OrFa+VdRUoXygyKIuNWUUUBZYv+n27STsJ7oDOHJgfF0bNKLMJF" crossorigin="anonymous">
+<link rel="stylesheet" href="/css/main.css">
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g=" crossorigin="anonymous"></script>
+
+
+<script src="/js/main.js"></script>
+<style>
+    .teaser_holder:hover a {
+        visibility: visible;
+    }
+</style>
+
+{% block body %}
+    <div class="container-fluid" style="background-color: #333333; height: 100%;">
+        {% for row in videos %}
+        <div class="row">
+            {% for video in row %}
+            <div class="col" style="padding-right: 2px; padding-left: 2px;">
+                <div class="teaser_holder" style="padding: 1 !important;">
+                    <a href="/embed?v={{ video.owner }}/{{ video.permlink }}&category={{ video.category }}&language={{ video.language }}">
+                        <img height="141" class="img-fluid bg-dark" {% if video.isNsfwContent == true %}onclick="this.src = '{{ APP_IMAGE_CDN_DOMAIN }}/{{ video.permlink }}/thumbnail.png'" {% endif %} src="{% if video.isNsfwContent == true %}{% else %{{ APP_VIDEO_CDN_DOMAIN }}/{{ video.permlink }}/thumbnail.png{% endif %}">
+                    </a>
+                    <a class="card-label" style="visibility: visible;" href="/embed?v={{ video.owner }}/{{ video.permlink }}&category={{ video.category }}&language={{ video.language }}">
+                        <b data-toggle="tooltip" data-placement="bottom" title="{{ video.title }}" class="max-lines word-break">{{ video.title|striptags }}</b>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+

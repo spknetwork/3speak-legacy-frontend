@@ -1,0 +1,7 @@
+.carousel-control-prev,
+.carousel-control-next {
+  background: none;
+  opacity: 0;
+  width: 51px;
+  height: 100%;
+}

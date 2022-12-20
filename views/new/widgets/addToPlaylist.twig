@@ -1,0 +1,235 @@
+<span class="ml-1" data-toggle="modal" data-target="#addToPlaylistModal"><a id="add-to-playlist-{{ video.permlink }}" class="btn btn-light btn-sm m-1" style="cursor: pointer; margin-right: 1%;" data-permlink="{{ video.permlink }}" data-author="{{ video.owner }}" onclick="addToPlaylistModalInit('{{ video.owner }}', '{{ video.permlink }}')"><i class="fa fa-plus"></i> ADD TO PLAYLIST</a></span>
+
+<div class="modal add-to-playlist-modal" tabindex="-1" role="dialog" id="addToPlaylistModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><span class="text-left">Save to...</span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          
+          <div id="playlist-container">
+            <!-- 
+            Client side renderered 
+            -->
+          </div>
+          <div class="create-playlist-btn text-left" style="margin: 2%;">
+            <a href="javascript:void(0)" id="createNewPlaylist" onclick="createPlaylistInit()" class="btn btn-light btn-sm">Create New Playlist <i class="fa fa-plus"></i></a>
+          </div>
+          
+          <div id="createPlaylistArea">
+            <hr>
+            <input class="form-control" type="text" placeholder="Playlist name here...." id="new-playlist-name"  onkeyup="handleKey(event)">
+          </div>
+        </div>
+        <div class="modal-footer" onload="startUp()">
+          <a href="javascript:void(0)" id="addNewPlaylist" onclick="addToPlaylist()" class="btn btn-light btn-sm">Add To Playlist(s) <i class="fa fa-plus"></i></a>
+          <a href="javascript:void(0)" id="sendNewPlaylist" onclick="sendNewPlaylist()" class="btn btn-light btn-sm">Create <i class="fa fa-plus"></i></a>
+          <a href="javascript:void(0)" id="closeCreateNewPlaylist" onclick="closeCreateNewPlaylist()" class="btn btn-light btn-sm">Cancel <i class="fa fa-times"></i></a>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% block style %}
+    <style>
+        .one-playlist {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+        }
+
+        .one-label {
+            margin: 2% !important;
+        }
+
+        .playlist-form-check {
+            text-align: left !important;
+            margin: 2% !important;
+        }
+    </style>
+{% endblock %}
+
+{% block script %}
+    
+  <script>
+
+    // When generatting elements dynamically, especially the check forms and the buttons in the playlist modal, it is very important to maintain/retain all custom classes and id where applicable
+   
+    function startUp() {
+      console.log('system is starting up')
+    }
+    function handleKey(e) {
+
+      if (e.key === 'Enter' || e.keyCode === 13) {
+        // Do something
+        createPlaylistInit()
+        sendNewPlaylist()   
+      }    
+    }
+    function addToPlaylistModalInit (owner, permlink) {
+        const user = '{{user}}';
+        document.getElementById('sendNewPlaylist').style.display = 'none'
+        document.getElementById('createPlaylistArea').style.display = 'none'
+        document.getElementById('closeCreateNewPlaylist').style.display = 'none'
+
+        if (!user) {
+          $('.add-to-playlist-modal').find('.modal-body').html('<p class="text-center">You must be logged in before you can add a video to a playlist</p>')
+          document.getElementById('createNewPlaylist').style.display = 'none'
+          document.getElementById('addNewPlaylist').style.display = 'none'
+        }
+
+        if (user) {
+            console.log({owner: owner, permlink: permlink});
+
+            document.getElementById('addToPlaylistModal').setAttribute('data-author', owner)
+            document.getElementById('addToPlaylistModal').setAttribute('data-permlink', permlink)
+
+            /* load playlists from backend and populate the modal here, every displayed <input type="checkbox" />, <div class="form-check"></div> and <label class="form-check-label"></label> must have the class 'one-playlist', playlist-form-check and one-label respectively, that is very important*/
+        }
+    }
+
+  function renderPlaylistRow(item) {
+    return(`
+        <div class="form-check playlist-form-check" data-permlink="${item.permlink}">
+          <div style="display: flex; align-items: center">
+              <input type="checkbox" class="form-check-input one-playlist" data-permlink="${item.permlink}" value="playlistNameProbably2">
+              <label class="form-check-label one-label" for="playlistIdProbably">${item.title || ''}</label>
+              <i class="fa fa-trash text-danger" style="font-size: 18px; margin-left: auto; cursor: pointer;" onclick="deletePlaylist('${item.permlink}', '${item.title}')"></i>
+
+          </div>
+            </div>`)
+  }
+    axios({
+      method: 'get',
+      url: 'api/playlists/ls',
+    })
+    .then(function (response) {
+      const {out} = response.data
+      
+      for(let item of out) {
+        $('#playlist-container').append(renderPlaylistRow(item))
+      }
+    });
+
+    function addToPlaylist () {
+      document.getElementById('addNewPlaylist').innerHTML = 
+        `<div class="spinner-border  spinner-border-sm" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>`
+        let playlistsToAdd = [] // array of playlists to add the video
+
+        const checkBoxChecked = document.getElementsByClassName('one-playlist'); // every displayed playlist must have the class 'one-playlist'
+
+        
+        for (var i = 0; i < checkBoxChecked.length; i++) {
+            if (checkBoxChecked.item(i).checked) {
+                const playlistId = checkBoxChecked.item(i).getAttribute('data-permlink');
+                const playlistName = checkBoxChecked.item(i).getAttribute('value');
+                const owner = document.getElementById('addToPlaylistModal').getAttribute('data-author')
+                const permlink = document.getElementById('addToPlaylistModal').getAttribute('data-permlink')
+
+                playlistsToAdd.push({
+                    playlistId: playlistId,
+                    owner: owner,
+                    permlink: permlink
+                })
+            }
+        }
+
+        console.log(playlistsToAdd) // send this array and other necessary data to the backend
+        
+        for(let item of playlistsToAdd) {
+          console.log(item)
+          axios({
+            method: 'post',
+            url: 'api/playlists/add',
+            data: {
+              id: item.playlistId,
+              permlink: item.permlink,
+              owner: item.owner
+            }
+          })
+        }
+
+        
+      document.getElementById('addNewPlaylist').innerHTML = 
+        `Add To Playlist(s) <i class="fa fa-plus"></i>`
+        toastr.success('Added successfully!')
+    }
+
+    function createPlaylistInit() {
+        document.getElementById('sendNewPlaylist').style.display = 'inline-block'
+        document.getElementById('createPlaylistArea').style.display = 'block'
+        document.getElementById('closeCreateNewPlaylist').style.display = 'inline-block'
+        
+        document.getElementById('createNewPlaylist').style.display = 'none'
+        document.getElementById('addNewPlaylist').style.display = 'none'
+    }
+
+    function closeCreateNewPlaylist() {
+
+        document.getElementById('sendNewPlaylist').style.display = 'none'
+        document.getElementById('createPlaylistArea').style.display = 'none'
+        document.getElementById('closeCreateNewPlaylist').style.display = 'none'
+        
+        document.getElementById('createNewPlaylist').style.display = 'inline-block'
+        document.getElementById('addNewPlaylist').style.display = 'inline-block'
+    }
+    
+    function sendNewPlaylist() {
+        const playlistName = document.getElementById('new-playlist-name').value
+
+        console.log(playlistName) // SEND THIS TO BACKEND TO STORE NEW PLAYLIST
+
+        document.getElementById('sendNewPlaylist').innerHTML = 
+        `<div class="spinner-border  spinner-border-sm" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>`
+        
+        axios({
+          method: 'post',
+          url: 'api/playlists/create',
+          data: {
+            title: playlistName
+          }
+        }).then(function (response) {
+          const data = response.data;
+          console.log(data)
+          $('#playlist-container').append(renderPlaylistRow(data))
+            document.getElementById('new-playlist-name').value = ''
+            document.getElementById('sendNewPlaylist').innerHTML = 
+              `Create <i class="fa fa-plus"></i>`
+            
+            toastr.success('Created successfully!')
+        })
+    }
+
+    async function deletePlaylist(permlink, title) {
+      const deleteOp = await axios.post('/api/playlists/delete', {permlink, title})
+
+      if (deleteOp.data.status === 'ok') {
+        $('#playlist-container').html('')
+        axios({
+          method: 'get',
+          url: 'api/playlists/ls',
+        })
+        .then(function (response) {
+          const {out} = response.data
+          
+          for(let item of out) {
+            $('#playlist-container').append(renderPlaylistRow(item))
+          }
+        });
+      }
+
+      if (deleteOp.data.status === 'false') {
+        toastr.success('You can only delete your own playlists')
+      }
+    }
+  </script>
+  
+{% endblock %}

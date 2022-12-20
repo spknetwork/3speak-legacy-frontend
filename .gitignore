@@ -1,0 +1,11 @@
+node_modules/
+package-lock.json
+package.json
+consts.js
+helper/config.ini
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+yarn.lock
+.env
+connect.sh

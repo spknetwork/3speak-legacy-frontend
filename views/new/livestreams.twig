@@ -1,0 +1,38 @@
+{%  extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Livestreams</h1>
+{% endblock %}
+
+{% block body %}
+
+{#  <div class="row">#}
+{#    <div class="col-12">#}
+{#      <p class="alert alert-info">#}
+{#        <b>Livestreaming is currently disabled.</b>#}
+{#      </p>#}
+{#    </div>#}
+{#  </div>#}
+
+  <div class="row">
+    {% for stream in streamsPro %}
+      {% include './widgets/liveCardPro.twig' with stream %}
+    {% endfor %}
+
+    {% for stream in streams %}
+      {% include './widgets/liveCard.twig' with stream %}
+    {% endfor %}
+
+
+
+    {% if streams|length == 0 and streamsPro|length == 0 %}
+<div class="col-12">
+  <p class="alert alert-info">
+    There are no creators livestreaming right now.
+  </p>
+</div>
+    {% endif %}
+
+  </div>
+
+{% endblock %}

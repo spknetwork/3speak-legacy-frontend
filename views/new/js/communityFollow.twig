@@ -1,0 +1,29 @@
+{% if user %}
+    $('[data-community]').each((i ,e) => {
+        $(e).click(() => {
+            let code = $(e).data("community");
+            console.log(code)
+            $(e).html("<i class='fa fa-spinner fa-spin'></i> Please wait...")
+            $.ajax({
+                type: "post",
+                data: {
+                    code: code
+                },
+                url: "/api/communities/follow",
+                success: (res) => {
+                    if (res.error) {
+                        Swal.fire("error", res.error)
+                    } else {
+                        if (res.ok === "followed") {
+                            $(e).removeClass('btn-primary').addClass('btn-secondary').addClass('text-dark')
+                            $(e).html("leave")
+                        } else {
+                            $(e).addClass('btn-primary').removeClass('btn-secondary').removeClass('text-dark')
+                            $(e).html("follow")
+                        }
+                    }
+                }
+            })
+        })
+    });
+{% endif %}

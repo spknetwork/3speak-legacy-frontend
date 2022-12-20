@@ -1,0 +1,56 @@
+:root {
+  --darker: #141414;
+  --light: #ddd
+}
+
+
+#layoutNav {
+  background-color: var(--dark) !important;
+  color: var(--light) !important;
+}
+
+.dropdown-item:hover, .dropdown-item:active {
+  background: var(--dark)
+}
+
+
+section.header_sec, footer.footer_sec, .tags span a {
+  background-color: var(--dark);
+}
+
+.btn_black, .btn-light {
+  background-color: var(--light) !important;
+  color: var(--dark) !important;
+}
+
+
+.content_home {
+  background-color: #444;
+}
+
+a, footer h6, h1, .carousel.slide, .card-body, .card-label:not(.card-label-pinned), .nav-link, body, .tags span a:hover, .dropdown-menu, #new-comment-body, #new-comment-body::placeholder {
+  color: var(--light) !important;
+}
+
+.text-muted {
+  color: inherit !important;
+}
+
+.card-body, .box, .card-label:not(.card-label-pinned), .dropdown-menu {
+  background-color: var(--darker);
+}
+
+.steem-like-icon i {
+  color: var(--dark) !important;
+}
+
+.card-label-pinned {
+  background-color: var(--danger);
+}
+
+
+.box, .video-card-image  {
+  box-shadow: 0 0 11px var(--darker);
+}
+
+

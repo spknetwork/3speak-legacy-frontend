@@ -1,0 +1,911 @@
+{% set adZone = 1 %}
+{% set adRevive = "9690131b1142ea67f52093b855fba1b3" %}
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="wehmoen, sisygoboom">
+  <title>{% block title %}{% endblock %}3speak - Tokenised video communities</title>
+  {% block meta %}{% endblock %}
+
+  <link rel="icon" type="image/png" href="/favicon.png?v=2.1">
+  <link href="/css/osahan.css" rel="stylesheet preload prefetch" as="style">
+  <link rel="stylesheet preload prefetch" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.2.1/materia/bootstrap.min.css">
+  <link rel="stylesheet preload prefetch" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet preload prefetch" as="style" href="/css/navbar-fixed-left.min.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-xVVam1KS4+Qt2OrFa+VdRUoXygyKIuNWUUUBZYv+n27STsJ7oDOHJgfF0bNKLMJF" crossorigin="anonymous">
+  <link rel="stylesheet preload prefetch" as="style" href="/css/main.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.min.css"/>
+  <script src="https://www.google.com/recaptcha/api.js?render=6Le5G3MaAAAAAKXzr4reX2i2Bss8abc6CrrlEo-Z"></script>
+  <!--<script src="/js/keysDefender.js"></script>-->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <meta name="coinzilla" content="033e37f224361eb3ea55f8e23d46e665" />
+  <script data-ad-client="ca-pub-8397845832901188" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6MLPGHWJ5K"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-6MLPGHWJ5K');
+  </script>
+  <style>
+    .grecaptcha-badge {
+      visibility: hidden;
+    }
+
+    /*@media (max-width: 320px) {*/
+    /*  .card-video-title {*/
+    /*    font-size: 13px;*/
+    /*  }*/
+    /*  .card-video-footer > div span:nth-child(2):before { content: ' '; display: block; }*/
+    /*}*/
+
+    /*@media (max-width: 1920px) {
+      .card-video-title {
+        font-size: 13px;
+      }
+
+      .card-video-footer {
+
+        display: block;
+        position: unset !important;
+      }
+
+      .card-video-footer > div {
+        display: block !important;
+      }
+
+      .card-video-footer > div span:nth-child(2) {
+        display: block !important;
+      }
+    }*/
+    @media (max-width: 4000px) {
+      .card-video-title {
+        font-size: 13px;
+      }
+
+      .card-video-footer {
+
+        display: block;
+        position: unset !important;
+      }
+
+      .card-video-footer > div {
+        display: block !important;
+      }
+
+      .card-video-footer > div span:nth-child(2) {
+        display: block !important;
+      }
+    }
+
+    .placeholder-light::placeholder {
+      color: #ddd !important;
+    }
+  </style>
+  {% block style %}{% endblock %}
+  {% if user and user.darkMode == true %}
+    <link rel="stylesheet" href="/css/dark.css">
+  {% endif %}
+</head>
+
+<body style="margin-right: 0px;" {% if user and user.darkMode == true %}class="bg-darker"{% endif %}>
+
+{% block hideNav %}
+  <nav id="layoutNav"
+       class="navbar navbar-expand-md navbar-light bg_white fixed-left mobileNavWrapper">
+    <a class="navbar-brand pl-2" href="/">
+
+      {% if user and user.darkMode == true %}
+      <img src="/img/3S_logo_light.svg">
+      {% else %}
+      <img src="/img/3S_logo.svg">
+      {% endif %}
+    </a>
+    {% if user %}
+      <div class="nav-item dropdown no-arrow osahan-right-navbar-user mt-2">
+        <a class="nav-link dropdown-toggle user-dropdown-link p-1" id="userDropdown" role="button"
+           data-toggle="dropdown" aria-haspopup="true"
+           aria-expanded="false" {# style="text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;" #}>
+          <img alt="Avatar" src="{{ user.user_id|avatar }}">
+          <span class="nav-username">{{ user.nickname }}</span>
+        </a>
+        <div id="userDropdownPanel" class="dropdown-menu dropdown-menu-left" aria-labelledby="userDropdown">
+          <a class="dropdown-item" href="/settings/identities">
+            <i class="fas fa-fw fa-user-edit"></i> &nbsp; Switch/Add Account</a>
+
+          <a class="dropdown-item" href="//{{ APP_SIGNUP_DOMAIN }}">
+            <i class="far fa-shopping-basket"></i> &nbsp; Get Hive Account</a>
+
+
+          {% if user.isSteem %}
+
+            <a class="dropdown-item" href="https://auth.3speak.tv/3/requestKeys ">
+              <i class="far fa-key"></i> &nbsp; Get Private Keys</a>
+              
+
+            <a class="dropdown-item" href="/user/{{ user.nickname }}">
+              <i class="fas fa-fw fa-video"></i> &nbsp; My Channel</a>
+
+            <a class="dropdown-item" href="/playlists">
+              <i class="fas fa-fw fa-list"></i> &nbsp; Playlists</a>
+          {% endif %}
+
+
+          <a class="dropdown-item" href="/auth/sso?platform=studio">
+            <i class="fal fa-toolbox"></i> &nbsp;
+            Creator Studio
+          </a>
+          <a class="dropdown-item" href="/settings/language"><i class="fas fa-fw fa-language"></i>
+            Language Settings</a>
+
+          <a href="#" class="dropdown-item" id="toggle_dark_mode">
+            <i class="fa fa-sun-o"></i>
+            Toggle Dark Mode
+          </a>
+
+          {% if user.isSteem %}
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item"
+               href="https://hivesigner.com/sign/account_witness_vote?witness=threespeak&amp;approve=true&amp;account={{ user.nickname }}&amp;redirect_uri=https%3A%2F%2F{{ APP_PAGE_DOMAIN }}%2F">
+              <img src="https://images.hive.blog/u/threespeak/avatar/small" style="height: 20px; width: 20px" alt="">
+              Approve 3Speak as witness
+            </a>
+          {% endif %}
+          <div class="dropdown-divider"></div>
+          <div class="ml-2">
+            Logged in as: {{ user.email }}
+          </div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal"><i
+              class="fas fa-fw fa-sign-out-alt"></i> &nbsp; Logout</a>
+        </div>
+      </div>
+    {% else %}
+
+    {% endif %}
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+            aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+      <ul class="navbar-nav nav_dist" style=" margin-top: 0.75rem !important;">
+        {% if user is not defined %}
+        <li class="nav-item">
+          <a href="/auth/login" class="w-100">
+            <button class="btn {% if user and user.darkMode == true %}btn-light{% else %}btn-outline-light{% endif%}  btn-block text-dark">
+              Log In / Sign Up
+            </button>
+          </a>
+        </li>
+          {% else %}
+            <li class="nav-item">
+              <a href="/auth/sso?platform=studio" class="w-100">
+                <button class="btn {% if user and user.darkMode == true %}btn-light{% else %}btn-outline-light{% endif%} btn-block text-dark">
+                  Upload Video
+                </button>
+              </a>
+            </li>
+        {% endif %}
+        <div style="margin-left: -0.3rem;">
+
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <div class="nav_icons">
+
+                {{ 'icon_home.svg'|menuIcon(user.darkMode) }}
+              </div>
+              Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/newcomers">
+              <div class="nav_icons">{{ 'icon_newcomer.svg'|menuIcon(user.darkMode) }}</div>
+              First Uploads</a>
+          </li>
+          {% if user is defined %}
+            <li class="nav-item">
+              <a class="nav-link" href="/feed">
+                <div class="nav_icons">
+                  {{ 'icon_feed.svg'|menuIcon(user.darkMode) }}
+
+                  </div>
+                Feed</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="/trends">
+              <div class="nav_icons">
+                {{ 'icon_trend.svg'|menuIcon(user.darkMode) }}
+              </div>
+              Trending Content</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/new">
+              <div class="nav_icons">
+                {{ 'icon_new_content.svg'|menuIcon(user.darkMode) }}
+              </div>
+              New Content</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/3speaknetwork/3Speak-app/releases/latest">
+              <div class="nav_icons"><i class="fa fa-download" style="font-size: 1.5em;"></i></div>
+              Desktop App</a>
+          </li>
+          {#<li class="nav-item">
+            <a class="nav-link" href="/livestreams">
+              <div class="nav_icons">
+                {{ 'icon_livestream.svg'|menuIcon(user.darkMode) }}
+              </div>
+              Livestreams</a>
+          </li>#}
+          <li class="nav-item">
+            <a id="communitiesPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Communities" data-content='
+            <a class="dropdown-item communityCreate">
+            <i class="fa fa-plus"></i> Create
+            </a>
+            <a class="dropdown-item" href="/communities">
+            <i class="fa fa-globe"></i> All Communities...
+            </a>
+            <a class="dropdown-item" href="/c/hive-181335">
+              <i class="far fa-users"></i> Threespeak
+            </a>
+            <a class="dropdown-item" href="/c/hive-153014">
+              <i class="far fa-users"></i> Citizen Journalists
+            </a>
+            <a class="dropdown-item" href="/c/hive-112355">
+              <i class="far fa-users"></i> Threeshorts
+            </a>
+            <a class="dropdown-item" href="/c/hive-129768">
+              <i class="far fa-users"></i>&nbsp;Coronavirus Pandemic
+            </a>
+            <a class="dropdown-item" href="/c/hive-196427">
+              <i class="far fa-users"></i> &nbsp; COVID-19
+            </a>'>
+              <div class="nav_icons">
+
+              {{ 'shake-hands.svg'|menuIcon(user.darkMode) }}
+              </div>
+                Communities
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/leaderboard">
+              <div class="nav_icons">{{ 'icon_leaderboard.svg'|menuIcon(user.darkMode) }}</div>
+              Leaderboard</a>
+          </li>
+          
+        </div>
+
+        <li class="nav-item">
+          <form action="/search" method="get">
+
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-search"></i>
+                </span>
+              </div>
+              <input type="search" name="q" placeholder="Search" class="form-control {% if user and user.darkMode == true %}placeholder-light{% endif%} border-dark">
+            </div>
+
+
+          </form>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav mt-3">
+
+        <div class="display-wide">
+          <li class="nav-item">
+            <div class="pad_l"><h5>3Speak</h5></div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/intl/about_us">About us</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/intl/faq">FAQ</a>
+          </li>
+
+          <li class="nav-item text-center ">
+            <a class="" target="_blank" href="{{ SOCIAL_TWITTER_LINK }}">
+              <i class="fab fa-twitter text-muted fa-2x"></i>
+            </a>
+            <a class="ml-2" target="_blank" href="{{ SOCIAL_TELEGRAM_LINK }}">
+              <i class="fab fa-telegram text-muted fa-2x"></i>
+            </a>
+            <a class="ml-2" target="_blank" href="{{ SOCIAL_DISCORD_LINK }}">
+              <i class="fab fa-discord text-muted fa-2x"></i>
+            </a>
+            <a class="ml-2" target="_blank" title="Visit Our Blog" href="{{ SOCIAL_BLOG_LINK }}">
+              <img style="width: 32px; margin-top: -15px; filter: brightness(0.45);" src="/img/blog.png" alt="">
+            </a>
+            <a class="ml-2" target="_blank" title="SPK Network" href="https://spk.network">
+              <img style="width: 32px; margin-top: -15px; filter: drop-shadow(2px 4px 6px black); image-rendering: pixelated;" src="/img/spk_network.png" alt="">
+            </a>
+            <a class="ml-2" target="_blank" href="{{ IOS_APP_LINK }}">
+              <i class="fab fa-app-store-ios text-muted fa-2x"></i>
+            </a>
+            <a class="ml-2" target="_blank" href="{{ ANDROID_APP_LINK }}">
+              <i class="fab fa-android text-muted fa-2x"></i>
+            </a>
+            <a class="ml-2" target="_blank" href="{{ ANDROID_VIA_DROPBOX }}">
+              <i class="fab .fa-dropbox text-muted fa-2x"></i>
+            </a>
+          </li>
+        </div>
+        <li class="nav-item dropdown display-mobile">
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
+              3Speak
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="/intl/about_us">About us</a>
+              <a class="dropdown-item" href="/intl/faq">FAQ</a>
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown mt-2 display-mobile">
+          <div class="btn-group">
+            <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
+              Find us
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{{ SOCIAL_TELEGRAM_LINK }}">Telegram</a>
+              <a class="dropdown-item" href="{{ SOCIAL_DISCORD_LINK }}">Discord</a>
+              <a class="dropdown-item" target="_blank" href="{{ SOCIAL_TWITTER_LINK }}">Twitter</a>
+              <a class="dropdown-item" target="_blank" href="https://spk.network">SPK Network</a>
+
+            </div>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+
+  </nav>
+{% endblock %}
+{% block header %}
+  <section class="header_sec">
+    <div class="container-fluid">
+
+
+      <div class="row">
+        {% block smallHeaderHTML %}
+          <div class="col-lg-6 col-md-12 col-xs-12 header_dist1">
+            {% block headerHTML %}{% endblock %}
+          </div>
+        {% endblock %}
+      </div>
+
+    </div>
+
+  </section>
+{% endblock %}
+
+
+<section class="content_home">
+
+
+  {% block widelayout %}
+    <div class="container-fluid">
+      {% block body %}{% endblock %}
+    </div>
+  {% endblock %}
+</section>
+
+{% block footer %}
+  <footer class="footer_sec header_sec" {% block footercss %}{% endblock %}>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-4 col-5">
+          {% if user and user.darkMode == true %}
+            <img src="/img/3S_logo_light.svg" alt="Threespeak logo" class="mb-2" style="max-width: 100%;">
+          {% else %}
+            <img src="/img/3S_logo.svg" alt="Threespeak logo" class="mb-2" style="max-width: 100%;">
+          {% endif %}
+
+          <p class="mb-0">
+            <a href="/intl/contact_m" class="{% if user and user.darkMode == true %}text-light{% else %}text-dark{% endif %}">
+              <i class="fas fa-envelope fa-fw"></i>{{ SUPPORT_EMAIL }}
+            </a>
+          </p>
+          <p class="mb-0">
+            <a href="/" class="{% if user and user.darkMode == true %}text-light{% else %}text-dark{% endif %}">
+              <i class="fas fa-globe fa-fw"></i> {{ APP_PAGE_DOMAIN }}
+            </a>
+          </p>
+        </div>
+        <div class="col-lg-3 col-md-3 col-7">
+          <h6 class="mb-4">Company</h6>
+          <ul class="p-0 m-0 mb-4" style="list-style-type: none">
+            <li><a href="/intl/about_us">About us</a></li>
+            <li><a href="/intl/faq">FAQ</a></li>
+            <li><a href="/intl/terms_of_service">Terms</a></li>
+
+          </ul>
+        </div>
+        <div class="col-lg-3 col-md-3 col-7">
+          <h6 class="mb-4">Accepted Payment Methods</h6>
+
+          <img title="HIVE (HIVE)" width="48"
+               src="/img/hive-blockchain-hive-logo.svg" alt="">
+        </div>
+      </div>
+    </div>
+  </footer>
+{% endblock %}
+
+<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginmodallabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Log in?</h5>
+        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">This action requires you to log in first.</div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+        <a class="btn btn-primary" href="/auth/login">Login</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="votelistModal" tabindex="-1" role="dialog" aria-labelledby="votelistModalTitle"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="votelistModalTitle"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="votelistModalBody" class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% block modal %}{% endblock %}
+
+{% if user %}
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="/auth/logout">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="donationModal" tabindex="-1" role="dialog" aria-labelledby="donationModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Donate to a post</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            Send a tip to @<span class="donation-recipient"></span>/<span class="donation-post"></span>
+          </p>
+          <input id="donationAmount" type="number" class="form-control" value="1" step="0.001" min="0.1">
+          <select id="donationCurrency" class="form-control">
+            <option value="HIVE">Hive</option>
+            <option vlaue="HBD">HBD</option>
+          </select>
+          <input id="donationMemo" type="text" class="form-control" placeholder="Write a short message to the reciever">
+        </div>
+        <div class="modal-footer">
+          <button id="donationComplete" class="btn btn-primary" type="button">Proceed</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="spkModalFAQ" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">What are SPEAK?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          SPEAK ( or short just SPK ) are used on 3Speak to reward content creators for their videos. <br>
+          Every
+          user can purchase SPEAK token with their credit card and can donate them by using the donation
+          button
+          below every video.
+          <br> If you donate more than 100 SPEAK you can also add a short personal message which can only be
+          read
+          by the content creator.
+          <br> You can always check your SPEAK balance, purchases and donations in your <a
+            href="/settings/wallet">personal wallet</a>.
+          <br><br> In case you have more questions about SPEAK please don't hassle do contact us on Discord.
+          You find the
+          link to our Discord server in the main menu on the left.
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" type="button" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="communityCreateModal" tabindex="-1" role="dialog" aria-labelledby="communityCreateModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="communityCreateModalTitle">Community Creation</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div id="communityCreateModalBody" class="modal-body">
+          <label for="communityTitle">Title (<span id="communityTitleChars">20</span> chars remaining):</label>
+          <input id="communityTitle" type="text" class="form-control mb-3">
+
+          <label for="communityAbout">About (<span id="communityAboutChars">120</span> chars remaining):</label>
+          <input id="communityAbout" type="text" class="form-control mb-3">
+
+          <label for="communityName">Owner account name:</label>
+          <input id="communityName" disabled type="text" class="form-control mb-3">
+
+          <pre id="communityKeys"></pre>
+          <div style="text-align: center;">
+            <button class="btn" onclick="downloadString(document.getElementById('communityKeys').innerText, 'text/plain', 'hive-community-keys-'+document.getElementById('communityName').value)">Download <i class="fa fa-download" aria-hidden="true"></i></button>
+          </div>
+
+          <label class="mt-2" for="keysAreSaved">
+            Please confirm that you have your keys stored safely and securely, they cannot be recovered once lost
+            <input id="keysAreSaved" type="checkbox">
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button id="broadcastCommunityCreate" disabled type="button" class="btn btn-primary" data-dismiss="modal">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endif %}
+
+<script src="/js/jquery.min.js"></script>
+<script>
+
+  $(function () {
+    // $(document).tooltip();
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@hiveio/hive-js/dist/hive.min.js"></script>
+<script>
+  hive.config.set('rebranded_api', true)
+  // window.steem = hive; // 😎
+  // steem.config.set('rebranded_api', true)
+</script>
+<script src="/js/dhive.js"></script>
+<script>
+  if (window.steem) {
+    steem.api.setOptions({useAppbaseApi: true, rebranded_api: true, url: '{{ HIVE_SECURE_NODE_PREFIX }}://{{ HIVE_DEFAULT_NODE }}'});
+  } else {
+    window.steem = hive;
+  }
+</script>
+<script>
+  hive.api.setOptions({useAppBaseApi: true, rebranded_api: true, url: '{{ HIVE_SECURE_NODE_PREFIX }}://{{ HIVE_DEFAULT_NODE }}'});
+</script>
+<script>
+  const hiveClient = new dhive.Client(["{{ HIVE_SECURE_NODE_PREFIX }}://{{ HIVE_DEFAULT_NODE }}"], {rebrandedApi: true});
+</script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+<script src="/js/main.js"></script>
+<script src="/js/adblock.js"></script>
+<script>
+  //window.onload = function() {
+    //if(document.getElementById('EkoWJZymLDcx')){
+      // document.getElementsByTagName("body")[0].classList.remove("d-none")
+    //} else {
+      // alert('Please disable your adblocker to use 3Speak');
+      // window.location.reload();
+    //}
+  //}
+</script>
+<script>
+  window.userId = '{{ user.user_id }}';
+  const nickname = '{{ user.nickname }}';
+
+  {% if user is defined and user.isSteem == true and user.nickname != 'guest-account' %}
+  const enableComments = true;
+
+  $('#toggle_dark_mode').click(() => {
+    $.ajax({
+      url: '/apiv2/toggle_dark_mode',
+      method: 'post',
+      success: () => {
+        window.location.reload();
+      }
+    })
+  })
+
+  {% else %}
+  const enableComments = false;
+  {% endif %}
+
+  const globals = {
+    HIVE_DEFAULT_NODE_PREFIX: '{{ HIVE_DEFAULT_NODE_PREFIX }}',
+    HIVE_SECURE_NODE_PREFIX: '{{ HIVE_SECURE_NODE_PREFIX }}',
+    HIVE_DEFAULT_NODE: '{{ HIVE_DEFAULT_NODE }}',
+    APP_VIDEO_CDN_DOMAIN: '{{ APP_VIDEO_CDN_DOMAIN }}',
+    APP_AUDIO_CDN_DOMAIN: '{{ APP_AUDIO_CDN_DOMAIN }}',
+    APP_HIVE_CDN_DOMAIN: '{{ APP_HIVE_CDN_DOMAIN }}',
+    APP_IMAGE_CDN_DOMAIN: '{{ APP_IMAGE_CDN_DOMAIN }}'
+  }
+
+</script>
+<script  src="/js/notify.js"></script>
+<script  src="/js/custom.js"></script>
+<script  type="text/javascript">
+  var WindowSize = function () {
+    let width = $(window).width();
+    if (width >= 768) {
+      $('#userDropdownPanel').removeClass("dropdown-menu-right").addClass("dropdown-menu-left")
+    } else {
+      $('#userDropdownPanel').removeClass("dropdown-menu-left").addClass("dropdown-menu-right")
+    }
+  }
+
+  $('.popover-queue').popover()
+
+  $(document).ready(WindowSize);
+  $(window).resize(WindowSize);
+</script>
+<script>
+
+  async function getValidCommunityId(type) {
+    let id = ((min = 1000, max = 100000) => { // min and max included
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    })();
+    let account = "hive-" + type + id;
+    if (/^hive-[123]\d{4,6}$/.test(account)) {
+      console.log("> Trying community id: " + account)
+      let accounts = await hive.api.getAccountsAsync([account]);
+      return accounts.length === 0 ? account : getValidCommunityId(type)
+    } else {
+      return getValidCommunityId(type)
+    }
+  }
+
+  let validityRequirements = {title: false, about: false, savedKeys: false};
+  let charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", password = "";
+  for (let i = 0, n = charset.length; i < 50; ++i) {
+    password += charset.charAt(Math.floor(Math.random() * n));
+  }
+  let name;
+  getValidCommunityId(1).then(res => {
+    name = res;
+  })
+
+  function generateKeys(username) {
+
+    const publicKeys = hive.auth.generateKeys(username, password, ['owner', 'active', 'posting', 'memo']);
+
+    const ownerWif = hive.auth.toWif(username, password, 'owner');
+    const activeWif = hive.auth.toWif(username, password, 'active');
+    const postingWif = hive.auth.toWif(username, password, 'posting');
+    const memoWif = hive.auth.toWif(username, password, 'memo');
+    const ownerAuth = { weight_threshold: 1, account_auths: [], key_auths: [[publicKeys.owner, 1]] };
+    const activeAuth = { weight_threshold: 1, account_auths: [], key_auths: [[publicKeys.active, 1]] };
+    const postingAuth = { weight_threshold: 1, account_auths: [], key_auths: [[publicKeys.posting, 1]] };
+
+    const keyInfo = {
+      name,
+      password,
+      public: {owner: ownerAuth, active: activeAuth, posting: postingAuth, memo: publicKeys.memo},
+      private: {owner: ownerWif, active: activeWif, posting: postingWif, memo: memoWif}
+    }
+
+    return keyInfo
+  }
+
+  function toggleBroadcastValidity() {
+    let createBut = $('#broadcastCommunityCreate')
+    let disabled = createBut.is(":disabled")
+    if (validityRequirements.title && validityRequirements.about && validityRequirements.savedKeys) {
+      if (disabled){
+        createBut.prop("disabled", false);
+      }
+    } else {
+      if (!disabled) {
+        createBut.prop("disabled", true)
+      }
+    }
+  }
+
+  function downloadString(text, fileType, fileName) {
+    let blob = new Blob([text], { type: fileType });
+
+    let a = document.createElement('a');
+    a.download = fileName;
+    a.href = URL.createObjectURL(blob);
+    a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
+    a.style.display = "none";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function() { URL.revokeObjectURL(a.href); }, 1500);
+  }
+
+  function communityCreateNotification(type, message='', name='') {
+    switch (type) {
+      case 'success':
+        Swal.fire({
+          title: 'Success',
+          html: "Community account has been created. Log in via <a href='https://peakd.com/@"+name+"'>peakD</a> " +
+            "using your keys from earlier to configure settings/images and appoint community admins/moderators.",
+          icon: 'success',
+          confirmButtonText: 'Okay'
+        });
+        return
+      case 'error':
+        Swal.fire({
+          title: 'Something went wrong',
+          text: message,
+          icon: 'error',
+          confirmButtonText: 'Okay'
+        })
+        return
+    }
+  }
+
+  function buildAndBroadcastCommunityCreate() {
+    let authorities = generateKeys();
+    const op = [
+      [
+        "account_create",
+        {
+          "fee": "3.000 HIVE",
+          "creator": nickname,
+          "new_account_name": authorities.name,
+          "owner": authorities.public.owner,
+          "active": authorities.public.active,
+          "posting": authorities.public.posting,
+          "memo_key": authorities.public.memo,
+          "json_metadata": ""
+        }
+      ]
+    ]
+
+    isKeychainInstalled().then(kc => {
+      if (kc) {
+        hive_keychain.requestBroadcast(nickname, op, 'active', (res) => {
+          if (res.success === true) {
+            communityCreateNotification('success', '', authorities.name)
+          } else {
+            communityCreateNotification('error', res.message)
+          }
+        })
+      } else {
+        let key = prompt('Please enter your private active key. It will not be stored, all operations are performed on you computer.')
+        try {
+          key = dhive.PrivateKey.fromString(key);
+          hiveClient.broadcast.sendOperations(op, key).then(
+            function(result) {
+              communityCreateNotification('success', '', authorities.name)
+            },
+            function(error) {
+              communityCreateNotification('error', error)
+            }
+          )
+        } catch (e) {
+          console.log(e)
+          communityCreateNotification('error', 'Invalid key.')
+        }
+      }
+    })
+  }
+
+  $(() => {
+    $(document).on('click', '.communityCreate', () => {
+      console.log('clicked')
+      $('#communitiesPopover').popover('hide')
+      if (nickname === '') {
+        $('#loginModal').modal()
+      } else {
+        let keys = generateKeys(name)
+        $('#communityKeys').text(
+          'Owner account: ' + keys.name +
+          '\n\nOwner key: ' + keys.private.owner +
+          '\n\nActive key: ' + keys.private.active +
+          '\n\nPosting key: ' + keys.private.posting +
+          '\n\nBackup password: ' + keys.password)
+        $('#communityName').val(name)
+        $('#communityCreateModal').modal()
+      }
+    })
+
+    $('#communityTitle').on('change paste keyup', function() {
+      let length = $(this).val().length
+      $('#communityTitleChars').text(20 - length)
+      validityRequirements.title = length >= 3 && length <=20
+      toggleBroadcastValidity()
+    })
+
+    $('#communityAbout').on('change paste keyup', function() {
+      let length = $(this).val().length
+      $('#communityAboutChars').text(120 - length)
+      validityRequirements.about = length > 0 && length <= 120
+      toggleBroadcastValidity()
+    })
+
+    $('#keysAreSaved').on('click', function() {
+      console.log($(this).is(':checked'));
+      validityRequirements.savedKeys = $(this).is(':checked')
+      toggleBroadcastValidity()
+    })
+
+    $('#broadcastCommunityCreate').click(() => {
+      buildAndBroadcastCommunityCreate();
+    })
+  })
+</script>
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script  src="https://www.googletagmanager.com/gtag/js?id=UA-167033282-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+
+  gtag('js', new Date());
+
+  gtag('config', 'UA-167033282-1');
+</script>
+
+
+{% block script %}{% endblock %}
+
+</body>
+</html>

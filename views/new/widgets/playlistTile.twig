@@ -1,0 +1,39 @@
+<div class="col-xl-{% if size is defined %}{{ size }}{% else %}2{% endif %} col-lg-3  col-6 p-2 mb-3">
+
+    <a href="watch?v={{playlist.owner}}/{{playlist.permlink}}">
+        <div style="overflow: hidden; position: relative;">
+            <div style="float: right">
+                <div style="
+                    width: 50%;
+                    height: 100%;
+                    position: absolute;
+                    background-color: rgb(0 0 0 / 60%);
+                    float: right;
+                    margin-left: -50%;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                ">
+                    <div style="display: flex;flex-direction: column;align-items: center;flex-wrap: nowrap;">
+                        <h5 style="color: white;">
+                            {{
+                                playlist.list.length
+                            }}
+                            
+                        </h5>
+                        <h5>
+                            <i class="fas fa-fw fa-list"></i> 
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <img src="api/playlists/{{playlist.permlink}}/thumbnail" style="aspect-ratio: 16/9"/>
+
+        </div>
+        <h5 style="margin-top: 8px; font-weight: bold;">
+            {{playlist.title}}
+        </h5>
+    </a>
+</div>

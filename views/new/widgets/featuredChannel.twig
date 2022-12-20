@@ -1,0 +1,31 @@
+<div class="col-xl-2 col-sm-4 mb-3">
+    <div class="channels-card {% if user and user.darkMode == true %} bg-dark{% endif %}">
+        <div class="channels-card-image">
+            <a href="/user/{{ creator.username }}"><img class="img-fluid" src="https://images.hive.blog/u/{{ creator.username }}/avatar" alt=""></a>
+            <div class="channels-card-image-btn">
+                <a href="/user/{{ creator.username }}" class="btn {% if user and user.darkMode == true %} btn-dark text-light{% else %}btn-light text-dark{% endif %} btn-sm">View Channel
+                </a>
+            </div>
+        </div>
+        <div class="channels-card-body">
+            <div class="channels-title">
+                <a href="/user/{{ creator.username }}">{{ creator.username }}</a>
+            </div>
+{#            {% if creator.canProxyUpvote == true %}#}
+{#            <div>#}
+{#                <i>Upvote day on {{ creator.upvoteDate }}</i>#}
+{#            </div>#}
+{#            {% endif %}#}
+        </div>
+
+        {% if showScore is defined %}
+
+            <div class="clearfix">
+                <div class="channels-card-rank position-absolute channels-card-score-small badge badge-dark text-white">Rank: {{ creator.pos }}</div>
+                <div class="channels-card-score mb-3 mb-md-0 channels-card-score-small badge badge-dark text-white">Score: {{ creator.score|parseInt }}</div>
+                &nbsp;
+            </div>
+
+        {% endif %}
+    </div>
+</div>

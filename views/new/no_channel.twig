@@ -1,0 +1,49 @@
+{% extends './layout.twig' %}
+
+{% block style %}
+    <style>
+        .sidebar-toggled .single-channel-page {
+            padding: 0px 0px 0px 90px;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="single-channel-page" id="content-wrapper">
+        <div class="container-fluid">
+            <div class="video-block section-padding">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="main-title">
+                            <h6>This user has no channel yet. Create a channel by signing up to our creator studio: <a
+                                        href="//{{ APP_STUDIO_DOMAIN }}/login">Login here</a></h6>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center mb-1 mt-1">
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- 3speak-top-lg -->
+                            <!--<ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-2784600041331572"
+                                 data-ad-slot="6776429328"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </div>
+
+{% endblock %}

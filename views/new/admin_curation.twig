@@ -1,0 +1,107 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+    <div>
+        <input type="text" id="selector" placeholder="Username">
+        <input type="submit" id="banSubmit" value="Search">
+    </div>
+
+    {% for video in videos %}
+        <div id="{{ video.owner }}-{{ video.permlink }}" class="border mb-4" style="display: inline-block; padding: 2; border-width: 3px !important;">
+          <iframe width="560" height="315" src="/embed?v={{ video.owner }}/{{ video.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <div class="mt-2">
+                <i>{{ video.created }}</i> - <a href="/user/{{ video.owner }}">@{{ video.owner }}</a> - <i>Views: {{ video.views }}</i> - <b>$<i data-payout="{{ video.owner }}/{{ video.permlink }}"></i></b>
+                <div class="custom-control custom-checkbox mt-2">
+                    <input type="checkbox" class="custom-control-input" id="nsfw-{{ video.owner }}/{{ video.permlink }}" data-nsfw="{{video.owner}}/{{ video.permlink }}" {% if video.isNsfwContent %} checked="checked"{% endif %}>
+                    <label class="custom-control-label{% if video.isNsfwContent %} active{% endif %}" for="nsfw-{{ video.owner }}/{{ video.permlink }}">Is NSFW?</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="recommended-{{ video.owner }}/{{ video.permlink }}" data-recommended="{{video.owner}}/{{ video.permlink }}" {% if video.recommended %} checked="checked"{% endif %}>
+                    <label class="custom-control-label{% if video.recommended %} active{% endif %}" for="recommended-{{ video.owner }}/{{ video.permlink }}">Show on recommended feed</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="upvote-{{ video.owner }}/{{ video.permlink }}" data-upvote="{{video.owner}}/{{ video.permlink }}" {% if video.upvoteEligible %} checked="checked"{% endif %}>
+                    <label class="custom-control-label{% if video.upvoteEligible %} active{% endif %}" for="upvote-{{ video.owner }}/{{ video.permlink }}">Eligible for upvote</label>
+                </div>
+                <br>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" id="reduced-upvote-{{ video.owner }}/{{ video.permlink }}" data-reducedupvote="{{video.owner}}/{{ video.permlink }}" {% if video.reducedUpvote %} checked="checked"{% endif %}>
+                  <label class="custom-control-label{% if video.reducedUpvote %} active{% endif %}" for="reduced-upvote-{{ video.owner }}/{{ video.permlink }}">Reduced upvote</label>
+                </div>
+
+                <button class="btn btn-primary mt-3" data-curated="{{ video.owner }}/{{ video.permlink }}">Curation complete!</button>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block script %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $('[data-nsfw]').on("click", function() {
+            let authorperm = $(this).data('nsfw').split('/');
+            $.ajax({
+                url: '/admin/api/curation/toggleNSFW',
+                type: "post",
+                data: {author: authorperm[0], permlink: authorperm[1]}
+            });
+        });
+
+        $('[data-recommended]').on("click", function() {
+            let authorperm = $(this).data('recommended').split('/');
+            $.ajax({
+                url: '/admin/api/curation/toggleRecommended',
+                type: 'post',
+                data: {author: authorperm[0], permlink: authorperm[1]}
+            })
+        });
+
+        $('[data-curated]').on("click", function() {
+            let ap = $(this).data('curated');
+            let authorperm = ap.split('/');
+            $.ajax({
+                url: '/admin/api/curation/complete',
+                type: "post",
+                data: {author: authorperm[0], permlink: authorperm[1]},
+                success: (res) => {
+                    if (res.error) {
+                        Swal.fire("warning", res.error);
+                    } else {
+                        $('#'+authorperm[0]+'-'+authorperm[1]).addClass('d-none');
+                    }
+                }
+            })
+        });
+
+        $('[data-upvote]').on("click", function() {
+            let authorperm = $(this).data('upvote').split('/');
+            console.log(authorperm);
+            $.ajax({
+                url: '/admin/api/curation/upvote',
+                type: 'post',
+                data: {author: authorperm[0], permlink: authorperm[1]}
+            })
+        });
+
+        $('[data-reducedupvote]').on('click', function() {
+          let authorperm = $(this).data('reducedupvote').split('/');
+          $.ajax({
+            url: '/admin/api/curation/reduced-upvote',
+            type: 'post',
+            data: {author: authorperm[0], permlink: authorperm[1]}
+          })
+        })
+
+        let availableTags = [{% for account in allAccountsList %}"{{ account }}", {% endfor %}];
+
+        $("#selector").autocomplete({
+          source: availableTags
+        });
+
+        $('#banSubmit').on('click', function() {
+          window.location.href = '/admin/curation?user=' + $('#selector').val()
+        })
+    </script>
+{% endblock %}

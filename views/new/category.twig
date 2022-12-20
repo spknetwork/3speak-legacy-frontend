@@ -1,0 +1,40 @@
+{% extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">{{ catDisplay }} videos</h1>
+{% endblock %}
+
+{% block body %}
+
+    <div class="video-block section-padding">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-title">
+                    <h3>Trends</h3>
+                </div>
+            </div>
+            {% for video in trends %}
+                {% include './widgets/bigVideoCard.twig' with video %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="video-block section-padding">
+        <div id="videoContainer" class="row">
+            <div class="col-md-12">
+                <div class="main-title">
+                    <h3>New</h3>
+                </div>
+            </div>
+            {% for new in latest %}
+                {% if not new.isBlog %}
+                    {% include './widgets/bigVideoCard.twig' with {'video': new} %}
+                {% else %}
+                    {% include './widgets/blog.twig' with {'blog': new} %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

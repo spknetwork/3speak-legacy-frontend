@@ -1,0 +1,227 @@
+{% extends './layout.twig' %}
+
+{% block hideNav %}{% if embed == false %}{{ parent() }}{% endif %}{% endblock %}
+{% block header %}{% if embed == false %}{{ parent() }}{% endif %}{% endblock %}
+
+{% block style %}
+  <style>
+  code::selection {
+  background: #0000ff; /* WebKit/Blink Browsers */
+  }
+  code::-moz-selection {
+  background: #0000ff; /* Gecko Browsers */
+  }
+  </style>
+{% endblock %}
+
+{% block widelayout %}
+    <label for="requireVerification">User requiring verification: </label> <input type="text" id="requireVerification">
+    <input id="requireVerificationSubmit" type="submit">
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Date requested</th>
+            <th>Evidence Submitted</th>
+            <th>Verified</th>
+            <th>Banned</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for account in requiredAccounts %}
+            <tr id="{{ account.username }}">
+                <td><a href="/user/{{ account.username }}">@{{ account.username }}</a></td>
+                <td>{{ account.verificationRequiredDate|date }}</td>
+                <td><i class="fas fa-{% if (account.awaitingVerification == true) or (account.verified == true) %}check text-success{% else %}times text-danger{% endif %}"></i></td>
+                <td>
+                  <i class="fas fa-{% if account.verified == true %}check text-success{% else %}times text-danger{% endif %}"></i>
+                  <button class="btn btn-sm approve" data-creator="{{ account.username }}">Verify</button>
+                </td>
+                <td>
+                  <label>Can upload</label> <input type="checkbox" data-ban="{{ account.username }}" {% if account.canUpload == true %}checked{% endif %}>
+                  <br>
+                  <label>Can receive upvotes</label> <input type="checkbox" data-voteban="{{ account.username }}" {% if account.upvoteEligible == true %}checked{% endif %}>
+                  <br>
+                  <button class="btn btn-sm" data-withdraw="{{ account.username }}">Withdraw request</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Username</th>
+            <th>Evidence URL</th>
+            <th>Verify</th>
+            <th>Reject</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for account in accounts %}
+            <tr id="{{ account.username }}">
+                <td><a href="/user/{{ account.username }}">@{{ account.username }}</a></td>
+                <td><a href="{{ account.verificationEvidence }}">{{ account.verificationEvidence }}</a></td>
+                <td><i data-creator="{{ account.username }}" class="fas fa-check text-success approve"></i></td>
+                <td><i data-creator="{{ account.username }}" class="fas fa-times text-danger remove"></i></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+  <hr>
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Social media username</th>
+      <th>Social media platform</th>
+      <th>Please private message this url</th>
+      <th>Confirm that inbox has been sent to user</th>
+      <th>Reject this message request</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for msgReq in inboxVerifications %}
+      <tr id="msg-{{ msgReq.spkUser }}">
+        <td>{{ msgReq.username }}</td>
+        <td>{{ msgReq.platform }}</td>
+        <td><code>https://3speak.co/admin/verification/complete?code={{ msgReq.verifyId }}</code></td>
+        <td><i data-creator="{{ msgReq.spkUser }}" class="fas fa-check text-success message-sent"></i></td>
+        <td><i data-creator="{{ msgReq.spkUser }}" class="fas fa-times text-danger message-request-denied"></i></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block script %}
+    <script>
+        function sendApproval(node, approve) {
+            let creator = $(node).data("creator");
+            $.ajax({
+                url: "/admin/api/verification/approve",
+                type: "post",
+                data: {username: creator, valid: approve},
+                success: (res) => {
+                    if (res.error) {
+                        Swal.fire("Oops", res.error, "error")
+                    } else {
+                        $('#' + creator).remove();
+                    }
+                }
+            })
+        }
+
+        $(() => {
+            $('.approve').on('click', function(e)  {
+                sendApproval(this, true);
+            });
+
+            $('.remove').on('click', function(e) {
+                sendApproval(this, false);
+            });
+
+            $('.message-sent').on('click', function(e) {
+              $.ajax({
+                url: '/admin/api/verification/message-sent',
+                data: {spkUser: $(this).data('creator')},
+                type: 'post',
+                success: () => {
+                  window.location.reload();
+                }
+              })
+            });
+
+            $('.message-request-denied').on('click', function(e) {
+              $.ajax({
+                url: '/admin/api/verification/deleteMsgReq',
+                data: {spkUser: $(this).data('creator')},
+                type: 'post',
+                success: () => {
+                  sendApproval(this, false);
+                  window.location.reload();
+                }
+              });
+
+            });
+
+            $('#requireVerificationSubmit').on('click', function (e) {
+                let username = $('#requireVerification').val();
+                $.ajax({
+                    url: '/admin/api/verification/require',
+                    data: {username},
+                    type: "post",
+                    success: (res) => {
+                        if (res.error) {
+                            Swal.fire('Oops', res.error, 'error')
+                        } else {
+                            window.location.reload();
+                        }
+                    }
+                })
+            });
+
+            $('[data-ban]').on('click', function (e) {
+                let username = $(this).data('ban');
+                let checked = $(this).is(':checked');
+                $.ajax({
+                    url: '/admin/api/uploadban',
+                    data: {username, checked},
+                    type: 'post',
+                    success: (res) => {
+                        if (res.error) {
+                            Swal.fire('Oops', res.error, 'error')
+                        }
+                    }
+                })
+            });
+
+          $('[data-voteban]').on('click', function (e) {
+            let username = $(this).data('voteban');
+            let checked = !$(this).is(':checked');
+            console.log(checked, username);
+            $.ajax({
+              url: '/admin/api/voteban',
+              data: {username, checked},
+              type: 'post',
+              success: (res) => {
+                if (res.error) {
+                  Swal.fire('Oops', res.error, 'error')
+                }
+              }
+            })
+          })
+
+          $('[data-withdraw]').on('click', function(e) {
+            let username = $(this).data('withdraw');
+            $.ajax({
+              url: '/admin/api/verification/withdraw',
+              data: {username},
+              type: 'post',
+              success: () => {
+                window.location.reload()
+              }
+            })
+          })
+
+          $('[data-withdraw]').on('click', function(e) {
+            let username = $(this).data('withdraw');
+            $.ajax({
+              url: '/admin/api/verification/withdraw',
+              data: {username},
+              type: 'post',
+              success: () => {
+                window.location.reload()
+              }
+            })
+          })
+        });
+    </script>
+{% endblock %}

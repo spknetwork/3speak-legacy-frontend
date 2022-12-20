@@ -1,0 +1,41 @@
+{% extends 'layout.twig' %}
+{% block body %}
+    <div class="container-fluid pb-0">
+        <div class="video-block section-padding">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title">
+                        <h6>Wehmoen Tests Stuff here!</h6>
+                    </div>
+                </div>
+                <div id="viads"></div>
+                <script type="text/javascript">
+                    (function (v,i) {
+                        var scp = v.createElement("script"),
+                            config = {
+                                ChannelID: '5a0458dc28a06145e4519d21',
+                                AdUnitType: '2',
+                                PublisherID: '389049312722514',
+                                PlacementID: 'pltvC4AqQ4T1tIUmH21',
+                                DivID: 'viads',
+                                IAB_Category: 'IAB1',
+                                Keywords: '',
+                                Language: 'en-us',
+                                BG_Color: '',
+                                Text_Color: '',
+                                Font: '',
+                                FontSize: '',
+                            };
+                        scp.src='https://s.vi-serve.com/tagLoader.js';
+                        scp.type = "text/javascript";
+                        scp.onload = function() {
+                            i[btoa('video intelligence start')].init(config);
+                        };
+                        (v.getElementsByTagName('head')[0] || v.documentElement.appendChild(v.createElement('head'))).appendChild(scp);
+                    })(document, window);
+                </script>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

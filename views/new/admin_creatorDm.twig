@@ -1,0 +1,43 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+  <input type="text" id="selector" placeholder="Username"><br>
+  <textarea rows="5" cols="60" id="message">Message to send...</textarea><br>
+  <label for="isStrike">Keep this message as a strike on this users account</label>
+  <input id="isStrike" type="checkbox"><br>
+  <input type="submit" id="messageSubmit" value="Send">
+{% endblock %}
+
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script>
+    let availableTags = [{% for account in allAccountsList %}"{{ account }}", {% endfor %}];
+
+    $("#selector").autocomplete({
+      source: availableTags
+    });
+
+    $('#messageSubmit').on('click', function() {
+      let message = $('#message').val();
+      let user = $('#selector').val();
+      let isStrike = $('#isStrike').is(':checked');
+
+      if (isStrike) {
+        $.ajax({
+          url: '/admin/api/strikes/add',
+          type: 'post',
+          data: {message, user}
+        })
+      }
+      $.ajax({
+        url: '/admin/api/creatorDm/send',
+        type: 'post',
+        data: {message, user},
+        success: () => {
+          $('#message').val('');
+          $('#selector').val('');
+        }
+      })
+    })
+  </script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Your wallet</h1>
+    <h5 class="text-dark font-weight-bolder">Here you can see your incoming and outgoing SPK transfers as well as all SPEK purchases</h5>
+{% endblock %}
+
+{% block body %}
+
+    <div class="alert alert-dark clearfix">
+        <div class="float-left">
+            <h5 class="mt-1">Your Balance: <span class="balance">{{ balance.balance|toFixed(2) }}</span> <small>SPK</small></h5>
+        </div>
+        <div class="float-right">
+            <button class="btn btn-light btn-sm" data-toggle="modal" data-target="#spkModal">Get SPEAK Token
+            </button>
+        </div>
+    </div>
+
+    {% if transactions.orders|length > 0 %}
+        <div class="col-12 ml-0 pl-0">
+            <h4>Recent Purchases</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Reference</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in transactions.orders %}
+                        <tr>
+                            <td>{{ order.amount }}</td>
+                            <td>{{ order.price }} HIVE</td>
+                            <td>{{ order.memo }}</td>
+                            <td>{{ order.timestamp|date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    {% if transactions.transfers|length > 0 %}
+        <div class="col-12 ml-0 pl-0">
+            <h4>Recent Transfers</h4>
+            <small class="text-muted">Only the last 25 transfers are shown.</small>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                    {% for order in transactions.transfers %}
+                        <tr>
+                            <td>{{ order.timestamp|date }}</td>
+                            <td>{% if order.to == balance.userId %}Received {{ order.amount }} SPK from {{ order.from }}{% else %}Transfer {{ order.amount }} SPK to {{ order.to }}{% endif %}</td>
+                            <td width="33%">{{ order.memo|json_decode.message|escape }}</td>
+{#                            <td>{{ order._id }}</td>#}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    {% endif %}
+    {% if transactions.credits|length > 0 %}
+        <div class="col-12 ml-0 pl-0">
+            <h4>Recent Credits</h4>
+            <small class="text-muted">Credits are SPEAK that you were gifted by 3Speak.</small>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Quantity</th>
+                        <th>Memo</th>
+                        <th>Reference</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in transactions.credits %}
+                        <tr>
+                            <td>{{ order.amount }}</td>
+                            <td>{{ order.memo }}</td>
+                            <td>{{ order._id }}</td>
+                            <td>{{ order.timestamp|date }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    <div class="col-12 ml-0 pl-0 text-muted">
+        <small>Your wallet address: {{ id }}</small>
+    </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+<div class="card">
+    <div class="card-header" id="headingOne">
+        <h2 class="mb-0">
+            <span class="btn btn-link btn-block text-left category-text" type="button" data-toggle="collapse" data-target="#collapse{{category}}" aria-expanded="true" aria-controls="collapseOne">
+                {{ category }}
+            </span>
+        </h2>
+    </div>
+
+    <div id="collapse{{category}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+        <div class="card-body">
+            {% for achievement in achievements %}
+                {% if achievement.category == category %}              
+                    <div class="card">
+                        <div class="card-body achievement-body">
+                            <h6 class="card-subtitle mb-2 text-muted">{{ achievement.title }}  <span class="badge badge-light text-right">{{ achievement.completionPercentage }}% complete</span></h6>
+                            <form>
+                                <div class="form-group">
+                                    <label for="formControlRange">Progress: {{ achievement.progress }}/{{ achievement.maxValue}}</label>
+                                    <input type="range" class="form-control-range" id="formControlRange" min="1" max="{{ achievement.maxValue + 1 }}" value="{{ achievement.progress + 1 }}" disabled>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .category-text {
+        color: #666 !important;
+    }
+</style>

@@ -1,0 +1,28 @@
+<div class="video-card-list">
+    <div class="teaser_holder video-card-image">
+        <div class="card-label">
+            {{ video.duration|duration }}
+        </div>
+        <a href="/watch?v={% if playlist == true %}{{ playlistInfo.owner }}/{{ playlistInfo.id }}&i={{ index }}{% else %}{{ video.owner }}/{{ video.permlink }}{% endif %}" {% if video.isNsfwContent == true %}class="href-disabled" data-permlink="{{ video.permlink }}"{% endif %}>
+            <img loading="lazy" width="1920" height="1080" class="{% if video.isNsfwContent == true %}img-thumbnail{% endif %} img-fluid bg-dark" data-permlink="{{ video.permlink }}" src="{% if video.isNsfwContent == true %}/img/nsfw.png{% else %}{{ video.thumbUrl }}{% endif %}" alt="">
+        </a>
+    </div>
+    <span class="video-card-body">
+        <div class="video-title">
+            <a href="/watch?v={% if playlist == true %}{{ playlistInfo.owner }}/{{ playlistInfo.id }}&i={{ index }}{% else %}{{ video.owner }}/{{ video.permlink }}{% endif %}">{{ video.title|striptags }}</a>
+        </div>
+        <div class="video-page{# text-success#}">
+            <a href="/user/{{ video.owner }}">{{ video.owner }}</a> {#<a title="" data-placement="top" data-toggle="tooltip" href="#" data-original-title="Verified">
+                <i class="fas fa-check-circle text-success"></i>
+            </a>#}
+        </div>
+        <div class="video-view">
+           <i class="fas fa-eye"></i> {{ video.views }} views
+
+            <i class="fas fa-calendar-alt"></i> {{ video.created|ago }}
+
+
+            <b class="ml-1">$<i data-payout="{{ video.owner }}/{{ video.permlink }}"></i></b>
+        </div>
+    </span>
+</div>

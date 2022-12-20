@@ -1,0 +1,50 @@
+{% extends './base.twig' %}
+dd
+{% block body %}
+<h5 class="card-title">{{ app|appLink }} wants to access your 3Speak Account</h5>
+<p class="card-text mb-3">
+
+    This will allow {{ app|appLink }} to: <br>
+    <br>
+
+    - See your username <br>
+
+    {% for scope in scopes %}
+
+        {% if scope == 'upload' %}
+            - Upload videos to your channel <br>
+        {% endif %}
+
+        {% if scope == 'list_videos' %}
+            - List videos on your channel <br>
+        {% endif %}
+
+        {% if scope == 'edit_videos' %}
+            - Edit videos on your channel <br>
+        {% endif %}
+
+        {% if scope == 'delete_videos' %}
+            - <span class="text-danger">Delete videos on your channel</span> <br>
+        {% endif %}
+
+        {% if scope == 'statistics' %}
+            - Access your channel statistics <br>
+        {% endif %}
+
+    {% endfor %}
+    <br>
+    <hr>
+    <br>
+
+    <b>Make sure you trust {{ app|appLink }}</b> <br>
+    You may be sharing sensitive info with this site or app. Learn about how {{ app|appLink }} will handle your data by reviewing their <a href="{{ app.tos }}" target="_blank">terms of service</a> and
+    <a href="{{ app.privacy_policy }}" target="_blank">privacy policy</a>. You can always see or remove access in your <a href="/settings/apps">3Speak Account</a>
+
+</p>
+    <a href="{{ redirect_uri }}" class="btn btn-link">Cancel</a>
+    <form method="post" class="d-inline">
+        <input type="submit" value="Allow" class="btn btn-primary float-right" /></form>
+{% endblock %}
+{% block info %}
+    <span class="text-muted">{{ app|appLink }} is not operated by 3Speak</span>
+{% endblock %}

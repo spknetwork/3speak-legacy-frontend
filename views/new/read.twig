@@ -1,0 +1,78 @@
+{% extends './layout.twig' %}
+
+{% block meta %}
+    <meta property="og:title" content="Comment replies to {{ comment.author }} - {{ APP_PAGE_DOMAIN }}">
+    <meta property="og:image" content="{{ APP_VIDEO_CDN_DOMAIN }}/{{ root.permlink }}/thumbnails/default.png">
+    <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/watch?v={{ root.author }}/{{ root.permlink }}">
+    <meta property="og:site_name" content="3Speak">
+{% endblock %}
+
+{% block style %}
+
+{% endblock %}
+{% block body %}
+    <div class="container-fluid pb-0">
+        <div class="video-block section-padding">
+            <div class="row">
+                <div class="col-12">
+                    <div class="single-video-left">
+                        <div class="box mb-2" id="">
+                            <a href="{% if parent.author == root.author and parent.permlink == root.permlink %}/watch?v={{ parent.author }}/{{ parent.permlink }}{% else %}/read?author={{ parent.author }}&permlink={{ parent.permlink }}&root_author={{ root.author }}&root_permlink={{ root.permlink }}{% endif %}">Go
+                                back</a>
+                            <h6>Replies to:</h6>
+                            <!-- /container -->
+                        </div>
+                        <div id="rootComment"></div>
+                        <div id="comments">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% if user is defined and user.isSteem == true %}
+        <div class="modal fade" id="commentModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="replyTo"></h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="author">
+                        <input type="hidden" id="permlink">
+                        <textarea name="comment" id="comment" cols="30" rows="10" class="form-control"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" id="closeCMD" type="button" data-dismiss="modal">Cancel
+                        </button>
+                        <button class="btn btn-primary" id="cmd">Comment</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+{% endblock %}
+{% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="https://{{ APP_ASSETS_DOMAIN }}/md5.js"></script>
+    {#<script src="https://unpkg.com/steem-content-renderer"></script>#}
+    <script>
+
+        const rootComment = {{ comment|json_encode }};
+
+        $(document).on("click", ".steem-upvote-cast", function (err) {
+            const id = '#' + $(this).closest('.steem-like').attr('id').replace('.', '\\.');
+            normalVote(id);
+        })
+
+    </script>
+
+    {% include './widgets/commentTemplates.twig' with {old: false, read: true, comment, user} %}
+
+{% endblock %}

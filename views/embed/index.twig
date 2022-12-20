@@ -1,0 +1,221 @@
+{% extends 'embed/layout.twig' %}
+
+{% block body %}
+
+  <div class="container mt-3 text-white d-none" id="steemit">
+    <div class="row">
+      <div class="col">
+        <div class="text-center">
+          <a href="//3speak.co"><img width="256" src="https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png"
+                                         alt=""></a>
+          <h2>3Speak Moved to HIVE.</h2>
+          The 3Speak platform and all videos moved to the HIVE blockchain. <br>
+          3Speak videos are not available on steemit.com due to the massive censorship conducted by Steemit Inc. and
+          the Steem witnesses. <br>
+          As a free speech platform 3Speak can and will not support any form of censorship. <br>
+
+          To watch this video on HIVE please click the button below: <br> <br>
+
+          <a href="//peakd.com/@{{ v.author }}/{{ v.permlink }}" target="_blank" class="btn btn-primary"
+             rel="noopener noreferrer">
+            Watch this Video on HIVE
+          </a>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {% if v.status == 'published' and banned == false %}
+    <video controls="controls" poster="{{ APP_IMAGE_CDN_DOMAIN }}/{{ v.permlink }}/poster.png"
+           id="player"></video>
+  {% else %}
+    <div class="container mt-3 text-white" id="deleted">
+      <div class="row">
+        <div class="col">
+          <div class="text-center">
+            <a href="//3speak.co"><img width="250" src="https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png"
+                                           alt=""></a>
+            <h2>This video is no longer available.</h2>
+            The author has removed this video from 3Speak or has been banned.
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  {% endif %}
+
+{% endblock %}
+
+{% block js %}
+
+  <script>
+
+    let serverHost = {{ serverHost }};
+
+    const autoplay = {{ autoplay }};
+
+    $(() => {
+      let host = document.location.ancestorOrigins ? Array.isArray(document.location.ancestorOrigins[0]) ? document.location.ancestorOrigins[0] : '' : '';
+      if (serverHost !== undefined && serverHost.startsWith("http")) {
+        serverHost = new URL(serverHost)
+      }
+
+      if (["https://steemit.com", "https://steempeak.com"].includes(host)) {
+        try {
+          $('#player').remove()
+        } catch (e) {
+
+        }
+        try {
+          $('#deleted').remove()
+        } catch (e) {
+
+        }
+        $('#steemit').removeClass("d-none")
+      } else {
+
+        if (typeof serverHost === 'object' && serverHost.constructor.name === "URL" && ["steemit.com", "steempeak.com"].includes(serverHost.host)) {
+          try {
+            $('#player').remove()
+          } catch (e) {
+
+          }
+          try {
+            $('#deleted').remove()
+          } catch (e) {
+
+          }
+          $('#steemit').removeClass("d-none")
+        } else {
+          const author = '{{ v.author }}';
+          const permlink = '{{ v.permlink }}';
+          const imageUrl = '{{ v.imageUrl }}';
+          const playUrl = '{{ v.playUrl }}';
+          
+          const player = jwplayer('player').setup({
+            image: imageUrl,
+            playlist: [{
+              title: '{{ v.title|escape }}',
+              matomoTitle: "[Embed] {{ v.title|escape }}",
+              image: imageUrl,
+              sources: [
+                {
+                  file: playUrl,
+                  type: "application/x-mpegURL"
+                }
+              ]
+            }],
+            playbackRateControls: [0.75, 1, 1.15, 1.25, 1.5, 2],
+            autostart: autoplay,
+            /*"advertising": {
+              "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.co%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
+              "client": "googima",
+              "vpaidmode": "insecure"
+            },*/
+            related: {
+              onclick: 'play',
+              oncomplete: 'autoplay',
+              //file: '/apiv2/recommended?v={{ v.author }}/{{ v.permlink }}&embed=on'
+            },
+            abouttext: "Powered by 3Speak",
+            aboutlink: "https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}&utm_source=player_context",
+            cast: {},
+            ga: {},
+            preload: "none",
+            floating: {
+              dismissible: true
+            },
+            logo: {
+              "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
+              "link": "https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}&utm_souce=player_brand",
+              "hide": "true",
+              "position": "top-left"
+            },
+            sharing: {
+              code: '<iframe width="560" height="315" src="https://{{ APP_PAGE_DOMAIN }}/embed?v={{ v.author }}/{{ v.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+              sites: ["facebook", "twitter", "reddit", "email"],
+              link: 'https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}'
+            }
+          });
+          
+
+          let watched = false;
+          let midroll = false;
+          let seconds = 0;
+          let duration = 0;
+          let t;
+          let running = false;
+
+          const events = []
+
+
+          /*player.on('time', (event) => {
+            if ((event.position / event.duration) * 100 >= 50) {
+              if (midroll === false) {
+                midroll = true;
+                player.playAd("https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.co%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=")
+              }
+            }
+          });*/
+
+          function add() {
+            if (running === true) {
+              seconds++;
+            }
+
+            if (seconds >= 1 && watched === false) {
+              running = false;
+              watched = true;
+
+              grecaptcha.execute('6Le5G3MaAAAAAKXzr4reX2i2Bss8abc6CrrlEo-Z', {action: 'view'}).then(token => {
+                $.ajax({
+                  url: '/video/api/view',
+                  data: {
+                    v: '{{ v.author }}/{{ v.permlink }}',
+                    token
+                  }
+                });
+              });
+
+
+            }
+
+            if (watched === false) {
+              timer();
+            }
+          }
+
+          function timer() {
+            t = setTimeout(add, 1000);
+          }
+
+          player.on("pause", () => {
+            running = false
+          });
+
+          player.on("stop", () => {
+            running = false
+          });
+
+          player.on("play", () => {
+            running = true;
+          });
+
+          player.on("firstFrame", (event) => {
+            duration = player.getDuration();
+            timer()
+            running = true
+          });
+        }
+
+
+      }
+    });
+
+
+  </script>
+
+{% endblock %}

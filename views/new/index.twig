@@ -1,0 +1,186 @@
+{% extends './layout.twig' %}
+
+{% block meta %}
+  <meta name="description" content="Censorship resistant video platform where you can earn cryptocurrency.">
+{% endblock %}
+
+{% block style %}
+  <link href="/css/carousel.css" rel="stylesheet">
+{% endblock %}
+
+{% block smallHeaderHTML %}{% endblock %}
+
+{% block body %}
+  {#    <div class="row marg_top1">#}
+  {#        <a href="/feed"><div class="col-12"><h5>Feed</h5></div></a>#}
+  {#    </div>#}
+
+
+  <div id="videoContainer" class="row marg_bot3">
+  {% for row in feed %}
+    {% for video in row %}
+      {% include './widgets/bigVideoCard.twig' with {video: video, size: 2, user: user} %}
+    {% endfor %}
+    {% endfor %}
+
+  </div>
+
+{% endblock %}
+
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+  {% include './widgets/cardTemplate7s.twig' %}
+  <script>
+    function beneficiaryFixNotification(type, message='', name='') {
+      switch (type) {
+        case 'success':
+          Swal.fire({
+            title: 'Success',
+            html: "You have successfully removed bad actors from your beneficiary data.",
+            icon: 'success',
+            confirmButtonText: 'Okay'
+          });
+          return
+        case 'error':
+          Swal.fire({
+            title: 'Something went wrong',
+            text: message,
+            icon: 'error',
+            confirmButtonText: 'Okay'
+          })
+          return
+      }
+    }
+
+    $(() => {
+
+      hiveClient.database.getAccounts(['{{ user.nickname }}']).then(r => {
+        console.log(r[0].json_metadata)
+        let meta = JSON.parse(r[0].json_metadata)
+        let beneficiaries = meta.beneficiaries
+        console.log(beneficiaries)
+        if (beneficiaries) {
+          for (let benefactor of beneficiaries) {
+            if (['detlev', 'louis88', 'wehmoen'].includes(benefactor.name)) {
+
+              Swal.fire({
+                title: "You have bad actors in your beneficiary data!",
+                text: "A rogue ex employee has misallocated your sign up beneficiaries to various hive accounts. eit" +
+                  "her authorise the Keychain transaction or enter your private active key if you don't have keych" +
+                  "ain installed in order to reallocate the funds to 3speak.",
+                icon: 'info',
+                confirmButtonText: 'Okay'
+              })
+
+              meta.beneficiaries = beneficiaries.filter(e => !['detlev', 'louis88', 'wehmoen'].includes(e.name))
+              meta.beneficiaries.push(
+                {
+                  "name": "spk.beneficiary",
+                  "label": "referrer",
+                  "weight": 300
+                }
+              )
+              //meta.beneficiaries = JSON.stringify(meta.beneficiaries)
+
+              if (meta.beneficiaries === '[]') {
+                delete meta.beneficiaries
+              }
+
+              let op = [
+                [
+                  "account_update2",
+                  {
+                    "account": nickname,
+                    "json_metadata": JSON.stringify(meta),
+                    "posting_json_metadata": r[0].posting_json_metadata,
+                    "extensions": []
+                  }
+                ]
+              ]
+
+              isKeychainInstalled().then(kc => {
+                if (kc) {
+                  hive_keychain.requestBroadcast(nickname, op, 'active', (res) => {
+                    if (res.success === true) {
+                      beneficiaryFixNotification('success', '')
+                    } else {
+                      beneficiaryFixNotification('error', res.message)
+                    }
+                  })
+                } else {
+                  let key = prompt('Please enter your private active key. It will not be stored, all operations are performed on you computer.')
+                  try {
+                    key = dhive.PrivateKey.fromString(key);
+                    hiveClient.broadcast.sendOperations(op, key).then(
+                      function(result) {
+                        beneficiaryFixNotification('success', '')
+                      },
+                      function(error) {
+                        beneficiaryFixNotification('error', error)
+                      }
+                    )
+                  } catch (e) {
+                    console.log(e)
+                    beneficiaryFixNotification('error', 'Invalid key.')
+                  }
+                }
+              })
+
+              break
+            }
+          }
+        }
+
+      })
+
+      $('.carousel').carousel({
+        pause: true,
+        interval: false
+      });
+
+      $('#reveal-cat-buttons').click((e) => {
+        $(".category-button.d-none").removeClass("d-none");
+        $('#reveal-cat-buttons').addClass('d-none');
+      });
+
+
+      let skip = 64;
+
+      var loading = false;
+
+      const $win = $(window);
+
+      $win.scroll(function () {
+        if ($(window).scrollTop() + $(window).height() > $(document).height() - 300 && loading === false) {
+          loading = true;
+
+          $.ajax({
+            url: '/api/feed/more',
+            data: {
+              skip
+            },
+            success: (res) => {
+              if (res.length > 0) {
+                for (let index = 0; index < res.length; index++) {
+                  // let arr_index = index - maxLoad;
+                  let video = res[index];
+                  video.created = timeSince(new Date(video.created));
+                  video.title = filterXSS(video.title);
+                  let minutes = Math.floor(video.duration / 60);
+                  let seconds = Math.round(video.duration - minutes * 60);
+                  video.duration = minutes + ':' + seconds;
+                  $('#videoContainer').append(window.tpl.video_card({video, index, APP_IMAGE_CDN_DOMAIN: globals.APP_IMAGE_CDN_DOMAIN}))
+
+                }
+                refreshDataPayout();
+              }
+              skip += 64;
+              loading = false;
+            }
+          });
+        }
+      });
+
+    });
+  </script>
+{% endblock %}

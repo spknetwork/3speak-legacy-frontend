@@ -1,0 +1,298 @@
+{% extends './layout.twig' %}
+
+{% block title %}{{ podcast.title|escape }} - {% endblock %}
+
+{% block meta %}
+  <meta property="og:title" content="{{ podcast.title|escape }} by {{ podcast.owner }} - {{ APP_PAGE_DOMAIN }}">
+  <meta property="og:image"
+        content="{{ thumbnailUrl }}&t={{ ""|date("U") }}">
+  <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/podcast?v={{ podcast.owner }}/{{ podcast.permlink }}">
+  <meta property="og:site_name" content="3Speak">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="720">
+
+  <meta name="twitter:card" content="player">
+  <meta name="twitter:site" content="@3speakonline">
+  <meta name="twitter:title" content="{{ podcast.title|escape }}">
+  <meta name="twitter:description" content="{{ podcast.description|escape|substr(0,128) }}">
+  <meta name="twitter:image" content="{{ thumbnailUrl }}&t={{ ""|date("U") }}">
+
+{% endblock %}
+
+{% block style %}
+  <style>
+    html, body {
+      margin-right: 0px;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100% !important;
+    }
+
+    .jw-icon-fullscreen {
+      display: none !important;
+    }
+
+    .jw-rightclick { display: none !important; }
+
+    #player {
+      max-height: 215px !important;
+    }
+  </style>
+{% endblock %}
+
+{% block smallHeaderHTML %}{% endblock %}
+
+{% block widelayout %}
+  <div class="container-fluid pb-0">
+    <div class="video-block section-padding">
+      <div class="row">
+        <div class="col-12" id="playerCol">
+          <div class="single-video-left">
+            <div class="single-video">
+              <div style="width: 100%;">
+                {#                                <video id='player' class='video-js vjs-16-9'></video>#}
+                {#                                <iframe src="https://embed.3speak.co/v2/?v={{ podcast.owner }}/{{ podcast.permlink }}&autoplay=true" style="width: 100%; min-height: 720px" frameborder="0"></iframe>#}
+
+{#                <video style="width: 100%" controls="controls"#}
+{#                       poster="#TODO"#}
+{#                       id="player"></video>#}
+
+                <audio src="{{ playbackUrl }}" id="player" ></audio>
+
+              </div>
+            </div>
+            <div class="single-video-title box mb-3 clearfix">
+              <div class="float-left">
+                <h2><a href="#">{{ podcast.title|striptags }}</a></h2>
+                <p class="mb-2">
+                  <span class="mr-1">
+                      <i class="fas fa-eye"></i>
+                      {{ podcast.views }}
+                  </span>
+
+                  <span class="mr-1">
+                    <i class="fas fa-calendar"></i>
+                    <span>{{ podcast.created|date("M d, Y") }}</span>
+                  </span>
+
+
+                </p>
+              </div>
+
+              <div class="text-right d-inline-block float-right">
+
+
+{#                <span id="upv-container-{{ podcast.owner }}-{{ podcast.permlink }}"></span>#}
+{#                {% if user is defined and user.isSteem == true %}#}
+{#                  <div class="btn btn-sm btn-light" data-reblog="{{ podcast.owner }}/{{ podcast.permlink }}">Reblog <i#}
+{#                      class="fas fa-retweet"></i>#}
+{#                  </div>#}
+{#                {% endif %}#}
+
+                {#<button class="btn btn-sm btn-secondary "#}
+                {#data-dislike="{{ podcast.owner }}/{{ podcast.permlink }}">#}
+                {#<i class="fa fa-thumbs-down"></i> 0#}
+                {#</button>#}
+                <br>
+                <div class="dropdown d-inline-block mt-1">
+                  <button id="videoOptions" type="button" data-toggle="dropdown" aria-haspopup="true"
+                          aria-expanded="false" class="btn btn-secondary btn-sm dropdown-toggle">
+                    <i class="fa fa-cogs"></i>
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="videoOptions">
+                    <a class="dropdown-item" data-report="{{ podcast.owner }}/{{ podcast.permlink }}"
+                       href="mailto:helpdesk@3speak.co?subeject=Report%20Podcast&body=Author:%20{{ podcast.owner|url_encode }}%0d%0aPermlink:%20{{ podcast.permlink|url_encode }}%0d%0aTitle:%20{{ podcast.title|url_encode }}%0d%0a%0d%0aReason of Report:%0d%0a"><i
+                        class="fas fa-fw fa-exclamation-triangle "></i> &nbsp; Report</a>
+                    {#                    <div class="dropdown-divider" id="divide"></div>#}
+                    {#                    <a class="dropdown-item text-muted d-none" id="unicorn">#}
+                    {#                      <small>🦄 Believe in your dreams!</small>#}
+                    {#                    </a>#}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="single-video-author box mb-3">
+              <div class="float-right">
+
+{#                {% include './widgets/subscribe.twig' with {'creator': podcast, 'subscribed': subscribed, 'notifications': notifications} %}#}
+                {#<button class="btn btn btn-outline-danger" type="button"><i class="fas fa-bell"></i>#}
+                {#</button>#}
+
+              </div>
+              <img class="img-fluid" src="{{ podcast.owner|avatar }}" alt="">
+              <p><a href="/user/{{ podcast.owner }}"><strong>{{ podcast.owner }}</strong></a>
+                {% if owner.verified == true %}
+                  <span title=""
+                        data-placement="top"
+                        data-toggle="tooltip"
+                        data-original-title="Verified"><i
+                      class="fas fa-check-circle text-success"></i></span>
+                {% endif %}
+              </p>
+{#            </div>#}
+{#            <div class="single-video-info-content box mb-3">#}
+
+              <br class="clearfix">
+
+              <div id="videoAbout">
+                <span class="description">{{ podcast.description }}</span>
+              </div>
+{#              <div class="text-center collapsed" id="videoAboutCollapse"#}
+{#                   style="cursor: pointer; border-top: 1px solid rgba(0,0,0,0.2)">#}
+{#                <i class="fa fa-chevron-down"></i> Show more#}
+{#              </div>#}
+
+              {% if noAds is not defined %}
+                <div class="text-center mb-1 mt-1">
+                  {% include './widgets/advert.twig' with {zone: adZone, revive: adRevive} %} {#Check layout.twig for consts#}
+                </div>
+              {% endif %}
+
+              <h6>Tags :</h6>
+              <p class="tags mb-0">
+                {% for tag in podcast.tags %}
+                  <span><a href="/search?q={{ tag }}" class="text-white">{{ tag }}</a></span>
+                {% endfor %}
+              </p>
+            </div>
+
+            {% if noAds is not defined %}
+              <div class="text-center mb-1 mt-1">
+                <script async
+                        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                <!-- 3speak-top-lg -->
+                <!--<ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-2784600041331572"
+                     data-ad-slot="6776429328"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>-->
+                <script>
+                  (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+              </div>
+            {% endif %}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="https://{{ APP_ASSETS_DOMAIN }}/md5.js"></script>
+  {#<script src="https://unpkg.com/steem-content-renderer"></script>#}
+
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  {#    <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>#}
+  <script src="https://cdn.jwplayer.com/libraries/j7Kz0Rae.js"></script>
+  <script src="/js/donate.js"></script>
+  <script>
+
+    $(() => {
+
+      const player = jwplayer('player').setup({
+        file: '{{ playbackUrl }}',
+        image: '{{ thumbnailUrl }}',
+        playbackRateControls: false,
+        autostart: true,
+        advertising: false,
+        abouttext: "Powered by 3Speak",
+        aboutlink: "https://{{ APP_PAGE_DOMAIN }}/?utm_source=player_context",
+        enableFullscreen: false,
+        cast: {},
+        sharing: false
+      });
+      window.player = player;
+      let watched = false;
+      let midroll = false;
+      let seconds = 0;
+      let duration = 0;
+      let t;
+      let running = false;
+
+      player.on('adError', (event) => {
+        console.log("Ad Request Error: \n" + event.message)
+      });
+      player.on('adComplete', (event) => {
+        timer()
+      });
+
+      player.on('time', (event) => {
+        if ((event.position / event.duration) * 100 >= 50) {
+          if (midroll === false) {
+            midroll = true;
+            // player.playAd("https://advertise.3speakcontent.online/www/api/v2/vast/?zone=6")
+          }
+        }
+      });
+
+      function add() {
+        if (running === true) {
+          seconds++;
+        }
+
+        if (seconds >= 10 && watched === false) {
+          running = false;
+          watched = true;
+
+          grecaptcha.execute('6Le5G3MaAAAAAKXzr4reX2i2Bss8abc6CrrlEo-Z', {action: 'view'}).then(token => {
+            $.ajax({
+              url: '/video/api/view_podcast',
+              data: {
+                v: '{{ podcast.owner }}/{{ podcast.permlink }}',
+                token
+              }
+            });
+          });
+        }
+
+        if (watched === false) {
+          timer();
+        }
+      }
+
+      function timer() {
+        t = setTimeout(add, 1000);
+      }
+
+      player.on("pause", (event) => {
+        running = false
+      });
+
+      player.on("stop", (event) => {
+        running = false
+      });
+
+      player.on("play", () => {
+        if (!running) {
+          duration = player.getDuration();
+          timer()
+        }
+        running = true;
+      });
+
+      $('#shareVideo').click(e => {
+        e.preventDefault();
+        $('#shareModal').modal();
+      });
+
+    });
+  </script>
+
+{% endblock %}
+
+
+
+{% block tracking %}
+  _paq.push(['trackEvent', 'Video', 'Play', '{{ podcast.title|url_encode|trim("'") }}']);
+{% endblock %}

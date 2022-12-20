@@ -1,0 +1,7 @@
+export NEW_LAYOUT=1
+export ENV=dev
+export MONGO_HOST=127.0.0.1
+export DEBUG=twig:*
+export HOST=http://localhost:9500
+export MEMCACHED_HOST=localhost:11211
+export REDIS_HOST=redis://localhost:6379

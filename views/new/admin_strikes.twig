@@ -1,0 +1,55 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+  <input type="text" id="selector" placeholder="Username"><br>
+  <textarea rows="5" cols="60" id="message">Strike text here...</textarea><br>
+  <input type="submit" id="strikeSubmit" value="Send">
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Strikes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for account in accounts %}
+        <tr>
+          <td>{{ account.username }}</td>
+          <td>
+            <ul>
+            {% for strike in account.strikes %}
+              <li>{{ strike }}</li>
+            {% endfor %}
+            </ul>
+          </td>
+        </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script>
+    let availableTags = [{% for account in allAccountsList %}"{{ account }}", {% endfor %}];
+
+    $("#selector").autocomplete({
+      source: availableTags
+    });
+
+    $('#strikeSubmit').on('click', function() {
+      let message = $('#message').val();
+      let user = $('#selector').val();
+      $.ajax({
+        url: '/admin/api/strikes/add',
+        type: 'post',
+        data: {message, user},
+        success: () => {
+          window.location.reload();
+        }
+      })
+    })
+  </script
+{% endblock %}

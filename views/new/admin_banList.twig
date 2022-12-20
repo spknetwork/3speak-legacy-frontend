@@ -1,0 +1,145 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+  <input type="text" id="selector" placeholder="Username">
+  <label>Full ban <input type="radio" name="banType" value="full">  </label>
+  <label>Upload ban <input type="radio" name="banType" value="upload">  </label>
+  <label>Upvote ban <input type="radio" name="banType" value="upvote" checked="checked"></label>
+  <label>Reduced votes <input type="radio" name="banType" value="reduced"></label>
+  <input type="submit" id="banSubmit">
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Username</th>
+      <th>Full ban</th>
+      <th>Banned from uploading</th>
+      <th>Banned from receiving upvotes</th>
+      <th>Receiving reduced upvotes</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for account in accounts %}
+      <tr id="{{ account.username }}">
+        <td><a href="/user/{{ account.username }}">@{{ account.username }}</a></td>
+        <td><input type="checkbox" data-ban="{{ account.username }}" {% if account.banned == true %}checked{% endif %}></td>
+        <td><input type="checkbox" data-uploadban="{{ account.username }}" {% if account.canUpload == false %}checked{% endif %}></td>
+        <td><input type="checkbox" data-voteban="{{ account.username }}" {% if account.upvoteEligible == false %}checked{% endif %}></td>
+        <td><input type="checkbox" data-votereduce="{{ account.username }}" {% if account.reducedUpvote == true %}checked{% endif %}></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script>
+    function uploadBan(username, checked, reload = false) {
+      $.ajax({
+        url: '/admin/api/uploadban',
+        data: {username, checked},
+        type: 'post',
+        success: (res) => {
+          if (res.error) {
+            Swal.fire('Oops', res.error, 'error')
+          } else if (reload) {
+            window.location.reload();
+          }
+        }
+      })
+    }
+
+    function upvoteBan(username, checked, reload = false) {
+      $.ajax({
+        url: '/admin/api/voteban',
+        data: {username, checked},
+        type: 'post',
+        success: (res) => {
+          if (res.error) {
+            Swal.fire('Oops', res.error, 'error')
+          } else if(reload) {
+            window.location.reload();
+          }
+        }
+      })
+    }
+
+    function fullBan(username, checked, reload = false) {
+      $.ajax({
+        url: '/admin/api/fullban',
+        data: {username, checked},
+        type: 'post',
+        success: (res) => {
+          if (res.error) {
+            Swal.fire('Oops', res.error, 'error')
+          } else if (reload) {
+            window.location.reload();
+          }
+        }
+      })
+    }
+
+    function voteReduce(username, checked, reload = false) {
+      $.ajax({
+        url: '/admin/api/votereduce',
+        data: {username, checked},
+        type: 'post',
+        success: (res) => {
+          if (res.error) {
+            Swal.fire('Oops', res.error, 'error')
+          } else if (reload) {
+            window.location.reload()
+          }
+        }
+      })
+    }
+
+    $(() => {
+      $('[data-uploadban]').on('click', function (e) {
+        let username = $(this).data('uploadban');
+        let checked = !$(this).is(':checked');
+        uploadBan(username, checked)
+      });
+
+      $('[data-ban]').on('click', function (e) {
+        let username = $(this).data('ban');
+        let checked = $(this).is(':checked');
+        fullBan(username, checked)
+      });
+
+      $('[data-voteban]').on('click', function (e) {
+        let username = $(this).data('voteban');
+        let checked = $(this).is(':checked');
+        upvoteBan(username, checked)
+      });
+
+      $('[data-votereduce]').on('click', function(e) {
+        let username = $(this).data('votereduce');
+        let checked = $(this).is(':checked');
+        voteReduce(username, checked)
+      })
+
+      let availableTags = [{% for account in allAccountsList %}"{{ account }}", {% endfor %}];
+
+      $("#selector").autocomplete({
+        source: availableTags
+      });
+
+      $('#banSubmit').on('click', function () {
+        let type = $('[name=banType]:checked').val();
+        let name = $('#selector').val();
+        if (type === 'full') {
+          fullBan(name, true, true)
+        } else if (type === 'upload') {
+          uploadBan(name, false, true)
+        } else if (type === 'upvote') {
+          upvoteBan(name, true, true)
+        } else if (type === 'reduced') {
+          voteReduce(name, true, true)
+        }
+      });
+    })
+  </script>
+{% endblock %}

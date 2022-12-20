@@ -1,0 +1,51 @@
+{% if post.isRoot == true %}
+  {% if post.replies|length > 0 %}
+    <div class="comment_replies" data-depth="{{ depth }}">
+      {% for reply in post.replies %}
+        {% set newDepth = depth + 1 %}
+        {% include './comment.twig' with {post:reply, depth: newDepth} %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% else %}
+  <div class="row mt-2">
+    <div class="col-12">
+      <div class="card mb-3">
+        <div class="card-header align-items-middle">
+
+          <div class="avatar mr-2"
+               style="background-image: url(https://images.hive.blog/u/{{ post.author }}/avatar/small);"></div>
+
+          <a class="text-muted font-weight-bold" href="/user/{{ post.author }}">{{ post.author }}</a><span
+            class="mx-1"> </span>{% if post.teamMember == true %}
+          <span
+            class="badge badge-pill badge-info">Team Member</span>{% endif %}<i
+            class="fal fa-calendar-alt"></i> <span class="text-muted"
+                                                   title="{{ post.created|date }}">{{ post.created|ago }}</span>
+        </div>
+        <div class="card-body comment-body pb-0 pl-2 pr-1" style="padding-left: 1.25rem !important;padding-right: 1.25rem !important;">
+          {{ post.body|hiverender }}
+
+          <div class="comment-action-bar">
+            <hr>
+            <ul class="list-inline list-inline-separate">
+              {% include '../widgets/vote.twig' with {post, user} %}
+            </ul>
+          </div>
+
+          {% if post.replies|length > 0 %}
+            <div class="comment_replies" data-depth="{{ depth }}">
+              {% for reply in post.replies %}
+                {% set newDepth = depth + 1 %}
+                {% include './comment.twig' with {post:reply, depth: newDepth} %}
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+

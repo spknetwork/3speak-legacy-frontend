@@ -1,0 +1,104 @@
+{% extends './layout.twig' %}
+
+{% block headerHTML %}
+  <h1 class="white_col">Shop</h1>
+{% endblock %}
+
+{% block stlye %}
+  <style>
+    a {
+      color: -moz-default-color;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+
+  {% if products|length == 0 %}
+    <p class="alert alert-info">
+      Unfortunately there is nothing that you can buy at this time. Please come back later.
+    </p>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-12"><a href="/shop/orders" class="btn btn-primary btn-block">My Order History</a></div>
+  </div>
+
+  <table class="table table-striped table-bordered mt-4">
+
+    <tr>
+      <td>Name</td>
+      <td>Price (USD)</td>
+      <td>Accepted Payment Currencies</td>
+      <td></td>
+    </tr>
+
+    {% for product in products %}
+      <tr>
+        <td>{{ product.name }}{% if product.published == false %} <span class="badge text-dark badge-warning">HIDDEN</span>{% endif %}</td>
+        <td>${{ product.price_usd }}</td>
+        <td>
+          {% for currency in product.currencies %}
+            <a href="/shop/buy/{{ product._id }}/{{ currency }}" class="btn btn-sm btn-primary">
+              <i class="fa fa-shopping-cart"></i> Buy with {{ currency }}
+            </a>
+          {% endfor %}
+        </td>
+        <td>
+          <button class="btn btn-sm btn-info" data-product="{{ product._id }}">
+            <i class="fa fa-eye"></i> Details
+          </button>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+
+  {% for product in products %}
+    <div id="product-details-{{ product._id }}" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content {% if user and user.darkMode == true %}bg-dark{% endif %}">
+          <div class="modal-header">
+            <h5 class="modal-title">Product Details</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div><b>Name:</b> {{ product.name }}</div>
+            <div><b>Price (USD):</b> {{ product.price_usd|usd_total }}</div>
+            <hr>
+            <div>
+              {{ product.description }}
+            </div>
+          </div>
+          <div class="modal-footer">
+            {% for currency in product.currencies %}
+              <a href="/shop/buy/{{ product._id }}/{{ currency }}" class="btn btn-sm btn-primary">
+                <i class="fa fa-shopping-cart"></i> Buy with {{ currency }}
+              </a>
+            {% endfor %}
+            <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  <small class="text-muted">Please be advised that we do not offer refunds for any order placed in our shop. If you have an issue with an order please create a support ticket at
+    <a href="https://helpdek.3speak.co">helpdek.3speak.co</a></small>
+
+{% endblock %}
+
+
+{% block script %}
+
+  <script>
+    $(() => {
+      $('[data-product]').click(e => {
+        $('#product-details-' + $(e.target).data('product')).modal();
+      })
+    })
+  </script>
+
+{% endblock %}

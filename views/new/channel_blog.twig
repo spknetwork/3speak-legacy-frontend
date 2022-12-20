@@ -1,0 +1,86 @@
+{% extends './layout.twig' %}
+
+{% block meta %}
+    <meta property="og:title" content="{{ channel.username }} Blog - 3speak.co">
+    <meta property="og:description" content="Read the latest blogs from {{ channel.username }}">
+    <meta property="og:image" content="{{ channel.username|avatar }}">
+    <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/user/{{ channel.username }}/blog">
+    <meta property="og:site_name" content="3Speak">
+{% endblock %}
+
+{% block style %}
+    <style>
+        .sidebar-toggled .single-channel-page {
+            padding: 0px 0px 0px 90px;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    {% include 'new/channel_header.twig' %}
+{% endblock %}
+
+{% block body %}
+    <div id="content-wrapper">
+
+        <div class="container-fluid">
+            <div class="video-block section-padding">
+                <div class="row">
+                    {#                {% if blogs|length == 0 %}#}
+                    {#                    <p class="alert alert-dark w-100">#}
+                    {#                        {{ channel.username }} has not published any blogs yet.#}
+                    {#                    </p>#}
+                    {#                {% endif %}#}
+                    {#                {% for blog in blogs %}#}
+                    {#                    {% include './widgets/blog.twig' with blog %}#}
+                    {#                {% endfor %}#}
+                    <div class="col">
+                        <div id="steemit-widgets-blog"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center mb-1 mt-1">
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- 3speak-top-lg -->
+                            <!--<ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-2784600041331572"
+                                 data-ad-slot="6776429328"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </div>
+
+{% endblock %}
+{% block script %}
+    <script src="https://mktcode.github.io/steemit-widgets/assets/js/steemit-widgets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script>
+        $(() => {
+            steemitWidgets.blog({
+                element: 'steemit-widgets-blog',
+                user: '{{ channel.username }}',
+                limit: 20,
+                template: '<div style="border: 2px solid rgb(172, 191, 228); border-radius: 5px; font-family: Arial, Helvetica, sans-serif; margin-bottom: 15px;"><a href="${URL}" style="border-top-right-radius: 3px; border-top-left-radius: 3px; height: 250px; display: block; background-image: url(\'${IMAGE}\'); background-size: contain; background-repeat: no-repeat; background-position: center center;"></a> <h2 style="margin: 0px; font-size: 16px; text-align: left; line-height: 16px; padding: 7px 10px;"><!----> <a href="${URL}" style="color: rgb(68, 68, 68); text-decoration: none;">                        ${TITLE}                    </a></h2> <div style="font-size: 12px; color: rgb(136, 136, 136); padding: 0px 10px 5px; background: rgb(255, 255, 255); text-align: left;"><span>${DATE}</span> <span>by <a href="https://hive.blog/@${AUTHOR}" style="color: rgb(68, 68, 68); text-decoration: none;">${AUTHOR}</a></span> <span style="border: 1px solid rgb(204, 204, 204); border-radius: 10px; padding: 1px 4px; font-size: 11px;">${REPUTATION}</span> <span>in <a href="https://steemit.com/@${AUTHOR}" style="color: rgb(68, 68, 68); text-decoration: none;">${CATEGORY}</a></span></div> </div>',
+                resteemedIndicator: '<span style="width: 15px; height: 15px; display: inline-block;"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><path d="M448,192l-128,96v-64H128v128h248c4.4,0,8,3.6,8,8v48c0,4.4-3.6,8-8,8H72c-4.4,0-8-3.6-8-8V168c0-4.4,3.6-8,8-8h248V96 L448,192z"></path></svg></span>',
+                reputationPrecision: 1,
+                updateInterval: 60,
+                dateCallback: function (date) {
+                    return moment.utc(date).from(moment.utc().format('YYYY-MM-DD HH:mm:ss'));
+                }
+            });
+        })
+    </script>
+{% endblock %}

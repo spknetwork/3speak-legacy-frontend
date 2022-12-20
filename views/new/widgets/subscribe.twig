@@ -1,0 +1,12 @@
+{% if creator.owner %}
+{% set creator = creator|merge({'username': creator.owner}) %}
+{% endif %}
+<button class="btn btn-{% if subscribed %}dark{% else %}light{% endif %} btn-sm" data-subscribe='{{ creator.username }}' type="button">
+    <span id="substatus">{% if subscribed %}Unfollow{% else %}Follow{% endif %}</span>
+    <strong id="subcount">
+        <a href="/user/{{ creator.username }}/followers" class="view-followers" data-tooltip="tooltip" title="Click to see followers">
+          <i class="fa fa-spin fa-spinner" data-subcount="{{ creator.username }}"></i>
+        </a>
+    </strong>
+    <span class="d-none ml-2{% if notifications == true %} fa fa-bell{% else %} far fa-bell{% endif %}" data-toggle-notifications="{{ creator.username }}"></span>
+</button>

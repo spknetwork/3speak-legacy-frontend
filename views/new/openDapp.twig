@@ -1,0 +1,15 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+  <h1>Haven't got the app yet?</h1>
+  <h5>Download it here!</h5>
+  <a target="_blank" href="https://github.com/3speaknetwork/3Speak-app/releases/latest" class="btn btn-info">Download</a>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(() => {
+      window.location.href='speak://#/watch/{{ uri }}'
+    })
+  </script>
+{% endblock %}

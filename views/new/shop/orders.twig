@@ -1,0 +1,47 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+  <h1 class="white_col">My Orders</h1>
+{% endblock %}
+
+{% block stlye %}
+  <style>
+    a {
+      color: -moz-default-color;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+
+  <table class="table table-striped table-bordered">
+
+
+    <tr>
+      <td>Order ID</td>
+      <td>Total (USD)</td>
+      <td>Selected Currency</td>
+      <td>Order Date</td>
+      <td>Status</td>
+      <td></td>
+    </tr>
+
+    {% for order in orders %}
+      <tr>
+        <td>{{ order._id }}</td>
+        <td>{{ order|shop_total('TOTAL') }}</td>
+        <td>{{ order|shop_total(order.currency ~ '_TOTAL') }}</td>
+        <td>{{ order.created_at|date }}</td>
+        <td>
+          {{ order.status }}
+        </td>
+        <td>
+          <a class="btn btn-sm btn-info" href="/shop/checkout/{{ order._id }}">
+            <i class="fa fa-eye"></i> Details
+          </a>
+
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

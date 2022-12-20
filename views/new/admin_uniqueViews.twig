@@ -1,0 +1,28 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+  <input type="text" id="permlink" placeholder="Permlink">
+  <input id="done" type="submit">
+  <hr>
+  <h3>Views: <span id="views"></span></h3>
+  <br>
+  <h3>Unique Views: <span id="unique"></span></h3>
+{% endblock %}
+
+{% block script %}
+  <script>
+    $('#done').on('click', function() {
+      let permlink = $('#permlink').val()
+      console.log(permlink)
+      $.ajax({
+        url: '/admin/api/views',
+        type: 'post',
+        data: {permlink},
+        success: (res) => {
+          $('#views').html(res.views)
+          $('#unique').html(res.unique)
+        }
+      })
+    })
+  </script>
+{% endblock %}

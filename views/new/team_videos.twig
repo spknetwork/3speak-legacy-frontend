@@ -1,0 +1,45 @@
+{% extends "./layout.twig" %}
+
+{% block body %}
+    <div id="content-wrapper">
+        <div class="container-fluid">
+            <div class="video-block section-padding">
+                <div class="row">
+
+                    {% for video in videos %}
+                      {% if video.type == 'video' %}
+                        {% include './widgets/bigVideoCard.twig' with video %}
+                      {% endif %}
+                      {% if video.type == 'podcast' %}
+                        {% include './widgets/bigPodcastCard.twig' with video %}
+                      {% endif %}
+                    {% endfor %}
+
+                    {% if videos|length == 0 %}
+                        <p class="alert alert-info w-100">
+                            3speak team members have not published any videos yet. Come back later.
+                        </p>
+                    {% endif %}
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center mb-1 mt-1">
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- 3speak-top-lg -->
+                            <!--<ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-2784600041331572"
+                                 data-ad-slot="6776429328"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </div>
+
+{% endblock %}

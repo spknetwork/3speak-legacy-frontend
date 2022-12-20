@@ -1,0 +1,56 @@
+{% extends 'embed/layout.twig' %}
+
+{% block body %}
+  {% if isLive %}
+    <video controls="controls" poster="https://cdn-live.3speakcontent.online/thumbnails/{{ channel }}.jpg"
+           id="player"></video>
+  {% else %}
+    <div id="offline"
+         style="height:100vh;background: #5e5e5e url('/img/offline.png') no-repeat center;background-size: contain;">
+      <a href="javascript:window.location.reload()"
+         style="color: #292929; text-decoration: none; position: absolute; padding-top: 3px; padding-left: 10px; padding-right: 10px; padding-bottom: 3px; background: whitesmoke; border-radius: 4px; border: inset #cacaca 1px; left: calc( 50% - 50px ); bottom: 50px">Reload</a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block js %}
+  <script>
+    const autoplay = false;
+    {% if isLive == true %}
+    $(() => {
+      const player = jwplayer('player').setup({
+        file: 'https://live.3speak.co/stream/{{ channel }}/playlist.m3u8',
+        image: 'https://live.3speak.co/stream/{{ channel }}/preview.png',
+        // playbackRateControls: [0.75, 1, 1.25, 1.5, 2],
+        autostart: true,
+        "advertising": {
+          "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.co%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
+          "client": "googima",
+          "vpaidmode": "insecure"
+        },
+        abouttext: "Powered by 3Speak",
+        aboutlink: "https://3speak.co/?utm_source=player_context",
+        cast: {},
+        floating: {
+          dismissible: true
+        },
+        logo: {
+          "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
+          "link": "https://3speak.co/?utm_souce=player_brand",
+          "hide": "true",
+          "position": "top-left"
+        },
+        sharing: {
+          code: '<iframe width="560" height="315" src="https://3speak.co/embed/live/{{ channel }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+          sites: ["facebook", "twitter", "reddit", "email"]
+        },
+        // hlsLabels: { "3300": "1080p", "4096" : "720p", "1024":"480p" },
+      });
+    });
+    {% else %}
+    $(() => {
+      $('#offline').css("height", $('body').height() + "px")
+    })
+    {% endif %}
+  </script>
+{% endblock %}

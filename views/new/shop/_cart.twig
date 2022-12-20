@@ -1,0 +1,36 @@
+<h4 class="d-flex justify-content-between align-items-center mb-3">
+  <span class="text-muted">Your cart</span>
+  <span class="badge badge-secondary badge-pill">{{ order.products|length }}</span>
+</h4>
+<ul class="list-group mb-3 {% if user and user.darkMode == true %}bg-dark{% endif %}">
+  {% for product in order.products %}
+    <li class="list-group-item {% if user and user.darkMode == true %}bg-dark{% endif %} d-flex justify-content-between lh-condensed">
+      <div>
+        <h6 class="my-0">{{ product.name }}</h6>
+        <small class="text-muted">{{ product.description }}</small>
+      </div>
+      <span class="text-muted">{{ product.price_usd|shop_usd_format }}</span>
+    </li>
+  {% endfor %}
+  <li style="border-top: 2px solid black !important;"
+      class="list-group-item {% if user and user.darkMode == true %}bg-dark{% endif %} d-none usd_info border-top d-flex justify-content-between">
+    <span>Subtotal (USD/{{ order.currency }})</span>
+    <strong>{{ order|shop_total('USD') }} / {{ order|shop_total }}</strong>
+  </li>
+  <li class="list-group-item {% if user and user.darkMode == true %}bg-dark{% endif %} usd_info d-flex justify-content-between d-none">
+    <span>Fees (USD/{{ order.currency }})</span>
+    <strong>{{ order|shop_total('FEE') }} / {{ order|shop_total(order.currency ~ '_FEE') }}</strong>
+  </li>
+  <li class="list-group-item {% if user and user.darkMode == true %}bg-dark{% endif %} d-flex justify-content-between">
+    <span class="font-weight-bold">Total (USD/{{ order.currency }})</span>
+    <strong>{{ order|shop_total('TOTAL') }} / {{ order|shop_total(order.currency ~ '_TOTAL') }}</strong>
+  </li>
+  {% if order.status == 'pending' %}
+    <li class="list-group-item {% if user and user.darkMode == true %}bg-dark{% endif %} d-flex justify-content-between">
+      <button class="btn btn-block btn-primary" id="checkout" data-order-id="{{ order._id }}"
+              data-total="{{ order|shop_total(order.currency ~ '_TOTAL') }}">
+        Pay {{ order|shop_total(order.currency ~ '_TOTAL') }}
+      </button>
+    </li>
+  {% endif %}
+</ul>

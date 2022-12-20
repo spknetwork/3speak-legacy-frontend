@@ -1,0 +1,13 @@
+{% extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Your subscriptions</h1>
+{% endblock %}
+
+{% block body %}
+    <div id="videoContainer" class="row marg_top1 marg_bot3">
+        {% for video in videos %}
+            {% include './widgets/bigVideoCard.twig' with video %}
+        {% endfor %}
+    </div>
+{% endblock %}

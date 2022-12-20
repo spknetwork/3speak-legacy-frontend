@@ -1,0 +1,87 @@
+{% extends 'new/layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">New videos</h1>
+{% endblock %}
+
+{% block body %}
+    <div id="videoContainer" class="row marg_top1 marg_bot3">
+        {% set videoLimit = 480 %}
+        {% set minLoad = 0 %}
+        {% set maxLoad = videoLimit %}
+        {% set hidden = false %}
+        {% for content in recommended %}
+            {% if loop.index0 == videoLimit %}
+                {% set hidden = true %}
+            {% endif %}
+            {% if not content.isBlog %}
+
+                {% include 'new/widgets/bigVideoCard.twig' with {'video': content, 'hidden': hidden, 'index': loop.index0} %}
+            {% else %}
+                {% include 'new/widgets/blog.twig' with {'blog': content, 'hidden': hidden} %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <h2 style="text-align: center">
+        Loading More...
+    </h2>
+{% endblock %}
+
+{% block script %}
+    {% include './widgets/cardTemplate7s.twig' %}
+
+    <script type="text/javascript" language="javascript">
+
+        $(function () {
+            const videoLimit = {{ videoLimit|json_encode() }};
+            var minLoad = {{ minLoad|json_encode() }};
+            var maxLoad = videoLimit;
+            {#var recommended = {{ recommended|json_encode() }};#}
+            var recommended = [];
+            var lastDate = {{ lastCreated|json_encode() }};
+
+            let skip = 48;
+
+            var loading = false;
+
+            const $win = $(window);
+
+            $win.scroll(function () {
+                if ($(window).scrollTop() + $(window).height() > $(document).height() - 300 && loading === false) {
+                    loading = true
+                    minLoad += videoLimit;
+                    maxLoad += videoLimit;
+                    for (let i = minLoad; i < maxLoad; i++) {
+                        $('#' + i).removeClass('d-none')
+                    }
+
+                    $.ajax({
+                        url: '/api/new/more',
+                        data: {
+                            skip
+                        },
+                        success: (res) => {
+                            if (res.recommended.length > 0) {
+                                recommended = res.recommended;
+                                for (let index = 0; index < recommended.length; index++) {
+                                    // let arr_index = index - maxLoad;
+                                    let video = recommended[index];
+                                    video.created = timeSince(new Date(video.created));
+                                    video.title = filterXSS(video.title);
+                                    let minutes = Math.floor(video.duration / 60);
+                                    let seconds = Math.round(video.duration - minutes * 60);
+                                    video.duration = minutes + ':' + seconds;
+                                    $('#videoContainer').append(window.tpl.video_card({video, index, APP_IMAGE_CDN_DOMAIN: globals.APP_IMAGE_CDN_DOMAIN}))
+
+                                }
+                                refreshDataPayout();
+                            }
+                            loading = false;
+                            skip += 48
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

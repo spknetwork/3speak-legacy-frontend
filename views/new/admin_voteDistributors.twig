@@ -1,0 +1,75 @@
+{% extends './layout.twig' %}
+
+{% block body %}
+  {% if privateReview == true %}
+  <h4 class="text-danger">
+    Hi, this is currently the review period where all changes are implemented on the 1st of the next month.
+  </h4>
+  {% endif %}
+
+  <div>
+    <input type="text" id="selector" placeholder="Username">
+    <input type="number" id="day" placeholder="Day">
+    <input type="number" id="dollars" placeholder="Value">
+    <input type="submit" id="submit" value="Add/Update">
+  </div>
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>Username</th>
+      <th>Day</th>
+      <th>Value</th>
+      <th>Remove</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for account in accounts %}
+      <tr>
+        <td>{{ account.username }}</td>
+        <td>{% if privateReview == true %}{{ account.queuedUpvoteDay }}{% else %}{{ account.upvoteDay }}{% endif %}</td>
+        <td>{% if privateReview == true %}{{ account.queuedLimit }}{% else %}{{ account.limit }}{% endif %}</td>
+        <td><i data-removeproxyvote="{{ account.username }}" class="fas fa-times text-danger"></i></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script>
+    let availableTags = [{% for account in allAccounts %}"{{ account.username }}", {% endfor %}];
+    let privateReview = {{ privateReview }};
+
+    $("#selector").autocomplete({
+      source: availableTags
+    });
+
+    $('[data-removeproxyvote]').on('click', function() {
+      let user = $(this).data('removeproxyvote');
+      $.ajax({
+        url: '/admin/api/voteDistributors/remove',
+        data: {username: user, privateReview},
+        type: 'post',
+        success: () => {
+          window.location.reload()
+        }
+      })
+    });
+
+    $('#submit').on('click', function() {
+      let username = $('#selector').val();
+      let day = $('#day').val();
+      let value = $('#dollars').val();
+      $.ajax({
+        url: '/admin/api/voteDistributors/add',
+        data: {username, day, value, privateReview},
+        type: 'post',
+        success: () => {
+          window.location.reload()
+        }
+      });
+    })
+  </script>
+{% endblock %}

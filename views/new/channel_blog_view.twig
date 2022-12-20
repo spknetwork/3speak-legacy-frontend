@@ -1,0 +1,63 @@
+{% extends './layout.twig' %}
+
+{% block meta %}
+    <meta property="og:title" content="{{ blog.title }} - by {{ blog.channel }} - 3speak.co">
+    <meta property="og:description" content="Read the latest blogs from {{ channel.username }}">
+    <meta property="og:image" content="{{ channel.username|avatar }}">
+    <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/user/{{ channel.username }}/blog/{{ blog.permlink }}">
+    <meta property="og:site_name" content="3Speak">
+{% endblock %}
+
+{% block style %}
+    <style>
+        .sidebar-toggled .single-channel-page {
+            padding: 0px 0px 0px 90px;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 0px;
+            padding-left: 0px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="single-channel-page" id="content-wrapper">
+        {% include './channel_header.twig' %}
+        <div class="container-fluid">
+            <div class="video-block section-padding">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="main-title">
+                            <h6 class="mb-0">{{ blog.title|striptags }}</h6>
+                            <small>by {{ blog.channel }} - {{ blog.created_at|ago }}</small>
+                        </div>
+                        <hr>
+                       <div id="blog_body">
+                           {{ blog.body }}
+                       </div>
+                    </div>
+
+
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="text-center mb-1 mt-1">
+                            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                            <!-- 3speak-top-lg -->
+                            <!--<ins class="adsbygoogle"
+                                 style="display:block"
+                                 data-ad-client="ca-pub-2784600041331572"
+                                 data-ad-slot="6776429328"
+                                 data-ad-format="auto"
+                                 data-full-width-responsive="true"></ins>
+                            <script>
+                                (adsbygoogle = window.adsbygoogle || []).push({});
+                            </script>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </div>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+  <h1 class="white_col">Connected HIVE Accounts</h1>
+  <h5 class="text-dark font-weight-bolder">You can use the 3Speak platform with all your connected HIVE accounts</h5>
+{% endblock %}
+
+{% block body %}
+
+  {% if isAdmin %}
+
+      <div class="bg-dark mb-2 text-white p-1">
+        <b>You are logged in as an administrator. You can login as any user. Enter the username you want to login as in the field below and click the switch button.</b>
+
+
+        <div class="form-group">
+          <label for="">Account:</label>
+          <input type="text" class="form-control text-white form-control-sm" id="admin_switch">
+        </div>
+
+        <button id="admin_switch_btn" class="btn btn-sm btn-info">Switch</button>
+
+      </div>
+
+
+
+  {% endif %}
+
+  <div class="col-12 ml-0 pl-0">
+
+    <a href="/settings/identities/add" class="btn mb-2 btn-info float-left">Connect My Existing HIVE Account</a>
+    <a href="//{{ APP_SIGNUP_DOMAIN }}" class="btn mb-2 btn-success float-right">Get New HIVE Account</a>
+
+    <table class="table table-striped clearfix">
+      <tr>
+        <th>Account</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+      {% for ident in identities %}
+        <tr>
+          <td>{% if user.username == ident.account %} <span title="Currently selected" class="text-success fa fa-check-square"></span> {% endif %}{{ ident.account }}</td>
+          <td data-identity="{{ ident.account }}">
+            <i class="fa fa-spinner fa-spin"></i>
+          </td>
+          <td>
+            {% if user.username == ident.account %}<button title="Already logged in as {{ ident.account }}" disabled class="btn btn-sm btn-info">Switch</button>{% else %}<a href="/auth/refreshIdentity?identity={{ ident.account }}" class="btn btn-sm btn-info">Switch</a>{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      {% if identities|length == 0 %}
+
+        <tr>
+          <td colspan="3">It seems you haven't connected any HIVE accounts yet. If you don't have one yet checkout <a
+              href="https://{{ APP_SIGNUP_DOMAIN }}">{{ APP_SIGNUP_DOMAIN }}</a></td>
+        </tr>
+      {% endif %}
+    </table>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+
+    $(async () => {
+
+      function hasPostingAuthority(account, authority) {
+        return account.posting.account_auths.find(x => x[0] === authority) !== undefined
+      }
+
+      for (let identity of $('[data-identity]')) {
+        identity = $(identity);
+        let account_name = identity.data('identity');
+        let [account] = await steem.api.getAccountsAsync([account_name])
+        identity.html(hasPostingAuthority(account, 'threespeak') ? '<i title="Threespeak has posting authority for this account. Posting authority is required so that 3Speak can publish your videos to the blockchain after they are encoded." class="text-success fa fa-check"></i>': '<i title="WARNING: Threespeak has no posting authority for this account. This means threespeak can NOT publish your videos to the HIVE blockchain after they are encoded." class="text-danger fa fa-times">')
+      }
+    })
+  </script>
+{% endblock %}

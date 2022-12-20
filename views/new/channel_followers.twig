@@ -1,0 +1,55 @@
+{% extends './layout.twig' %}
+
+{% block header %}
+  {% include 'new/channel_header.twig' %}
+{% endblock %}
+
+{% block body %}
+  <div id="followers">
+    {% for follower in followers %}
+      <i data-follower="{{ follower.follower }}"></i>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  function initialiseFollowers() {
+    $('[data-follower]').each((i, e) => {
+      let node = $(e);
+      let username = node.data('follower');
+      node.replaceWith('' +
+        '<a href="https://peakd.com/@'+username+'" style="display: inline-block; margin: 10px; text-align: center;">' +
+        '   <img class="channel-profile-img" alt="" src="https://images.hive.blog/u/'+username+'/avatar">' +
+        '   <br><b>@'+username+'</b>' +
+        '</a>')
+    })
+  }
+
+  $(() => {
+    initialiseFollowers()
+
+    const $win = $(window);
+    let last = '{{ last }}';
+    let loading = false;
+    let step = 250;
+
+    $win.scroll(() => {
+      if ($(window).scrollTop() + $(window).height() > $(document).height() - 300 && !loading) {
+        loading = true
+        hive.api.getFollowers('{{ channel.username }}', last, 'blog', step, function(err, res) {
+          res.shift()
+          res.forEach((e) => {
+            $('#followers').append('<i data-follower="'+e.follower+'"></i>')
+          })
+          initialiseFollowers()
+          last = res[res.length - 1].follower
+          if (res.length === step) {
+            loading = false
+          }
+        })
+      }
+    })
+  })
+</script>
+{% endblock %}

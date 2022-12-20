@@ -1,0 +1,36 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Authorized 3rd Party Apps</h1>
+    <h5 class="text-dark font-weight-bolder">Manage 3rd Party access to your account</h5>
+{% endblock %}
+
+{% block body %}
+    {% if settings.info == 'success' %}
+        <p class="alert alert-info">
+            <i class="fa fa-check-circle text-success mr-1"></i>Your language preferences have been updated!
+        </p>
+    {% endif %}
+    <div class="col-12 ml-0 pl-0">
+        <table class="table table-striped">
+            <tr>
+                <th>App</th>
+                <th>Scope</th>
+                <th></th>
+            </tr>
+            {% for app in apps %}
+            <tr>
+                <td>
+                    {{ app.name }}
+                </td>
+                <td>
+                    {{ app.scopes }}
+                </td>
+                <td>
+                    <a href="/auth/revoke/{{ app.app_id }}" class="btn btn-primary btn-small">REVOKE</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

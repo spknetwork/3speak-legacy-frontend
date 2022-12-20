@@ -1,0 +1,97 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+  <h1 class="white_col">Checkout</h1>
+{% endblock %}
+
+{% block stlye %}
+  <style>
+    a {
+      color: -moz-default-color;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+
+    <div class="row mb-4">
+      <div class="col-12">
+        <a href="/shop/orders" class="btn btn-block btn-primary">Show all my orders</a>
+      </div>
+    </div>
+
+  {% if order.status == 'tx_found' %}
+    <div class="row">
+      <div class="col-12">
+        <p class="alert alert-info">
+          {{ "tx_found"|shop_order_status_description }}
+        </p>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-md-4  mb-4">
+
+      {% include './_cart.twig' with {order} %}
+    </div>
+    <div class="col-md-4 mb-4">
+      {% include './_status.twig' with {order} %}
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block script %}
+  <script>
+    $(() => {
+      {% if order.status == 'tx_found' %}
+      setTimeout(() => {
+        window.location.reload()
+      }, 1000 * 15)
+      {% endif %}
+      $('#checkout').click(() => {
+        if (!window.hive_keychain) {
+          swal.fire({
+            icon: "info",
+            title: "Hive Keychain Required",
+            text: "To checkout you need to install the Hive Keychain browser extension. It is available for Chrome, Firefox, Opera and Brave. Please install Hive Keychain and reload this page."
+          })
+        } else {
+          const operations = [
+            ['transfer', {
+              from: '{{ user.nickname }}',
+              to: '{{ order|getMainTransferAccount }}',
+              memo: 'payment:{{ order._id }}',
+              amount: '{{ order|shop_total }}'
+            }],
+            ['transfer', {
+              from: '{{ user.nickname }}',
+              to: 'threespeakwallet',
+              memo: 'fee:{{ order._id }}',
+              amount: '{{ order|shop_total(order.currency ~ '_FEE') }}'
+            }]
+          ]
+
+          hive_keychain.requestBroadcast("{{ user.nickname }}", operations, 'active', res => {
+            if (res.success === false) {
+              swal.fire({icon: "error", title:"Something went wrong", text: res.message})
+            } else {
+              $.ajax({
+                type: 'post',
+                url: '/shop/checkout/{{ order._id }}',
+                data: {
+                  id: res.result.id
+                },
+                success: () => {
+                  window.location.reload();
+                }
+              })
+            }
+          })
+        }
+      })
+    })
+  </script>
+
+{% endblock %}

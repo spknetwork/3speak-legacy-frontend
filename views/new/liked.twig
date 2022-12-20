@@ -1,0 +1,52 @@
+{% extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Liked videos</h1>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="video-block section-padding">
+            <div class="row">
+
+                {% if videos|length == 0 %}
+                    <p class="alert alert-info">
+                        <i class="fa fa-info-circle"></i> You have not liked any videos yet. Come back once you liked a few videos.
+                    </p>
+                {% endif %}
+
+                {% for video in videos %}
+                    {% include './widgets/bigVideoCard.twig' with video %}
+                {% endfor %}
+
+                {#{% for sub in subs %}#}
+                {#<div class="col-xl-3 col-sm-6 mb-3">#}
+                {#<div class="channels-card">#}
+                {#<div class="channels-card-image">#}
+                {#<a href="/user/{{ sub.channel }}"><img class="img-fluid" src="{{ sub.channel|avatar }}" alt=""></a>#}
+                {#<div class="channels-card-image-btn">#}
+                {#<a href="/user/{{ sub.channel }}" class="btn btn-success btn-sm border-none">View Channel</a>#}
+                {#</div>#}
+                {#</div>#}
+                {#<div class="channels-card-body">#}
+                {#<div class="channels-title">#}
+                {#<a href="/user/{{ sub.channel }}">{{ sub.channel }}#}
+                {#<span title="" data-placement="top" data-toggle="tooltip" data-original-title="Verified">#}
+                {#<i class="fas fa-check-circle text-success"></i>#}
+                {#</span>#}
+                {#</a>#}
+                {#</div>#}
+                {#<div class="channels-view">#}
+                {#<span data-subcount="{{ sub.channel }}">#}
+                {#<i class="fa fa-spin fa-spinner"></i>#}
+                {#</span> subscribers#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+                {#</div>#}
+                {#{% endfor %}#}
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

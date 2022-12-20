@@ -1,0 +1,20 @@
+<div class="col-lg-2 col-6 marg_bot1">
+    <div class="teaser_holder">
+        <a href="/user/{{ stream.channel }}/live">
+            <img class="img-fluid mb-1" style="width: 100% !important; padding: 5px; height: 141px"
+                 src="https://{{ APP_LIVE_DOMAIN }}/stream{% if is247 == true %}247{% endif %}/{{stream.channel}}/preview.png">
+        </a>
+    </div>
+    <p>
+        <i class="fas fa-eye"></i>
+        <span>{{ stream.views }}</span>
+        <span class="black_col">
+                    <b class="float-right">
+                        <a href="/user/{{ stream.channel }}">{{ stream.channel }}</a>
+                    </b>
+                </span>
+    </p>
+    <a href="/user/{{ stream.channel }}/live">
+        <h5>{{ stream.title|striptags }}</h5>
+    </a>
+</div>

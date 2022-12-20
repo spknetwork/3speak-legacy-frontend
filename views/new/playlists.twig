@@ -1,0 +1,81 @@
+{% extends './layout.twig' %}
+
+{% block title %} My Playlists - {% endblock %}
+
+{% block headerHTML %}
+    <h1 class="white_col">My Playlists</h1>
+{% endblock %}
+
+{% block meta %}
+  <meta property="og:title" content="{{ podcast.title|escape }} by {{ podcast.owner }} - {{ APP_PAGE_DOMAIN }}">
+  <meta property="og:image"
+        content="{{ thumbnailUrl }}&t={{ ""|date("U") }}"/>
+  <meta property="og:url" content="https://{{ APP_PAGE_DOMAIN }}/playli?v={{ podcast.owner }}/{{ podcast.permlink }}"/>
+  <meta property="og:site_name" content="3Speak"/>
+  <meta property="og:image:width" content="1280"/>
+  <meta property="og:image:height" content="720"/>
+
+
+
+{% endblock %}
+
+{% block style %}
+  <style>
+    html, body {
+      margin-right: 0px;
+      overflow-x: hidden;
+    }
+
+    img {
+      max-width: 100% !important;
+    }
+
+    .jw-icon-fullscreen {
+      display: none !important;
+    }
+
+    .jw-rightclick { display: none !important; }
+
+    #player {
+      max-height: 215px !important;
+    }
+  </style>
+{% endblock %}
+
+
+{% block widelayout %}
+  <div style="margin-right: 20px; margin-left: 20px;">
+    <div class="row marg_top1 marg_bot3">
+      {% for item in playlists %}
+        {% include './widgets/playlistTile.twig' with {'playlist': item} %}
+      {% endfor %}
+    </div>
+  </div>
+
+
+
+{% endblock %}
+
+{% block script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+  <script src="https://{{ APP_ASSETS_DOMAIN }}/md5.js"></script>
+  {#<script src="https://unpkg.com/steem-content-renderer"></script>#}
+
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  {#    <script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/ima3.js"></script>#}
+  <script src="https://cdn.jwplayer.com/libraries/j7Kz0Rae.js"></script>
+  <script src="/js/donate.js"></script>
+  <script>
+
+   
+  </script>
+
+{% endblock %}
+
+
+
+{% block tracking %}
+  
+{% endblock %}

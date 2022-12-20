@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VAST version="3.0">
+    <Ad id="9f32ede9fc5842d5c47cf196bb990974">
+        <InLine>
+            <AdSystem>3speak.co</AdSystem>
+            <AdTitle>test vast</AdTitle>
+            <Creatives>
+                <Creative id="164" AdID="164">
+                    <Linear>
+                        <Duration>00:00:06</Duration>
+                        <MediaFiles>
+                            <MediaFile type="video/mp4" delivery="progressive" width="480" height="320"><![CDATA[https://cdn.3speakcontent.online/tqiuhsrb/.source/WsnGDysipwaJIdMCJqxneOiHFyhTofxZYhxJZGxGsiBMHytJQEAbcgPNdyVsMBmZ.mp4]]></MediaFile>
+                        </MediaFiles>
+                    </Linear>
+                </Creative>
+            </Creatives>
+        </InLine>
+    </Ad>
+</VAST>

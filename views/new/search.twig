@@ -1,0 +1,102 @@
+{% extends './layout.twig' %}
+
+
+{% block headerHTML %}
+    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid pb-0">
+    <div class="video-block section-padding">
+      <div class="row" id="searchResults">
+        {% for result in results.results %}
+          {% include './widgets/bigVideoCard.twig' with {video: result} %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <h2 style="text-align: center" id="loadingmoretext">
+    Loading More...
+  </h2>
+  <h2 style="text-align: center; display: none;" id="nomoreresults">
+    No more results
+  </h2>
+
+{% endblock %}
+
+{% block script %}
+  {% include './widgets/cardTemplate7s.twig' %}
+
+    <script type="text/javascript" language="javascript">
+
+        $(function () {
+            
+            var scroll_id = {{results.scroll_id | json_encode()}}
+
+            let searchQuery = JSON.parse('{{searchQuery|json_encode()|escape('js')}}')
+            let skip = 48;
+
+            var loading = false;
+
+            const $win = $(window);
+
+            if(!scroll_id) {
+              $("#loadingmoretext").hide()
+              $("#nomoreresults").show()
+            }
+
+            $win.scroll(function () {
+                if ($(window).scrollTop() + $(window).height() > $(document).height() - 300 && loading === false) {
+                    loading = true
+                    /*minLoad += videoLimit;
+                    maxLoad += videoLimit;
+                    for (let i = minLoad; i < maxLoad; i++) {
+                        $('#' + i).removeClass('d-none')
+                    }*/
+
+                    if(!scroll_id) {
+                      return;
+                    }
+
+                    $.ajax({
+                        url: '/api/search/more',
+                        data: {
+                          q: searchQuery,
+                          scroll_id
+                        },
+                        success: (res) => {
+                          console.log(res)
+                            if (res.results.length > 0) {
+                                
+                                recommended = res.results;
+                                for (let index = 0; index < recommended.length; index++) {
+                                    // let arr_index = index - maxLoad;
+                                    let video = recommended[index];
+                                    video.created = timeSince(new Date(video.created));
+                                    video.title = filterXSS(video.title);
+                                    let minutes = Math.floor(video.duration / 60);
+                                    let seconds = Math.round(video.duration - minutes * 60);
+                                    //video.duration = minutes + ':' + seconds;
+                                    console.log({video, index, APP_IMAGE_CDN_DOMAIN: globals.APP_IMAGE_CDN_DOMAIN})
+                                    $('#searchResults').append(window.tpl.video_card({video, index, APP_IMAGE_CDN_DOMAIN: globals.APP_IMAGE_CDN_DOMAIN}))
+
+                                }
+                                refreshDataPayout();
+                            }
+                            loading = false;
+                            skip += 48
+                            if(res.scroll_id) {
+                              scroll_id = res.scroll_id
+                              $("#loadingmoretext").hide()
+                              $("#nomoreresults").show()
+                            } else {
+                              scroll_id = null;
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
+

@@ -1,0 +1,27 @@
+<div {% if loop.index0 is defined %}id="{{ loop.index0 }}" {% endif %}
+     class="col-lg-{% if size is defined %}{{ size }}{% else %}2{% endif %} col-6 marg_bot1{% if hidden is defined and hidden == true %} d-none{% endif %}"
+style="padding: 1 !important;">
+    <div class="teaser_holder bg-dark text-center" style="max-height: 150px">
+        <div class="card-label card-label-podcast">Podcast</div>
+        <div class="card-label card-label-views">
+            <img class="play_i" src="/img/play.svg" height="11px">
+            <span>{{ video.views }}</span>
+        </div>
+        <div class="card-label">
+            {{ video.duration|duration }}
+        </div>
+        <a href="/podcast?v={{ video.owner }}/{{ video.permlink }}" >
+            <img style="max-height: 141px; width: auto !important;" class="img-fluid bg-dark" src="{{ video.thumbnailUrl }}">
+        </a>
+    </div>
+    <a href="/podcast?v={{ video.owner }}/{{ video.permlink }}">
+        <b data-toggle="tooltip" data-placement="bottom" title="{{ video.title }}" class="max-lines word-break">{{ video.title|striptags }}</b>
+    </a>
+    <div class="mt-2">
+        <span class="black_col">
+            <b><a href="/user/{{ video.owner }}"> <i class="fa fa-user"></i> {{ video.owner }}</a></b>
+        </span>
+        <br>
+        <span>{{ video.created|ago }}</span>
+    </div>
+</div>

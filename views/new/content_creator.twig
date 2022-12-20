@@ -1,0 +1,94 @@
+{% extends './layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Content Creator Leaderboard</h1>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid pb-0">
+        <div class="video-block section-padding">
+            <div class="row justify-content-md-center">
+                <div class="col-xl-8 col-sm-8 col-12 mb-3">
+                    <div class="channels-card {% if user and user.darkMode == true %} bg-dark{% endif %} " style="border-left: #d4af37 solid 6px">
+                        <div class="channels-card-image">
+                            <a href="/user/{{ first.username }}"><img class="img-fluid" src="{{ first.username|avatar }}" alt=""></a>
+                            <div class="channels-card-image-btn">
+                                <a   href="/user/{{ first.username }}" class="btn {% if user and user.darkMode == true %} btn-dark text-light{% else %}btn-light text-dark{% endif %} btn-sm">View Channel
+                                </a>
+                            </div>
+                        </div>
+                        <div class="channels-card-body">
+                            <div class="channels-title">
+                                <a href="/user/{{ first.username }}">{{ first.username }}</a>
+                            </div>
+{#                            {% if first.canProxyUpvote == true %}#}
+{#                            <div>#}
+{#                                <i>Upvote day on {{ first.upvoteDate }}</i>#}
+{#                            </div>#}
+{#                            {% endif %}#}
+                        </div>
+                        <div class="channels-card-rank badge badge-dark text-white">Rank: {{ first.pos }}</div>
+                        <div class="channels-card-score badge badge-dark text-white">Score: {{ first.score|parseInt }}</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row justify-content-md-center">
+                <div class="col-xl-5 col-sm-8 col-12 mb-3">
+                    <div class="channels-card {% if user and user.darkMode == true %} bg-dark{% endif %}" style="border-left: #bec2cb solid 6px">
+                        <div class="channels-card-image">
+                            <a href="/user/{{ second.username }}"><img class="img-fluid" src="{{ second.username|avatar }}" alt=""></a>
+                            <div class="channels-card-image-btn">
+                                <a   href="/user/{{ second.username }}" class="btn {% if user and user.darkMode == true %} btn-dark text-light{% else %}btn-light text-dark{% endif %} btn-sm">View Channel
+                                </a>
+                            </div>
+                        </div>
+                        <div class="channels-card-body">
+                            <div class="channels-title">
+                                <a href="/user/{{ second.username }}">{{ second.username }}</a>
+                            </div>
+{#                            {% if second.canProxyUpvote == true %}#}
+{#                            <div>#}
+{#                                <i>Upvote day on {{ second.upvoteDate }}</i>#}
+{#                            </div>#}
+{#                            {% endif %}#}
+                        </div>
+                        <div class="channels-card-rank badge badge-dark text-white">Rank: {{ second.pos }}</div>
+                        <div class="channels-card-score badge badge-dark text-white">Score: {{ second.score|parseInt }}</div>
+                    </div>
+                </div>
+                <div class="col-xl-5 col-sm-8 col-12 mb-3">
+                    <div class="channels-card {% if user and user.darkMode == true %} bg-dark{% endif %}" style="border-left: #b08d57 solid 6px">
+                        <div class="channels-card-image">
+                            <a href="/user/{{ third.username }}"><img class="img-fluid" src="{{ third.username|avatar }}" alt=""></a>
+                            <div class="channels-card-image-btn">
+                                <a   href="/user/{{ third.username }}" class="btn {% if user and user.darkMode == true %} btn-dark text-light{% else %}btn-light text-dark{% endif %} btn-sm">View Channel
+                                </a>
+                            </div>
+                        </div>
+                        <div class="channels-card-body">
+                            <div class="channels-title">
+                                <a href="/user/{{ third.username }}">{{ third.username }}</a>
+                            </div>
+{#                            {% if third.canProxyUpvote == true %}#}
+{#                            <div>#}
+{#                                <i>Upvote day on {{ third.upvoteDate }}</i>#}
+{#                            </div>#}
+{#                            {% endif %}#}
+                            <div class="channels-card-rank badge badge-dark text-white">Rank: {{ third.pos }}</div>
+                            <div class="channels-card-score badge badge-dark text-white">Score: {{ third.score|parseInt }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for creator in content_creator %}
+                        {% include './widgets/featuredChannel.twig' with creator %}
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+{% endblock %}

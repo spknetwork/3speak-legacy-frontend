@@ -1,0 +1,509 @@
+<script id="steem-comment-tpl" type="text/template7">
+    {% verbatim %}
+        <div {{#if isReply}}class="box ml-lg-5 ml-0 mt-1"{{else}}class="box mb-2"{{/if}} {{#if isScam}}style="opacity: .6" {{/if}} {{#if isSpam}}style="opacity: .6" {{/if}}>
+            <div>
+                <div>
+                    <div class="col">
+                        <div class="thumbnail mr-2 float-left">
+                            <img class="img-responsive user-photo" width="24" src="https://images.hive.blog/u/{{author}}/avatar">
+                        </div><!-- /thumbnail -->
+                    </div><!-- /col-sm-1 -->
+                    <div class="col-12">
+                        <div class="panel ml-2 panel-default">
+                            <div class="panel-heading ml-4">
+                                {{#if isOwner}}
+                                    <strong style="color: #ff0000;">{{author}}</strong>
+                                {{else}}
+                                    <strong><a href="/user/{{author}}">{{author}}</a> {{social}}</strong>
+                                {{/if}}
+                                {{#if isTeam}}
+                                <span title="Team Member of 3Speak" class="badge badge-primary ml-1">3Speak</span>
+                                {{/if}}
+                                 {{#if isDev}}
+
+                                <span title="Developer at 3Speak" class="badge badge-warning ml-1">Developer</span>
+                                {{/if}}
+
+                                 {{#if isSubscribed}}
+
+                                <span title="Subscriber" class="badge badge-info ml-1">Subscriber</span>
+                                {{/if}}
+                                {{#if isScam}}
+                                <span title="Dangerous! Potential fraud!" class="badge badge-dark text-white ml-1">Potential Fraud</span>
+                                {{/if}}
+                                 • <span class="text-muted">{{created}}</span>
+                            </div>
+                        <div class="panel-body mt-1">
+                            {{body}}
+                        </div><!-- /panel-body -->
+                            <div class="panel-footer ml-0 ml-md-4">
+                                <i class="fa fa-dollar-sign"></i> <span id="payout-{{author}}-{{permlink}}" class="post-payout">{{payout}}</span>
+                                {{#if enableComments}}
+                                    • <span style="cursor: pointer;" data-author="{{author}}" data-add-comment="{{#if realAuthor}}{{realAuthor}}{{else}}{{author}}{{/if}}/{{permlink}}">Reply</span>
+
+                                {{/if}}
+                                <span id="upv-container-{{author}}-{{permlink}}"> • </span>
+                                <div id="comment-{{permlink}}">
+                                </div>
+                            </div>
+                        </div><!-- /panel panel-default -->
+                    </div><!-- /col-sm-5 -->
+                </div><!-- /row -->
+            </div>
+            <div id="{{permlink}}">
+            </div>
+        </div>
+    {% endverbatim %}
+</script>
+
+<script id="steem-comment-more-tpl" type="text/template7">
+    {% verbatim %}
+        <div class="box mb-2 mt-2">
+            <div>
+                    <a href="/read?author={{parent}}&permlink={{parentPermlink}}&root_author={{root_author}}&root_permlink={{root_permlink}}">Read more</a>
+            </div>
+
+        </div>
+    {% endverbatim %}
+</script>
+
+<script id="steem-upvote-button-comment" type="text/template7">
+    {% verbatim %}
+        <span class="steem-like btn-light btn-sm ml-2 p-0" id="upv-btn-{{author}}-{{permlink}}-up" data-upvote="{{author}}/{{permlink}}" data-created="{{created}}">
+            <span class="steem-like-icon" style="cursor: pointer;">
+                <i id="up-icon-{{author}}-{{permlink}}" class="fa fa-lg fa-thumbs-up steem-like-icon-icon text-{{#if liked}}success{{else}}secondary{{/if}}"></i>
+            </span>
+
+            <input id="slider-input-{{author}}-{{permlink}}-up" class="steem-upvote-slider" data-slider-id='slider-{{author}}-{{permlink}}-up' type="text"
+                   data-slider-min="0" data-slider-max="100"
+                   data-slider-step="1" data-slider-value="100"/>
+            <span class="steem-upvote-val ml-2 d-none">100%</span>
+            <i data-post="{{author}}/{{permlink}}" style="cursor: pointer;"
+               class="fa fa-lg fa-chevron-circle-up d-none steem-upvote-cast"></i>
+            <i style="cursor: pointer;" class="fa fa-lg fa-times-circle text-danger d-none steem-upvote-cancel"></i>
+        </span>
+        <span class="likes p-1" style="cursor: pointer;" data-likes="{{author}}/{{permlink}}" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Upvoters" data-content="{{#each upvoters}}<a href='https://peakd.com/@{{voter}}' target='_blank'>@{{voter}}</a>: {{percent}}%<br>{{/each}}<a id='upvotes|{{author}}|{{permlink}}' class='seemore'>See more...</span>">
+            <b>
+             {{upvotes}}
+            </b>
+        </span>
+
+        <span class="steem-like btn-light btn-sm ml-2 p-0" id="upv-btn-{{author}}-{{permlink}}-down" data-upvote="{{author}}/{{permlink}}"
+        data-created="{{created}}">
+            <span class="steem-like-icon" style="cursor: pointer;">
+                <i id="down-icon-{{author}}-{{permlink}}" class="fas fa-lg fa-thumbs-down steem-like-icon-icon text-{{#if disliked}}danger{{else}}secondary{{/if}}"></i>
+            </span>
+
+            <input id="slider-input-{{author}}-{{permlink}}-down" class="steem-upvote-slider" data-slider-id='slider-{{author}}-{{permlink}}-down' type="text"
+                   data-slider-min="0" data-slider-max="-100"
+                   data-slider-step="1" data-slider-value="-100"/>
+            <span class="steem-upvote-val ml-2 d-none">100%</span>
+            <i data-post="{{author}}/{{permlink}}" style="cursor: pointer;"
+               class="fas fa-lg fa-chevron-circle-down d-none steem-downvote-cast"></i>
+            <i style="cursor: pointer;" class="fa fa-lg fa-times-circle text-danger d-none steem-upvote-cancel"></i>
+        </span>
+        <span class="likes p-1" style="cursor: pointer;" data-dislikes="{{author}}/{{permlink}}" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Downvoters" data-content="{{#each downvoters}}<a href='https://peakd.com/@{{voter}}' target='_blank'>@{{voter}}</a>: {{percent}}%<br>{{/each}}<a id='downvotes|{{author}}|{{permlink}}' class='seemore'>See more...</a>">
+            <b>{{downvotes}}</b>
+        </span>
+
+        <span class="ml-2 p-0 donate-button" data-donate="{{author}}/{{permlink}}" style="cursor: pointer;">
+          <i class="fa fa-lg fa-gift text-{{#if tipped}}info{{else}}secondary{{/if}}" aria-hidden="true"></i>
+        </span>
+        <span class="likes p-1" style="cursor: pointer;" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Tips" data-content="{{#each tippers}}<a href='https://peakd.com/@{{sender}}' target='_blank'>@{{sender}}</a>: {{amount}} {{curr}}<br>{{/each}}">
+            <b>{{tips}}</b>
+        </span>
+
+    {% endverbatim %}
+</script>
+<script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+<script>
+    window.tpl = {
+        steem_comment: Template7.compile(document.getElementById('steem-comment-tpl').innerHTML),
+        steem_comment_more: Template7.compile(document.getElementById('steem-comment-more-tpl').innerHTML),
+        steem_upvote_button_comment: Template7.compile(document.getElementById('steem-upvote-button-comment').innerHTML),
+    };
+
+    let team = ['theycallmedan', 'starkerz', 'honeybee11'];
+    let scammer = ["lassi", "rubbii", "samani", "uzma1", "dowie", "ranaa", "shappo"];
+    let spammer = ['greece-lover', 'steem-bootcamp'];
+    let hide = ['hivewatcher','cheetah' ];
+    let hideLowRep = true;
+    let hideLowRepMinimum = 0;
+    let allVotes = {};
+    const proxyPrefix = "threespeak.com";
+
+    $('#videoAboutCollapse').click(() => {
+        if ($('#videoAboutCollapse').hasClass('collapsed')) {
+            $('#videoAbout').css("max-height", "initial");
+            $('#videoAboutCollapse').removeClass('collapsed').html(' <i class="fa fa-chevron-up"></i> Show less')
+        } else {
+            $('#videoAbout').css("max-height", "200px");
+            $('#videoAboutCollapse').addClass('collapsed').html(' <i class="fa fa-chevron-down"></i> Show more')
+        }
+    });
+
+    const renderer = new SteemContentRenderer.DefaultRenderer({
+        baseUrl: "https://3speak.co/",
+        breaks: true,
+        skipSanitization: false,
+        addNofollowToLinks: true,
+        doNotShowImages: false,
+        ipfsPrefix: "",
+        assetsWidth: 640,
+        assetsHeight: 480,
+        imageProxyFn: (url) => url,
+        usertagUrlFn: (account) => "/user/" + account,
+        hashtagUrlFn: (hashtag) => '/search?q=' + hashtag,
+        isLinkSafeFn: (url) => {
+            const secureHosts = [
+                "hive.blog",
+                "steem.ninja",
+                "steem.guru",
+                "busy.org",
+                "steempeak.com",
+                "github.com",
+                "3speak.co",
+                "oracle-d.com",
+                "login.oracle-d.com",
+                "write4.oracle-d.com",
+                "cdn.steem.ninja",
+                "amzn.to",
+                "go.oracle-d.com"
+            ];
+
+            if (!url.startsWith("https")) {
+                return false;
+            }
+
+            try {
+                url = new URL(url);
+                return secureHosts.includes(url.host);
+            } catch (e) {
+                return false
+            }
+        },
+    });
+
+    function renderComments(authorperm, depth_temp) {
+
+        hiveClient.database.call('get_content_replies', [authorperm[0], authorperm[1]]).then(res => {
+
+            res = res.filter(x => x).map(x => {
+
+                if (hide.includes(x.author)) {
+                    return;
+                }
+
+                let social = false;
+                if (x.author.startsWith(proxyPrefix)) {
+                    social = true;
+                }
+
+                let json = {};
+                if (social) {
+                    json = JSON.parse(JSON.stringify(x.json_metadata));
+                    if (typeof json === "string") {
+                        json = JSON.parse(x.json_metadata);
+                        if (typeof json === "string") {
+                            json = x.json_metadata;
+                        }
+                    }
+                }
+
+                if (!social) {
+                    let rep = hive.formatter.reputation(x.author_reputation);
+                    if (hideLowRep === true && rep <= hideLowRepMinimum) {
+                        spammer.push(x.author)
+                    }
+                }
+
+                let com = {
+                    author: social ? json.comment.info.displayName : x.author,
+                    hash: '',
+                    permlink: x.permlink,
+                    body: social ? (json.comment.info.body.length > 0 ? renderer.render(filterXSS(json.comment.info.body)) : "") : renderer.render(filterXSS(x.body)),
+                    created: timeSince(new Date(x.created)),
+                    isOwner: social ? false : (x.author === '{{ video.owner }}'),
+                    isTeam: social ? false : team.includes(x.author),
+                    isDev: social ? false : ["wehmoen", "sisygoboom"].includes(x.author),
+                    isSubscribed: {{ video.owner|getSubscribedAccounts|json_encode }}.includes(x.author),
+                    isScam: social ? scammer.includes(json.comment.info.userId) : scammer.includes(x.author),
+                    isSpam: social ? spammer.includes(json.comment.info.userId) : spammer.includes(x.author),
+                    realAuthor: x.author,
+                    social: social ? getIcon(json.comment.info.social ? json.comment.info.social : json.comment.info.userId) : "",
+                    parentPermlink: x.parent_permlink.length > 0 ? x.parent_permlink : x.permlink,
+                    parent: x.parent_author.length > 0 ? x.parent_author : x.author,
+                    depth: depth_temp,
+                    hasReplies: x.children > 0,
+                    img_version: getVersion(),
+                    root_author: '{{ video.owner }}',
+                    root_permlink: '{{ video.permlink }}',
+                    payout: String(Number(removeHbd(new Date(x.last_payout) < new Date('2016-01-01T00:00:00') ? x.pending_payout_value : x.total_payout_value)).toFixed(2)),
+                    enableComments,
+                    liked: false,
+
+                };
+
+                com.body = com.body.split('<sub>').join('<div>');
+                com.body = com.body.split('</sub>').join('</div>');
+
+                return com;
+            });
+
+            res = res.sort(compare);
+            res = res.sort(sortGrayedCommentsToEnd);
+
+            depth_temp++;
+
+            for (let i = 0; i < res.length; i++) {
+
+                if (depth_temp > 3) {
+                    $('#' + res[i]['parentPermlink']).append(window.tpl.steem_comment_more(res[i]))
+                    break;
+                }
+                if (depth_temp == 1) {
+                    res[i].isReply = false;
+                    $('#comments').append(window.tpl.steem_comment(res[i]))
+                } else {
+                    res[i].isReply = true;
+                    $('#' + res[i]['parentPermlink']).append(window.tpl.steem_comment(res[i]))
+                }
+
+                let authorperm = [res[i]['realAuthor'], res[i]['permlink']];
+                addCommentLikeBtn(res[i].realAuthor, res[i].permlink, res[i].created);
+                renderComments(authorperm, depth_temp)
+            }
+        })
+    }
+
+    function attachRootComment(author, permlink) {
+      if (window.enableComments === true) {
+        const ID = '#new-comment'
+        if ($(ID).length === 0) {
+          let html = '<div id="new-comment" class="box mt-1 mb-2">\n' +
+            '            <div>\n' +
+            '                <div>\n' +
+            '                    \n' +
+            '                    <div class="col-12 clearfix"><h6 class="text-muted">Reply:</h6>\n' +
+            '                        <textarea id="new-comment-body" placeholder="Comment here..." class="form-control w-100" maxlength="25000"></textarea>\n' +
+            '<button id="new-comment-btn" data-new-comment="' + author + '/' + permlink + '" class="btn mt-1 {% if new == true %}btn-dark btn-sm{% else %}btn-primary{% endif %} float-right">Comment</button>' +
+            '                    </div><!-- /col-sm-5 -->\n' +
+            '                </div><!-- /row -->\n' +
+            '            </div>\n' +
+            '            \n' +
+            '        </div>';
+
+          $('#comments').append(html)
+        }
+      }
+
+    }
+
+    function addCommentLikeBtn(authorx, permlinkx, created) {
+        getNumberOfVotes(authorx, permlinkx, {% if read == false %}created,{% endif %} comment_add = true)
+    }
+
+    function instantiateUpvSlider(j) {
+        let more_upvoters = JSON.parse(JSON.stringify(j.upvoters));
+        j.upvoters.splice(10);
+        let more_downvoters = JSON.parse(JSON.stringify(j.downvoters));
+        j.downvoters.splice(10);
+        console.log(more_downvoters, more_upvoters);
+        if (!(j.author in allVotes)) {
+          allVotes[j.author] = {}
+        }
+        if (!(j.permlink in allVotes[j.author])) {
+          allVotes[j.author][j.permlink] = {}
+        }
+        allVotes[j.author][j.permlink]['downvotes'] = more_downvoters;
+        allVotes[j.author][j.permlink]['upvotes'] = more_upvoters;
+        $('#upv-container-' + j.author.replace('.', '\\.') + '-' + j.permlink).append(window.tpl.steem_upvote_button_comment(j));
+        console.log($('#upv-container-' + j.author.replace('.', '\\.') + '-' + j.permlink))
+
+        let types = ['-up', '-down'];
+        for (let i = 0; i < 2; i++) {
+            $("#slider-input-" + j.author.replace('.', '\\.') + "-" + j.permlink + types[i]).bootstrapSlider({
+                min: 0,
+                max: 100,
+                value: 100,
+                focus: true
+            });
+            let slider_id = "#slider-" + j.author.replace('.', '\\.') + "-" + j.permlink + types[i];
+
+            $(slider_id).addClass("d-none");
+            $(slider_id + ' .slider-selection').css("background", "#005582");
+            $('[data-toggle="popover"]').popover();
+        }
+    }
+
+    async function getNumberOfVotes(author, permlink, {% if read == false %}created = null,{% endif %} comment_add = false) {
+
+      if (!author || !permlink) return;
+
+      let upvoters = await getVotes(author, permlink, 'upvotes')
+      let downvoters = await getVotes(author, permlink, 'downvotes')
+      let liked = false;
+      let disliked = false;
+      await upvoters.forEach(e => {
+        console.log(e)
+        if (e.voter === nickname) {
+          liked = true
+        }
+      })
+      await downvoters.forEach(e => {
+        console.log(e)
+        if (e.voter === nickname) {
+          disliked = false;
+        }
+      })
+      let j = {
+        upvoters,
+        downvoters,
+        liked,
+        disliked,
+        author,
+        permlink,
+        upvotes: upvoters.length,
+        downvotes: downvoters.length
+      }
+
+      if (comment_add == true) {
+        {% if read == false %}j.created = created;{% endif %}
+        instantiateUpvSlider(j);
+      }
+    }
+
+    function compare(a, b) {
+        const genreA = parseFloat(a.payout);
+        const genreB = parseFloat(b.payout);
+
+        let comparison = 0;
+        if (genreA > genreB) {
+            comparison = 1;
+        } else if (genreA < genreB) {
+            comparison = -1;
+        }
+        return comparison * -1;
+    }
+
+    function sortGrayedCommentsToEnd(a, b) {
+        const aHide = a.isSpam === true ? 1 : 0;
+        const bHide = b.isSpam === true ? 1 : 0;
+
+        return aHide - bHide
+    }
+
+    function removeHbd(string) {
+        return string.replace(' HBD', '')
+    }
+
+    function getVersion() {
+        var now = new Date();
+        var start = new Date(now.getFullYear(), 0, 0);
+        var diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+        var oneDay = 1000 * 60 * 60 * 24;
+        var day = Math.floor(diff / oneDay);
+        return 'v' + day.toString()
+    }
+
+    {% if user is defined %}
+    function comment(author, permlink, comment) {
+        const cmd = $('#cmd');
+        cmd.html("<i class='fa fa-spin fa-spinner'></i>");
+        $.ajax({
+            url: "/user/api/comment",
+            type: "post",
+            data: {
+                author: author,
+                permlink: permlink,
+                comment: comment
+            },
+            success: (res) => {
+                if (res.error) {
+                    cmd.text("Comment");
+                    return alert(res.error)
+                }
+
+                {% if read == false %}
+                $('#comments').html('<div class="box mb-2" id=""><h6>Comments:</h6></div>');
+                let authorperm = ['{{ video.owner }}', '{{ video.permlink }}'];
+                refreshWatch();
+                {% else %}
+                $('#comments').html('');
+                let authorperm = ['{{ comment.author }}', '{{ comment.permlink }}'];
+                refreshRead();
+                {% endif %}
+                setTimeout(() => {
+                    cmd.text("Comment");
+                    $('#closeCMD').click()
+                })
+            }
+        })
+    }
+
+    $('#cmd').click(() => {
+        comment($('#author').val(), $('#permlink').val(), $('#comment').val())
+    });
+    {% if user.isSteem == true %}
+    $('.steem-downvote-cast').click(() => {
+        const id = '#' + $(this).closest('.steem-like').attr('id').replace('.', '\\.');
+        downVote(id);
+    });
+    {% endif %}
+    {% endif %}
+
+    function refreshRead() {
+        let authorperm = ['{{ comment.author }}', '{{ comment.permlink }}'];
+        let starting_depth = 0;
+        if (enableComments === true) {
+            attachRootComment('{{ comment.author }}', '{{ comment.permlink }}')
+        }
+        $(document).on("click", "#new-comment-btn", function (e) {
+            newComment({owner: '{{ comment.author }}', permlink: '{{ comment.permlink }}'}, this)
+        });
+        renderComments(authorperm, starting_depth);
+    }
+
+    function refreshWatch() {
+        {% if video.isVOD != true %}
+        let starting_depth = 0;
+        attachRootComment('{{ video.owner }}', '{{ video.permlink }}');
+        {#renderComments(['{{ video.owner }}', '{{ video.permlink }}'], starting_depth);#}
+        {% endif %}
+    }
+
+    $(async () => {
+
+        {% if read == true %}
+        $('#rootComment').append(window.tpl.steem_comment(rootComment));
+        addCommentLikeBtn(rootComment.author, rootComment.permlink, true);
+        refreshRead();
+        {% else %}
+        refreshWatch();
+        {% endif %}
+
+        $(document).on("click", '.steem-downvote-cast', function (err) {
+            const id = '#' + $(this).closest('.steem-like').attr('id').replace('.', '\\.');
+            downVote(id);
+        });
+
+        $('body').on('scroll', function () {
+          var $container = $(this);
+          $(this).find('.popover').each(function () {
+            $(this).css({
+              top:  - $container.scrollTop()
+            });
+          });
+        });
+
+      $('body').on('click', function (e) {
+        $('[data-toggle="popover"]').each(function () {
+          //the 'is' for buttons that trigger popups
+          //the 'has' for icons within a button that triggers a popup
+          if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.popover').has(e.target).length === 0) {
+            $(this).popover('hide');
+          }
+        });
+      });
+    })
+</script>

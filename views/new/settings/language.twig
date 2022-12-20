@@ -1,0 +1,29 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+    <h1 class="white_col">Language settings</h1>
+    <h5 class="text-dark font-weight-bolder">Please select the video languages you would like to see.</h5>
+{% endblock %}
+
+{% block body %}
+    {% if settings.info == 'success' %}
+        <p class="alert alert-info">
+            <i class="fa fa-check-circle text-success mr-1"></i>Your language preferences have been updated!
+        </p>
+    {% endif %}
+    <div class="col-3 ml-0 pl-0">
+        <form action="/settings/language" method="post">
+            {% for language in languages %}
+                <div class="form-check">
+                    <label class="form-check-label">
+                        <input type="checkbox" class="form-check-input" name="languages" value="{{language.code}}"
+                               {% if language.code in settings.languages %}checked="checked"{% endif %}>{{language.language}}
+                    </label>
+                </div>
+            {% endfor %}
+            <div class="form-group mt-4">
+                <input type="submit" class="btn btn-dark" value="Save Changes">
+            </div>
+        </form>
+    </div>
+{% endblock %}

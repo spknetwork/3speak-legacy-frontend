@@ -1,0 +1,74 @@
+{% if noHeaderImage is not defined %}
+  <div class="single-channel-image">
+    <img class="img-fluid mh-20" style="object-fit: cover; object-position: center; max-height: 500px;" alt=""
+         src="{{ APP_IMAGE_CDN_DOMAIN }}/user/{{ channel.username }}/cover.png" width="1000" height="250">
+    <div class="channel-profile">
+      <img class="channel-profile-img" alt="" src="https://images.hive.blog/u/{{ channel.username }}/avatar">
+      {{ channel.badges|profile_badges }}
+      {% if channel.username|hasRSSFeed %}
+        <a href="/rss/{{ channel.username }}.xml">
+          <img class="profile-badge" alt="Podcast RSS" title="Podcast RSS"  src="https://threespeakvideo.b-cdn.net/profile/badges/rss.png">
+        </a>
+      {% endif %}
+      {#<div class="social d-none hidden-xs">#}
+      {#Social &nbsp;#}
+      {#<a class="fb" href="#">Facebook</a>#}
+      {#<a class="tw" href="#">Twitter</a>#}
+      {#<a class="gp" href="#">Google</a>#}
+      {#</div>#}
+    </div>
+  </div>
+{% endif %}
+<div class="single-channel-nav {% if user and user.darkMode == true %}bg-dark{% endif %}">
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <a class="channel-brand">{{ channel.username }}
+      {% if channel.verified == true %}
+        <span title="" data-placement="top" data-toggle="tooltip" data-original-title="Verified">
+                                <i class="fas fa-check-circle text-success"></i></span>
+      {% endif %}
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item {% if active_menu == '' %}active{% endif %}">
+          <a class="nav-link" href="/user/{{ channel.username }}">Videos <span
+              class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item {% if active_menu == 'earnings' %}active{% endif %}">
+          <a class="nav-link" href="/user/{{ channel.username }}/earnings">Earnings</a>
+        </li>
+{#        <li class="nav-item {% if active_menu == 'blog' %}active{% endif %}">#}
+{#          <a class="nav-link" href="/user/{{ channel.username }}/blog">Blog</a>#}
+{#        </li>#}
+        <li class="nav-item {% if active_menu == 'about' %}active{% endif %}">
+          <a class="nav-link" href="/user/{{ channel.username }}/about">About</a>
+        </li>
+        <li class="nav-item {% if active_menu == 'live' %}active{% endif %}">
+          <a class="nav-link" href="/user/{{ channel.username }}/live">Livestream</a>
+        </li>
+        <li class="nav-item {% if active_menu == 'achievements' %}active{% endif %}">
+          <a class="nav-link" href="/user/{{ channel.username }}/achievements">Achievements</a>
+        </li>
+      </ul>
+      <div class="form-inline my-2 my-lg-0">
+        <div class="d-inline mr-3">
+          {{ channel.username|subscription(user_id) }}
+        </div>
+        {% include './widgets/subscribe.twig' with {'creator': channel, 'small': true, 'subscribed': subscribed, 'notifications': notifications} %}
+        {% if showLoginButton == true %}
+          {% if user is not defined %}
+            <a href="/auth/login" class="ml-2">
+              <button class="btn-dark btn btn-sm">
+                Log In
+              </button>
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+</div>

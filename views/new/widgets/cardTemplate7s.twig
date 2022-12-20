@@ -1,0 +1,78 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/template7/1.4.0/template7.min.js"></script>
+
+<script id="video-card" type="text/template7">
+  {% verbatim %}
+        <div class="col-xl-2 col-lg-3  col-6 p-2 mb-3" >
+            <div class="teaser_holder text-center">
+                {{#if video.views}}
+                <div class="card-label card-label-views">
+                    <img class="play_i" src="/img/play.svg" height="11px">
+                    <span>{{ video.views }}</span>
+                </div>
+                {{/if}}
+                {{#if video.duration}}
+                <div class="card-label">
+                    {{ video.duration }}
+                </div>
+                {{/if}}
+                <a href="/watch?v={{ video.owner }}/{{ video.permlink }}" {{#if video.isNsfwContent }}class="href-disabled card-video-thumbnail" data-permlink="{{ video.permlink }}"{{else}}class="card-video-thumbnail"{{/if}}>
+                    <img style="width: 100% !important; padding: 5px; max-height: 200px;" data-permlink="{{ video.permlink }}" class="img-fluid bg-dark" src="{{video.thumbUrl}}">
+                </a>
+            </div>
+            <div  style="min-height: 65px">
+                <h5 data-toggle="tooltip" data-placement="bottom" title="{{ video.title }}" class="max-lines card-video-title mt-2 word-break">
+                <a href="/watch?v={{ video.owner }}/{{ video.permlink }}">{{ video.title }}</a>
+                </h5>
+
+            <div class="position-absolute card-video-footer" style="bottom: 0; width: calc( 100% - 1rem )">
+            <div class="mt-2 d-flex justify-content-between " >
+                <span class="black_col">
+                    <b><a href="/user/{{ video.owner }}"> <i class="fa fa-user"></i> {{ video.owner }}</a></b>
+                </span>
+
+                <span>{{ video.created }}</span>
+                <span><b>$<i data-payout="{{ video.owner }}/{{ video.permlink }}"></i></b></span>
+                {{#if isAdmin }}
+                <br />
+                  {{#if muted }}
+                    <span class="ml-1"> | <a data-communityunmute="{{ video.owner }}/{{ video.permlink }}"><b>Unmute</b></a></span>
+                  {{else}}
+                    <span class="ml-1"> | <a data-communitymute="{{ video.owner }}/{{ video.permlink }}"><b>Mute</b></a></span>
+                  {{/if}}
+                {{/if}}
+            </div>
+</div>
+</div>
+        </div>
+        {% endverbatim %}
+</script>
+
+<script id="blog_card" type=text/template7">
+  {% verbatim %}
+        <div id="{{ index }}" class="col-lg-2 col-6 marg_bot1">
+            <div class="teaser_holder">
+                <a href="/user/{{ blog.channel }}/blog/{{ blog.permlink }}">
+                    <img class="img-fluid" src="{{ blog.thumbnail }}" alt="">
+                </a>
+                <div class="float-right m-1 text-success"><b>Blog</b></div>
+            </div>
+            <a href="/user/{{ blog.channel }}/blog/{{ blog.permlink }}">
+                <h5>{{ blog.title }}</h5>
+            </a>
+            <div class="marg_top2">
+        <span class="black_col">
+            <b><a href="/user/{{ blog.channel }}">{{ blog.channel }}</a></b>
+        </span>
+                <span class="space_l">{{ blog.created }}</span>
+                <span class="space_1">{{ blog.category }}</span>
+            </div>
+        </div>
+        {% endverbatim %}
+</script>
+<script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+<script>
+  window.tpl = {
+    video_card: Template7.compile(document.getElementById('video-card').innerHTML),
+    blog_card: Template7.compile(document.getElementById('blog_card').innerHTML)
+  };
+</script>

@@ -1,0 +1,19 @@
+<div {% if loop.index0 is defined %}id="{{ loop.index0 }}" {% endif %}
+     class="col-lg-3 col-md-6 col-6 marg_bot2{% if hidden is defined and hidden == true %} d-none{% endif %}">
+    <div class="teaser_holder">
+        <a href="/user/{{ blog.channel }}/blog/{{ blog.permlink }}">
+            <img class="img-fluid" src="{% if blog.thumbnail is not null %}{{ blog.thumbnail }}{% else %}/user/api/blog_cover/{{ blog.channel }}/{{ blog.permlink }}{% endif %}">
+        </a>
+        <div class="float-right m-1 text-success"><b>Blog</b></div>
+    </div>
+    <a href="/user/{{ blog.channel }}/blog/{{ blog.permlink }}">
+        <h5>{{ blog.title|striptags|substr(0,120) }}</h5>
+    </a>
+    <div>
+        <div class="black_col">
+            <b><a href="/user/{{ blog.channel }}">{{ blog.channel }}</a></b>
+        </div>
+        <span class="">{{ blog.created_at|ago }}</span> in
+        <span class="">{{ blog.category }}</span>
+    </div>
+</div>

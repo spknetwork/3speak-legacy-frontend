@@ -1,0 +1,18 @@
+{% extends 'layout.twig' %}
+{% block body %}
+    <div class="container-fluid pb-0">
+        <div class="video-block section-padding">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-title">
+                        <h6>History</h6>
+                    </div>
+                </div>
+                {% for video in history %}
+                    {% include './widgets/bigVideoCard.twig' with video %}
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

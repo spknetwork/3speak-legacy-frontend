@@ -1,0 +1,245 @@
+{% extends '../layout.twig' %}
+
+{% block headerHTML %}
+  <h1 class="white_col">Add HIVE Accounts</h1>
+  <h5 class="text-dark font-weight-bolder">You can use the 3Speak platform with all your connected HIVE accounts</h5>
+{% endblock %}
+
+{% block body %}
+
+
+  <div class="col-12" id="step_1">
+
+    <p class="alert alert-primary">
+
+      To connect a HIVE account first enter its name.
+
+    </p>
+
+    <div class="form-group">
+      <label for="">HIVE Account</label>
+      <input id="username" type="text" class="form-control">
+      <small class="text-danger d-none" id="account_error"></small>
+    </div>
+
+    <button class="btn btn-primary" id="checkAccount">Next</button>
+
+  </div>
+
+  <div class="col-12 d-none" id="step_2_5">
+
+    <p class="alert alert-info">
+      To start Using 3Speak we require your posting authority. This allows us to publish your uploaded
+      videos to HIVE. You only have to grant us posting authority once.
+    </p>
+
+    <div class="form-group">
+      <label for="">Your Private <b>Active</b> Key:</label>
+      <input id="wif_2_5" type="text" class="form-control">
+      <small class="text-danger" id="wif_2_5_error"></small>
+    </div>
+
+    <button class="btn btn-primary" id="check_2_5">Next</button>
+
+  </div>
+  <div class="col-12 d-none" id="step_2">
+
+    <p class="alert alert-info">
+      Please enter your private posting key below to verify the ownership of your HIVE account. You only
+      have to do this once.
+    </p>
+
+    <div class="form-group">
+      <label for="">Your Private <b>Posting</b> Key:</label>
+      <input id="wif_2" type="text" class="form-control">
+      <small class="text-danger" id="wif_2_error"></small>
+    </div>
+
+    <button class="btn btn-primary" id="check_2">Next</button>
+
+  </div>
+
+{% endblock %}
+{% block script %}
+  <script>
+    steem.api.setOptions({useAppbaseApi: true, url: `${HIVE_SECURE_NODE_PREFIX}://${HIVE_DEFAULT_NODE}`})
+    function hasPostingAuthority(account, authority) {
+      return account.posting.account_auths.find(x => x[0] === authority) !== undefined
+    }
+
+    function isValidWif(wif, account, authority) {
+
+      if (!steem.auth.isWif(wif)) return false;
+
+      for (key_auth of account[authority].key_auths) {
+        if (steem.auth.wifIsValid(wif, key_auth[0])) {
+          return true
+        }
+      }
+
+      return false;
+    }
+
+    function sign(message, wif, account, authority) {
+      if (isValidWif(wif, account, authority)) {
+        const payload = {
+          message,
+          authority,
+          account: account.name
+        }
+        return steem.memo.encode(wif, 'STM6Us37C8u4owTnPjdXesf5GSrWkmTA7Hd9hA78QuMcnMw8Acy6J', '#' + JSON.stringify(payload))
+      } else {
+        return false;
+      }
+    }
+
+    async function isKeychainInstalled(retries = 0, max_retries = 120) {
+      function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      if (typeof window.hive_keychain !== "object") {
+        if (retries < max_retries) {
+          await sleep(10);
+          console.log("KC not found", retries + 1, "/", max_retries)
+          retries = retries + 1;
+          return isKeychainInstalled(retries, max_retries)
+        } else {
+          return false
+        }
+      } else {
+        console.log("KC found after", retries + 1, "retries");
+        return true
+      }
+    }
+
+    $(async () => {
+      // const hasKeyChain = await isKeychainInstalled() //Keychain cant encode memos :(
+console.log("LOADED")
+
+      $('#checkAccount').click(async () => {
+        const [account] = await steem.api.getAccountsAsync([$('#username').val()]);
+        if (account === undefined) {
+
+          swal.fire({
+            icon: "info",
+            text: "This HIVE account does not exist. Do you want to create it? HIVE account creation costs $2.00.",
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, Redirect me to account creation',
+            cancelButtonText: 'No, thanks'
+          }).then(v => {
+            if (v.value === true) {
+              window.location.href = 'https://{{ APP_SIGNUP_DOMAIN }}'
+            }
+          })
+
+          $('#account_error').text("This HIVE account does not exist.").removeClass("d-none")
+        } else {
+          console.log(account)
+          $('#step_1').addClass("d-none");
+          if (!hasPostingAuthority(account, 'threespeak')) {
+            $('#step_2_5').removeClass("d-none") //only sign
+          } else {
+            $('#step_2').removeClass("d-none") //posting authority
+          }
+        }
+      })
+
+      $('#check_2_5').click(async () => {
+        const [account] = await steem.api.getAccountsAsync([$('#username').val()]);
+        $.ajax({
+          url: '/auth/identityChallenge',
+          data: {
+            account: $('#username').val(),
+            authority: 'active'
+          },
+          success: res => {
+            let signed_message = sign(res.challenge, $('#wif_2_5').val(), account, 'active')
+
+            if (signed_message === false) {
+              if (steem.auth.isPubkey($('#wif_2_5').val())) {
+                $('#wif_2_5_error').text('The key you entered is a public key. Please enter your private active key.')
+              } else {
+                if (!steem.auth.isWif($('#wif_2_5').val())) {
+                  $('#wif_2_5_error').text('You did not enter a valid private key. Private keys always start with the number 5.')
+                } else {
+                  $('#wif_2_5_error').text('The key you entered is not your private active key.')
+                }
+              }
+
+            } else {
+              steem.broadcast.addAccountAuth({
+                signingKey: $('#wif_2_5').val(),
+                username: $('#username').val(),
+                authorizedUsername: "threespeak",
+                role: 'posting',
+                weight: 1
+              }, (err, res) => {
+                $.ajax({
+                  url: '/auth/completeIdentityChallenge',
+                  type: 'post',
+                  data: {
+                    signed_message
+                  },
+                  success: res => {
+                    if (res.success === true) {
+                      window.location.href = '/'
+                    } else {
+                      $('#wif_2_5_error').text(res.error)
+                    }
+                  }
+                })
+              })
+            }
+
+          }
+        })
+      })
+
+      $('#check_2').click(async () => {
+        const [account] = await steem.api.getAccountsAsync([$('#username').val()]);
+        $.ajax({
+          url: '/auth/identityChallenge',
+          data: {
+            account: $('#username').val(),
+            authority: 'posting'
+          },
+          success: res => {
+            let signed_message = sign(res.challenge, $('#wif_2').val(), account, 'posting')
+
+            if (signed_message === false) {
+              if (steem.auth.isPubkey($('#wif_2').val())) {
+                $('#wif_2_error').text('The key you entered is a public key. Please enter your private posting key.')
+              } else {
+                if (!steem.auth.isWif($('#wif_2').val())) {
+                  $('#wif_2_error').text('You did not enter a valid private key. Private keys always start with the number 5.')
+                } else {
+                  $('#wif_2_error').text('The key you entered is not your private posting key.')
+                }
+              }
+
+              $.ajax({
+                url: '/auth/completeIdentityChallenge',
+                type: 'post',
+                data: {
+                  signed_message
+                },
+                success: res => {
+                  if (res.success === true) {
+                    window.location.href = '/'
+                  } else {
+                    $('#wif_2_error').text(res.error).removeClass("d-none")
+                  }
+                }
+              })
+            }
+          }
+        })
+
+
+      });
+    })
+  </script>
+{% endblock %}

@@ -1,0 +1,388 @@
+{% extends './layout.twig' %}
+
+{% block style %}
+  <script>
+    $(function() {
+      $('#accordion').accordion({
+        collapsible: true
+      })
+    })
+  </script>
+  <style>
+    body {
+      background-color: #f9f9fa
+    }
+
+    .flex {
+      -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+      flex: 1 1 auto
+    }
+
+    @media (max-width:991.98px) {
+      .padding {
+        padding: 1.5rem
+      }
+    }
+
+    @media (max-width:767.98px) {
+      .padding {
+        padding: 1rem
+      }
+    }
+
+    .padding {
+      padding: 5rem
+    }
+
+    .card {
+      background: #fff;
+      border-width: 0;
+      border-radius: .25rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+      margin-bottom: 1.5rem
+    }
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      word-wrap: break-word;
+      background-color: #fff;
+      background-clip: border-box;
+      border: 1px solid rgba(19, 24, 44, .125);
+      border-radius: .25rem
+    }
+
+    .card-header {
+      padding: .75rem 1.25rem;
+      margin-bottom: 0;
+      background-color: rgba(19, 24, 44, .03);
+      border-bottom: 1px solid rgba(19, 24, 44, .125)
+    }
+
+    .card-header:first-child {
+      border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0
+    }
+
+    card-footer,
+    .card-header {
+      background-color: transparent;
+      border-color: rgba(160, 175, 185, .15);
+      background-clip: padding-box
+    }
+  </style>
+{% endblock %}
+
+{% block header %}
+    <div style="position: relative; display: inline-block; width: 100%; min-height: 400px; background-attachment: fixed; background-size: cover; background-repeat: no-repeat; background: url('{{ APP_IMAGE_CDN_DOMAIN }}/user/{{ community.name }}/cover.png')">
+      <img class="channel-profile-img" style="position: absolute; bottom: 10px; left: 10px;" alt="" src="https://images.hive.blog/u/{{ community.name }}/avatar">
+{#        <img src="{{ community.cover_url }}" style="object-fit: cover; width: 100%; max-height: 400px;">#}
+        <h1 style="position: absolute; bottom: 10px; left: 150px;"><b style="color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;">{{ community.title }}</b>
+{#            {% if user %}#}
+{#            <div class="btn btn-outline-secondary {% if community.isFollowing == true %}btn-secondary text-dark{% else %}btn-primary{% endif %}" data-community="{{ community.code }}">#}
+{#                {% if community.isFollowing == true %}leave{% else %}Follow{% endif %}#}
+{#            </div>#}
+{#            {% endif %}#}
+        </h1>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <h4 class="mt-3">{{ community.about|striptags }}</h4>
+    <p>{{ community.description|striptags }}</p>
+
+    <hr>
+
+    <ul class="nav nav-tab" id="nav-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#comVidContainer" role="tab">Videos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#polls" role="tab">Polls</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#stats" role="tab">Stats</a>
+      </li>
+      {% if isAdmin %}
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#admin" role="tab">Admin</a>
+      </li>
+      {% endif %}
+    </ul>
+
+  <hr>
+
+  <div class="tab-content">
+
+    <div id="comVidContainer" class="video-block section-padding tab-pane active" role="tabpanel">
+      <div class="btn-group" role="group" aria-label="Ordering">
+        <button id="showTrending" type="button" class="btn btn-secondary">Trending</button>
+        <button id="showNew" type="button" class="btn btn-secondary">New</button>
+      </div>
+
+      <hr>
+
+      <h3 id="videoSectionHeading">Trending Videos</h3>
+      <div>
+        <div class="row trending">
+          {% for video in trendingVideos %}
+            {% if video != 'none' %}
+              {% include './widgets/bigVideoCard.twig' with {'video': video} %}
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="row new d-none">
+          {% for video in newVideos %}
+            {% if video != 'none' %}
+              {% include './widgets/bigVideoCard.twig' with {'video': video, isAdmin} %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+        <div id="polls" class="tab-pane fade" role="tabpanel">
+          {% if isAdmin %}
+            <button class="btn" id="create-poll">+ Create new poll</button>
+          {% endif %}
+          {% for poll in polls %}
+          <div class="row"{% if poll.archived == true %}style="opacity: 0.5;"{% endif %}>
+            <div class="mx-auto col-sm-7 col-md-5 col-lg-3">
+              <div class="card">
+                <div class="card-header">
+                  <a href="/user/{{ poll.owner }}">
+                    <img style="width: 30px; height: 30px; border-radius: 50%;" alt="Avatar" src="https://images.hive.blog/u/{{ poll.owner }}/avatar"> @{{ poll.owner }}
+                  </a> - <a href="/c/{{ community.name }}/poll/{{ poll.pollId }}"><b>{{ poll.question|striptags }}</b></a>
+                </div>
+                <a href="/c/{{ community.name }}/poll/{{ poll.pollId }}">
+                  <div class="card-body">
+                    {{ poll.description|striptags }}
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        <div id="stats" class="tab-pane fade" role="tabpanel">
+          <div class="row">
+            <div class="card col-lg-6 col-md-11 col-sm-12 col-xs-11 col-xl-5 ml-2 mt-2">
+              <div class="card-header"><h3>More Info</h3></div>
+              <div class="card-body">
+                <h5>Language: {{ community.lang }}</h5>
+                <h5>Total views: {{ totalViews }}</h5>
+                <h5>Community:</h5>
+
+                <b class="text-success">{{ community.num_pending }}</b> posts waiting to cash out<br>
+                <b class="text-success">${{ community.sum_pending }}</b> pending rewards<br>
+                <b class="text-success">{{ community.subscribers }}</b> subscribers<br>
+                <p><b class="text-success">{{ community.num_authors }}</b> active authors</p><br>
+                {% if community.is_nsfw == false %}<h5 class="text-success">Not NSFW</h5>{% else %}<h5 class="text-danger">NSFW</h5>{% endif %}
+              </div>
+            </div>
+            <div class="card col-lg-6 col-md-8 col-sm-10 col-xs-11 col-xl-5 ml-2 mt-2">
+              <div class="card-header"><h3>The team</h3></div>
+              <div class="card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <td>User</td>
+                      <td>Role</td>
+                      <td>Nickname</td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for member in community.team %}
+                  <tr>
+                    {% for x in member %}
+                      <td>{% if loop.index0 == 0 %}<a href="/user/{{ x|escape }}">@{{ x|escape }}</a>{% else %}{{ x|escape }}{% endif %}</td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if isAdmin %}
+        <div id="admin" class="tab-pane fade" role="tabpanel">
+          <div class="row">
+            {% for video in mutedVideos %}
+              {% include './widgets/bigVideoCard.twig' with {'video': video, 'muted': true} %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block modal %}
+<div class="modal fade" id="pollCreateModal" tabindex="-1" role="dialog" aria-labelledby="pollCreateModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="pollCreateModalTitle">Poll creation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="pollCreateModalBody" class="modal-body">
+        <h5>Question</h5>
+        <input id="pollQuestion" class="form-control" style="width: 100%;" placeholder="Ask a question... (required)">
+        <h5 class="mt-3">Description</h5>
+        <input id="pollDescription" class="form-control" style="width: 100%;" placeholder="Descibe some more about the question here">
+        <h5 class="mt-3">Answers</h5>
+        <div id="pollAnswers" class="form-inline">
+          <input class="form-control mr-3" name="pollAnswers">
+          <input class="form-control mr-3" name="pollAnswers"> <i id="pollAddAnswer" class="fa fa-plus-circle" style="cursor: pointer;"></i>
+        </div>
+        <div>
+          <h5 class="mt-3">Poll Length</h5>
+          <span class="form-inline">
+            <label for="pollLengthDays" class="mr-2">Days</label>
+            <input id="pollLengthDays" type="number" class="form-control" style="width: 20%;">
+            <label for="pollLengthHours" class="mr-2">Hours</label>
+            <input id="pollLengthHours" type="number"  class="form-control" style="width: 20%;">
+            <label for="pollLengthMinutes" class="mr-2">Minutes</label>
+            <input id="pollLengthMinutes" type="number" class="form-control" style="width: 20%;">
+          </span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <b id="pollCreationComplete" class="btn btn-secondary">Done</b>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+    <script src="/js/steemit-widget.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script>
+
+        $(() => {
+
+          let communityName = "{{ community.title|escape }}";
+
+          steemitWidgets.blog({
+              element: 'steemit-widgets-blog',
+              user: '{{community.name}}',
+              limit: 75,
+              template: '<div style="border: 2px solid rgb(172, 191, 228); border-radius: 5px; font-family: Arial, Helvetica, sans-serif; margin-bottom: 15px;"><a href="${URL}" style="border-top-right-radius: 3px; border-top-left-radius: 3px; height: 250px; display: block; background-image: url(\'${IMAGE}\'); background-size: contain; background-repeat: no-repeat; background-position: center center;"></a> <h2 style="margin: 0px; font-size: 16px; text-align: left; line-height: 16px; padding: 7px 10px;"><!----> <a href="${URL}" style="color: rgb(68, 68, 68); text-decoration: none;">                        ${TITLE}                    </a></h2> <div style="font-size: 12px; color: rgb(136, 136, 136); padding: 0px 10px 5px; background: rgb(255, 255, 255); text-align: left;"><span>${DATE}</span> <span>by <a href="https://peakd.com/@${AUTHOR}" style="color: rgb(68, 68, 68); text-decoration: none;">${AUTHOR}</a></span> <span style="border: 1px solid rgb(204, 204, 204); border-radius: 10px; padding: 1px 4px; font-size: 11px;">${REPUTATION}</span> <span>in <a href="https://3speak.co/c/${CATEGORY}" style="color: rgb(68, 68, 68); text-decoration: none;">'+communityName+'</a></span></div> </div>',
+              resteemedIndicator: '<span style="width: 15px; height: 15px; display: inline-block;"><svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve"><path d="M448,192l-128,96v-64H128v128h248c4.4,0,8,3.6,8,8v48c0,4.4-3.6,8-8,8H72c-4.4,0-8-3.6-8-8V168c0-4.4,3.6-8,8-8h248V96 L448,192z"></path></svg></span>',
+              reputationPrecision: 1,
+              updateInterval: 60,
+              dateCallback: function (date) {return moment.utc(date).from(moment.utc().format('YYYY-MM-DD HH:mm:ss'));}
+          });
+        });
+
+{#        {% include './js/communityFollow.twig' %}#}
+
+        $("#showNew").on("click", function () {
+            $('.trending').addClass("d-none");
+            $('.new').removeClass("d-none");
+            $('#videoSectionHeading').text('New Videos')
+        })
+        $("#showTrending").on("click", function () {
+            $('.new').addClass("d-none");
+            $('.trending').removeClass("d-none");
+            $('#videoSectionHeading').text('Trending Videos')
+        })
+
+        function vidMuteToggle(prefix, target) {
+          let [user, permlink] = $(target).data('community' + prefix).split('/');
+          $(target).html("<i class='fa fa-spin fa-spinner'></i>");
+          $.ajax({
+            url: '/api/communities/mute-video',
+            type: "post",
+            data: {user, permlink, comId: '{{ community.name }}', prefix},
+            success: ((res) => {
+              if (res.error) {
+                Swal.fire('error', res.error, 'error')
+              } else {
+                if (prefix === 'mute') {
+                  prefix = 'Unmute'
+                } else {
+                  prefix = 'Mute'
+                }
+                $(target).html('<a data-community' + prefix + '="' + user + '/' + permlink + '"><b>' + prefix + '</b></a></span>')
+              }
+            })
+          });
+        }
+
+        $('[data-communitymute]').on("click", function() {
+            vidMuteToggle('mute', this)
+        });
+
+        $('[data-communityunmute]').on('click', function() {
+          vidMuteToggle('unmute', this)
+        })
+
+        {% if isAdmin %}
+        $('#create-poll').on("click", function() {
+          $('#pollCreateModal').modal()
+        });
+
+        function validateAndGetAnswers() {
+          let valid = true;
+          let answers = [];
+          $('[name="pollAnswers"]').each(function() {
+            if ($(this).val() === '') {
+              valid = false;
+            }
+            answers.push($(this).val())
+          });
+
+          if (!valid) { return alert('Empty answer field') }
+
+          console.log(new Set(answers).size, answers.length)
+
+          valid = new Set(answers).size === answers.length;
+
+          if (!valid) { return alert('Duplicate entries found') }
+
+          return [answers, valid]
+        }
+
+        $('#pollCreationComplete').on('click', function() {
+          $(this).html('<i class="fa fa-spinner fa-spin"></i>');
+          let question = $('#pollQuestion').val();
+          let description = $('#pollDescription').val();
+          let [answers, valid] = validateAndGetAnswers();
+          if (!valid) {
+            return false;
+          }
+          let expires = {days: $('#pollLengthDays').val(), hours: $('#pollLengthHours').val(), minutes: $('#pollLengthMinutes').val()};
+          $.ajax({
+            url: '/api/poll/create',
+            type: 'post',
+            data: {
+              question,
+              communityId: '{{ community.name }}',
+              answers,
+              description,
+              expires
+            },
+            success: (res) => {
+              window.location.replace('/c/{{ community.name }}/poll/'+res.pollId)
+            }
+          })
+        });
+
+        $('#pollAddAnswer').on('click', function() {
+          [answers, valid] = validateAndGetAnswers();
+          if (!valid) {
+            return
+          }
+          $('#pollAnswers').prepend('<input class="form-control mr-3" name="pollAnswers">')
+        });
+        {% endif %}
+    </script>
+{% endblock %}

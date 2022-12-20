@@ -1,0 +1,19 @@
+{% extends './layout.twig' %}
+
+{% block body %}{% endblock %}
+
+{% block script %}
+<script>
+  $(() => {
+    {% if valid == true %}
+    Swal.fire('Success!', "Your account is now verified!", "success").then(() => {
+      window.location.href = '/'
+    });
+    {% else %}
+    Swal.fire('Fail!', 'Invalid url.', 'error').then(() => {
+      window.location.href = '/'
+    });
+    {% endif %}
+  })
+</script>
+{% endblock %}
