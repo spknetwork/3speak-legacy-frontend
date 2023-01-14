@@ -1302,7 +1302,7 @@ router.get('/embed', async (req, res, next) => {
 
   if (v === undefined || v.indexOf('/') === -1 || req.video === null) {
     v = {
-      author: 'wehmoen',
+      author: 'vaultec',
       permlink: 'ykgjpifr',
       status: 'published'
     }
@@ -1310,7 +1310,7 @@ router.get('/embed', async (req, res, next) => {
     v = v.split('/');
     if (v.length !== 2) {
       v = {
-        author: 'wehmoen',
+        author: 'vaultec',
         permlink: 'ykgjpifr',
         status: 'published'
       }

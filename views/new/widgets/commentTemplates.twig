@@ -225,7 +225,7 @@
                     created: timeSince(new Date(x.created)),
                     isOwner: social ? false : (x.author === '{{ video.owner }}'),
                     isTeam: social ? false : team.includes(x.author),
-                    isDev: social ? false : ["wehmoen", "sisygoboom"].includes(x.author),
+                    isDev: social ? false : ["vaultec", "sisygoboom", "sagarkothari88"].includes(x.author),
                     isSubscribed: {{ video.owner|getSubscribedAccounts|json_encode }}.includes(x.author),
                     isScam: social ? scammer.includes(json.comment.info.userId) : scammer.includes(x.author),
                     isSpam: social ? spammer.includes(json.comment.info.userId) : spammer.includes(x.author),
