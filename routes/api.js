@@ -447,7 +447,7 @@ router.get('/feeds/@:username/more', async(req, res) => {
     status: 'published',
     owner: req.params.username
   }
-  let feeds = await mongo.Video.find(query).sort({created: -1}).skip((() => {
+  const skipParsing = (() => {
     let skip = req.query.skip;
     if (typeof parseInt(skip) === 'number' && !isNaN(parseInt(skip))) {
       skip = parseInt(skip)
@@ -455,7 +455,8 @@ router.get('/feeds/@:username/more', async(req, res) => {
       skip = 0
     }
     return skip
-  })()).limit(48).cache(30)
+  });
+  let feeds = await mongo.Video.find(query).sort({created: -1}).skip(skipParsing()).limit(48).cache(30)
   const feedFinal = formatFeeds(feeds);
   res.json(feedFinal)
 });
