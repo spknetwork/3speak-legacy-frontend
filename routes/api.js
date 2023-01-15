@@ -52,7 +52,8 @@ router.get('/', async(req, res) => {
     developers: [
       'vaultec',
       'sisygoboom',
-      'sagarkothari88'
+      'sagarkothari88',
+      'igormuba',
     ],
     routes: [
       {

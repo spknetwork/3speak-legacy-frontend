@@ -1302,7 +1302,7 @@ router.get('/embed', async (req, res, next) => {
 
   if (v === undefined || v.indexOf('/') === -1 || req.video === null) {
     v = {
-      author: 'vaultec',
+      author: 'wehmoen',
       permlink: 'ykgjpifr',
       status: 'published'
     }

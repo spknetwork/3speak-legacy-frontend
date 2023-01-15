@@ -144,7 +144,7 @@ async function initComments() {
   const COMMENT_CONFIG = {
     MAX_DEPTH: 3,
     ACCOUNTS: {
-      TEAM: ['starkerz', 'honeybee11', 'theycallmedan', 'sisygoboom', 'vaultech', 'sagarkothari88'],
+      TEAM: ['starkerz', 'honeybee11', 'theycallmedan', 'sisygoboom', 'vaultec', 'sagarkothari88', 'igormuba'],
       SECURITY_RESEARCH: ['louis88'],
       SPAM: ['steem-bootcamp'],
       SCAM: [],
