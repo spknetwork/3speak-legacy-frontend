@@ -50,8 +50,10 @@ router.get('/', async(req, res) => {
       backend: '2.0.2'
     },
     developers: [
-      'wehmoen',
-      'sisygoboom'
+      'vaultec',
+      'sisygoboom',
+      'sagarkothari88',
+      'igormuba',
     ],
     routes: [
       {

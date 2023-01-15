@@ -44,7 +44,7 @@ const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
           creator.hidden = false;
           await creator.save();
         }
-        console.log("## Published:", "https://hive.wehmoen.dev/tx/" + publishAttempt.id, 'https://3speak.co/watch?v=' + video.owner + "/" + video.permlink)
+        console.log("## Published:", "https://hiveblocks.com/tx/" + publishAttempt.id, 'https://3speak.co/watch?v=' + video.owner + "/" + video.permlink)
       } else {
 
         const isLowRc = publishAttempt.message && publishAttempt.message.indexOf("power up") > -1;

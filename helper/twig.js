@@ -217,10 +217,6 @@ return '';
       html += `<img class="profile-badge" alt="Member of the 3Speak Citizen Journalist program" title="Member of the 3Speak Citizen Journalist program" src="${APP_VIDEO_CDN_DOMAIN}/profile/badges/journalist.png">`
     }
 
-    if (value.includes('telegram_wehmoen')) {
-      html += `<img class="profile-badge" alt="This is @wehmoen from Telegram." title="This is @wehmoen from Telegram. He is the former Lead Developer of ${APP_PAGE_DOMAIN}." src="${APP_VIDEO_CDN_DOMAIN}/profile/badges/telegram_wehmoen.png">`
-    }
-
     if (value.includes('deutsch')) {
       html += `<img class="profile-badge" alt="German Community" title="This creator is member of the German community." src="${APP_VIDEO_CDN_DOMAIN}/profile/badges/germany.png">`
     }

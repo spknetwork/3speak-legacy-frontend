@@ -1310,7 +1310,7 @@ router.get('/embed', async (req, res, next) => {
     v = v.split('/');
     if (v.length !== 2) {
       v = {
-        author: 'wehmoen',
+        author: 'vaultec',
         permlink: 'ykgjpifr',
         status: 'published'
       }
