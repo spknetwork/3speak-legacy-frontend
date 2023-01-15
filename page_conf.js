@@ -36,7 +36,7 @@ global.APP_MEMCACHED_HOST =  '127.0.0.1';
 global.APP_MONGO_HOST = process.env.MONGO_HOST || 'localhost:27018';
 global.APP_REDDITMQ_HOST = config.appRedditMqHost;
 
-global.AUTH_API_REDIRECT_URL = process.env.ENV === 'dev' ? process.env.AUTH_API_REDIRECT_URL || 'http://localhost:9400/auth/callback' : `https://${APP_PAGE_DOMAIN}/auth/callback`;
+global.AUTH_API_REDIRECT_URL = process.env.ENV === 'dev' ? process.env.AUTH_API_REDIRECT_URL || 'http://localhost:9400/auth/callback' : `https://studio.3speak.tv/auth/callback`;
 global.AUTH_API_URL = `https://auth.${APP_PAGE_DOMAIN}`
 global.AUTH_API_CLIENT_ID = config.authApiClientId;
 // eslint-disable-next-line max-len
