@@ -75,7 +75,7 @@ router.get('/', async(req, res) => {
             type: 'EXISTING_3SPEAK_ACCOUNT'
           }
         ],
-        description: 'Returns the requested user profile. If the user does not have a 3Speak profile an error message is returned instead'
+        description: 'Returns the list of videos from that user'
       },
       {
         method: 'GET',
@@ -126,6 +126,22 @@ router.get('/', async(req, res) => {
           }
         ],
         description: 'Returns next batch of trending videos'
+      },
+      {
+        method: 'GET',
+        route: '/feeds/@username/more',
+        parameters: [
+          {
+            name: 'skip',
+            type: 'int'
+          }
+        ],
+        description: 'Returns next batch of trending videos for that specific user'
+      },
+      {
+        method: 'GET',
+        route: '/feeds/@username/count',
+        description: 'Returns count of the videos for a specific user'
       },
       {
         method: 'GET',
@@ -426,6 +442,34 @@ router.get('/feeds/new/more', async(req, res) => {
   res.json({
     recommended
   })
+});
+
+router.get('/feeds/@:username/more', async(req, res) => {
+  let query = {
+    status: 'published',
+    owner: req.params.username
+  }
+  const skipParsing = (() => {
+    let skip = req.query.skip;
+    if (typeof parseInt(skip) === 'number' && !isNaN(parseInt(skip))) {
+      skip = parseInt(skip)
+    } else {
+      skip = 0
+    }
+    return skip
+  });
+  let feeds = await mongo.Video.find(query).sort({created: -1}).skip(skipParsing()).limit(48).cache(30)
+  const feedFinal = formatFeeds(feeds);
+  res.json(feedFinal)
+});
+
+router.get('/feeds/@:username/count', async(req, res) => {
+  let query = {
+    status: 'published',
+    owner: req.params.username
+  }
+  let count = await mongo.Video.find(query).count();
+  res.json({count: count});
 });
 
 router.get('/feeds/@:username', async(req, res) => {
