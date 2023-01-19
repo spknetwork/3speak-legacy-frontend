@@ -1,5 +1,7 @@
 require('dotenv').config()
 
+const { config } = require("./config/index.js");
+
 global.APP_PAGE_DOMAIN = process.env.HOST || '3speak.tv';
 global.APP_LIVE_DOMAIN = `live.${APP_PAGE_DOMAIN}`;
 global.APP_CHAT_DOMAIN = `chat.${APP_PAGE_DOMAIN}`;
@@ -58,7 +60,7 @@ global.AWS_CLOUDSEARCH_SORT_ORDER = 'created desc'
 
 global.WASABI_ENDPOINT = config.wasabiEndpoint;
 global.WASABI_ACCESS_KEY_ID = config.wasabiAccessKeyId;
-global.WASABI_SECRET_KEY = config.
+global.WASABI_SECRET_KEY = config.wasabiSecretKey
 global.WASABI_REGION = 'eu-central-1';
 global.WASABI_BUCKET = 'v--03-eu-west.3speakcontent.online'
 
