@@ -365,6 +365,12 @@ router.get('/feeds/trending/more', async(req, res) => {
   let query = {
     status: 'published'
   }
+  let skip = req.query.skip;
+  if (typeof parseInt(skip) === 'number' && !isNaN(parseInt(skip))) {
+    skip = parseInt(skip)
+  } else {
+    skip = 0
+  }
 
   if (req.query.ipfsOnly === 'true') {
     query.ipfs = {$ne: null}
@@ -373,21 +379,12 @@ router.get('/feeds/trending/more', async(req, res) => {
     query.isReel = true;
   }
 
-  let recommended = await trendingFeedGenerator(['en', 'es', 'fr'], 750, query, (() => {
-    let skip = req.query.skip;
-    if (typeof parseInt(skip) === 'number' && !isNaN(parseInt(skip))) {
-      skip = parseInt(skip)
-    } else {
-      skip = 0
-    }
-
-    return skip
-  })());
+  let recommended = await trendingFeedGenerator(['en', 'es', 'fr'], 750, query, skip);
 
   recommended = formatFeeds(recommended)
 
   res.json({
-    trends: helper.processFeed(recommended)
+    trends: processFeed(recommended)
   })
 });
 router.get('/feeds/new', async(req, res) => {
