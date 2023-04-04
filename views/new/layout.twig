@@ -240,13 +240,20 @@
               <div class="nav_icons"><i class="fa fa-download" style="font-size: 1.5em;"></i></div>
               Desktop App</a>
           </li>
-          {#<li class="nav-item">
-            <a class="nav-link" href="/livestreams">
+          <li class="nav-item">
+            <a id="appPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Download Mobile App" data-content='
+              <a class="dropdown-item" href="{{ IOS_APP_LINK }}">
+                <i class="fa fa-app-store-ios"></i>iOS App
+              </a>
+              <a class="dropdown-item" href="{{ ANDROID_APP_LINK }}">
+                <i class="fa fa-android"></i>Android App
+              </a>
+              '>
               <div class="nav_icons">
-                {{ 'icon_livestream.svg'|menuIcon(user.darkMode) }}
               </div>
-              Livestreams</a>
-          </li>#}
+                Download Mobile App
+            </a>
+          </li>
           <li class="nav-item">
             <a id="communitiesPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Communities" data-content='
             <a class="dropdown-item communityCreate">
@@ -349,8 +356,6 @@
               3Speak
             </button>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ IOS_APP_LINK }}">Download iOS App</a>
-              <a class="dropdown-item" href="{{ ANDROID_APP_LINK }}">Download Android App</a>
               <a class="dropdown-item" href="/intl/about_us">About us</a>
               <a class="dropdown-item" href="/intl/faq">FAQ</a>
             </div>
@@ -367,7 +372,6 @@
               <a class="dropdown-item" href="{{ SOCIAL_DISCORD_LINK }}">Discord</a>
               <a class="dropdown-item" target="_blank" href="{{ SOCIAL_TWITTER_LINK }}">Twitter</a>
               <a class="dropdown-item" target="_blank" href="https://spk.network">SPK Network</a>
-
             </div>
           </div>
         </li>
