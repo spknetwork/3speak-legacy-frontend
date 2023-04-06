@@ -236,26 +236,6 @@
               New Content</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="https://github.com/3speaknetwork/3Speak-app/releases/latest">
-              <div class="nav_icons"><i class="fa fa-download" style="font-size: 1.5em;"></i></div>
-              Desktop App</a>
-          </li>
-          <li class="nav-item">
-            <a id="appPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Download Mobile App" data-content='
-              <a class="dropdown-item" href="{{ IOS_APP_LINK }}">
-                <i class="fab fa-app-store-ios text-muted fa-2x"></i>&nbsp;&nbsp;iOS App
-              </a>
-              <a class="dropdown-item" href="{{ ANDROID_APP_LINK }}">
-                <i class="fab fa-android text-muted fa-2x"></i>&nbsp;&nbsp;Android App
-              </a>
-              '>
-              <div class="nav_icons">
-                <div class="nav_icons"><i class="fab fa-app-store-ios text-muted fa-2x" style="font-size: 1.5em;"></i></div>
-              </div>
-                Download Mobile App
-            </a>
-          </li>
-          <li class="nav-item">
             <a id="communitiesPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Communities" data-content='
             <a class="dropdown-item communityCreate">
             <i class="fa fa-plus"></i> Create
@@ -291,7 +271,53 @@
               <div class="nav_icons">{{ 'icon_leaderboard.svg'|menuIcon(user.darkMode) }}</div>
               Leaderboard</a>
           </li>
-          
+          <li class="nav-item">
+            <a id="appPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="Download 3Speak Apps" data-content='
+              <a class="dropdown-item" href="{{ IOS_APP_LINK }}">
+                iOS App
+              </a>
+              <a class="dropdown-item" href="{{ ANDROID_APP_LINK }}">
+                Android App
+              </a>
+              <a class="dropdown-item" href="https://github.com/3speaknetwork/3Speak-app/releases/latest">
+                Desktop App
+              </a>
+              '>
+              <div class="nav_icons"><i class="fab fa-app-store-ios text-muted fa-2x" style="font-size: 1.5em;"></i></div>
+                Download 3Speak Apps
+            </a>
+          </li>
+           <li class="nav-item">
+            <a id="aboutPopover" class="nav-link popover-queue" data-toggle="popover" data-trigger="click" data-html="true" data-placement="bottom" title="About 3Speak" data-content='
+              <a class="dropdown-item" href="About us">
+                About Us
+              </a>
+              <a class="dropdown-item" href="/intl/faq">
+                FAQ
+              </a>
+              <a class="dropdown-item" target="_blank" href="{{ SOCIAL_TELEGRAM_LINK }}">
+                Telegram
+              </a>
+              <a class="dropdown-item" target="_blank" href="{{ SOCIAL_DISCORD_LINK }}">
+                Discord
+              </a>
+              <a class="dropdown-item" target="_blank" href="{{ SOCIAL_TWITTER_LINK }}">
+                Twitter
+              </a>
+              <a class="dropdown-item"  target="_blank" href="https://linktr.ee/3speak">
+                3Speak - important links
+              </a>
+              <a class="dropdown-item"  target="_blank" href="https://spk.network">
+                SPK Network
+              </a>
+              <a class="dropdown-item"  target="_blank" href="https://linktr.ee/spknetwork">
+                SPK Network - important links
+              </a>
+              '>
+              <div class="nav_icons"><i class="fab fas fa-info-circle"></i></div>
+                About 3Speak
+            </a>
+          </li>
         </div>
 
         <li class="nav-item">
@@ -351,6 +377,7 @@
             </a>
           </li>
         </div>
+{#
         <li class="nav-item dropdown display-mobile">
           <div class="btn-group">
             <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true">
@@ -376,7 +403,7 @@
             </div>
           </div>
         </li>
-
+#}
       </ul>
     </div>
 
