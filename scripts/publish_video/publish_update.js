@@ -1,6 +1,6 @@
 require('../../page_conf')
 const {mongo} = require('../../helper');
-const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
+const {getOperations, sleep, steemPostExist, tryPublish, hasPostingAuthority } = require('./helper');
 
 (async() => {
 
@@ -10,7 +10,7 @@ const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
   from.setDate(from.getDate() - 1);
 
   const videos = await mongo.Video.find({
-    status: 'published',
+    status: { $in: ['published', 'published_manual'] },
     owner: {$ne: 'guest-account'},
     steemPosted: true,
     needsHiveUpdate: true,
@@ -23,6 +23,18 @@ const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
   }
 
   for (const video of videos) {
+
+    if (video.status === 'publish_manual') {
+      try {
+        let doWeHavePostingAuthority = await hasPostingAuthority(video.owner);
+        if (doWeHavePostingAuthority === false) {
+          continue;
+        }
+      }  catch (err) {
+        console.error(err + ' - Error while getting account info for ' + video.owner);
+        continue;
+      }
+    }
 
     console.log('===============================')
     console.log('## Updating hive blog HIVE:', video.owner, video.permlink, ' -- ', video.title)

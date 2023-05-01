@@ -1,13 +1,13 @@
 require('../../page_conf')
 const { mongo } = require('../../helper');
-const { getOperations, sleep, steemPostExist, tryPublish } = require('./helper');
+const { getOperations, sleep, steemPostExist, tryPublish, hasPostingAuthority } = require('./helper');
 
 (async() => {
 
   console.log('===============================')
 
   const videos = await mongo.Video.find({
-    status: 'published',
+    status: { $in: ['published', 'published_manual'] },
     publishFailed: { $ne: true },
     lowRc: { $ne: true },
     owner: { $ne: 'guest-account' },
@@ -23,6 +23,18 @@ const { getOperations, sleep, steemPostExist, tryPublish } = require('./helper')
   }
 
   for (const video of videos) {
+
+    if (video.status === 'publish_manual') {
+      try {
+        let doWeHavePostingAuthority = await hasPostingAuthority(video.owner);
+        if (doWeHavePostingAuthority === false) {
+          continue;
+        }
+      }  catch (err) {
+        console.error(err + ' - Error while getting account info for ' + video.owner);
+        continue;
+      }
+    }
 
     console.log('===============================')
     console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)

@@ -33,6 +33,34 @@ async function hasDelegation(account) {
   return delegations.includes(account)
 }
 
+function hasPostingAuthority(account) {
+  return new Promise(function (resolve, reject) {
+    hive.api.getAccounts([account], function (err, result) {
+      if (
+        (err === null || err === undefined) &&
+        result !== null &&
+        result !== undefined &&
+        Array.isArray(result) &&
+        result.length === 1
+      ) {
+        const account = result[0];
+        if (Array.isArray(account.posting.account_auths)) {
+          account.posting.account_auths.forEach(function (item) {
+            if (item[0] === "threespeak") {
+              return resolve(true);
+            }
+          });
+        }
+        return resolve(false);
+      } else {
+        return reject(Error(
+          "Error while getting account information for " + username
+        ));
+      }
+    });
+  });
+}
+
 function processTags(tags) {
   const fallback = ['threespeak', 'video'];
 
@@ -313,5 +341,6 @@ module.exports = {
   steemPostExist,
   tryPublish,
   hasDelegation,
-  delegateHP
+  delegateHP,
+  hasPostingAuthority,
 }
