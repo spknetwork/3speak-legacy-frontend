@@ -1,13 +1,13 @@
 require('../../page_conf')
 const {mongo} = require('../../helper');
-const {getOperations, sleep, steemPostExist, tryPublish, hasDelegation, delegateHP, hasPostingAuthority } = require('./helper');
+const {getOperations, sleep, steemPostExist, tryPublish, hasDelegation, delegateHP, shouldSkip } = require('./helper');
 
 (async() => {
 
   console.log('===============================')
 
   const videos = await mongo.Video.find({
-    status: { $in: ['published', 'published_manual'] },
+    status: { $in: ['published', 'publish_manual'] },
     lowRc: true,
     steemPosted: {$exists: false},
   });
@@ -18,17 +18,9 @@ const {getOperations, sleep, steemPostExist, tryPublish, hasDelegation, delegate
   }
 
   for (const video of videos) {
-
-    if (video.status === 'publish_manual') {
-      try {
-        let doWeHavePostingAuthority = await hasPostingAuthority(video.owner);
-        if (doWeHavePostingAuthority === false) {
-          continue;
-        }
-      }  catch (err) {
-        console.error(err + ' - Error while getting account info for ' + video.owner);
-        continue;
-      }
+    const shouldSkip = shouldSkip(video);
+    if (shouldSkip) {
+      continue;
     }
 
     console.log('===============================')
