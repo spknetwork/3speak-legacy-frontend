@@ -53,9 +53,7 @@ function hasPostingAuthority(account) {
         }
         return resolve(false);
       } else {
-        return reject(Error(
-          "Error while getting account information for " + username
-        ));
+        return resolve(false);
       }
     });
   });
@@ -102,7 +100,7 @@ function buildJSONMetadata(video) {
 
   let videoTags = video.tags;
   if (videoTags === undefined || videoTags.length === 0) {
-    videoTags = ["threespeak", "hive", "video"]
+    videoTags = ["threespeak"]
   } else {
     videoTags = videoTags.split(",")
   }
@@ -350,8 +348,6 @@ async function shouldSkip(video) {
         if (doWeHavePostingAuthority === false) {
           return true;
         }
-        video.status = 'published';
-        await video.save();
         return false;
       }  catch (err) {
         console.error(err + ' - Error while getting account info for ' + video.owner);

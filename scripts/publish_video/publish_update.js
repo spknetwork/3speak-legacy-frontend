@@ -26,6 +26,9 @@ const {getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require(
     const shouldSkip = shouldSkip(video);
     if (shouldSkip) {
       continue;
+    } else if (video.status === 'publish_manual') {
+      video.status = 'published';
+      await video.save();
     }
 
     console.log('===============================')
