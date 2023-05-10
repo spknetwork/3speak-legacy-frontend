@@ -23,7 +23,7 @@ const {getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require(
   }
 
   for (const video of videos) {
-    const shouldSkip = shouldSkip(video);
+    const shouldSkip = await shouldSkip(video);
     if (shouldSkip) {
       continue;
     } else if (video.status === 'publish_manual') {
