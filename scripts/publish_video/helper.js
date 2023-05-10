@@ -33,6 +33,32 @@ async function hasDelegation(account) {
   return delegations.includes(account)
 }
 
+function hasPostingAuthority(account) {
+  return new Promise(function (resolve, reject) {
+    hive.api.getAccounts([account], function (err, result) {
+      if (
+        (err === null || err === undefined) &&
+        result !== null &&
+        result !== undefined &&
+        Array.isArray(result) &&
+        result.length === 1
+      ) {
+        const account = result[0];
+        if (Array.isArray(account.posting.account_auths)) {
+          account.posting.account_auths.forEach(function (item) {
+            if (item[0] === "threespeak") {
+              return resolve(true);
+            }
+          });
+        }
+        return resolve(false);
+      } else {
+        return resolve(false);
+      }
+    });
+  });
+}
+
 function processTags(tags) {
   const fallback = ['threespeak', 'video'];
 
@@ -72,8 +98,15 @@ function buildJSONMetadata(video) {
     })
   }
 
+  let videoTags = video.tags;
+  if (videoTags === undefined || videoTags.length === 0) {
+    videoTags = ["threespeak"]
+  } else {
+    videoTags = videoTags.split(",")
+  }
+
   return {
-    tags: processTags(video.tags.split(',')),
+    tags: processTags(videoTags),
     app: '3speak/0.3.0',
     type: '3speak/video',
     image: [
@@ -103,7 +136,7 @@ function buildJSONMetadata(video) {
       },
       content: {
         description: video.description,
-        tags: processTags(video.tags.split(','))
+        tags: processTags(videoTags)
       }
     }
   };
@@ -307,11 +340,33 @@ async function delegateHP(account, hp) {
   );
 }
 
+async function shouldSkip(video) {
+  if (video.status === 'publish_manual') {
+    if (video.fromMobile === true ) {
+      try {
+        let doWeHavePostingAuthority = await hasPostingAuthority(video.owner);
+        if (doWeHavePostingAuthority === false) {
+          return true;
+        }
+        return false;
+      }  catch (err) {
+        console.error(err + ' - Error while getting account info for ' + video.owner);
+        return true;
+      }
+    } else {
+      // video not posted from mobile app. do nothing for now.
+      return true;
+    }
+  }
+}
+
 module.exports = {
   getOperations,
   sleep,
   steemPostExist,
   tryPublish,
   hasDelegation,
-  delegateHP
+  delegateHP,
+  hasPostingAuthority,
+  shouldSkip,
 }

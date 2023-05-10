@@ -1,6 +1,6 @@
 require('../../page_conf')
 const {mongo} = require('../../helper');
-const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
+const {getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require('./helper');
 
 (async() => {
 
@@ -10,7 +10,7 @@ const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
   from.setDate(from.getDate() - 1);
 
   const videos = await mongo.Video.find({
-    status: 'published',
+    status: { $in: ['published', 'publish_manual'] },
     owner: {$ne: 'guest-account'},
     steemPosted: true,
     needsHiveUpdate: true,
@@ -23,6 +23,13 @@ const {getOperations, sleep, steemPostExist, tryPublish} = require('./helper');
   }
 
   for (const video of videos) {
+    const shouldSkip = await shouldSkip(video);
+    if (shouldSkip) {
+      continue;
+    } else if (video.status === 'publish_manual') {
+      video.status = 'published';
+      await video.save();
+    }
 
     console.log('===============================')
     console.log('## Updating hive blog HIVE:', video.owner, video.permlink, ' -- ', video.title)
