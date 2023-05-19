@@ -59,6 +59,68 @@ function hasPostingAuthority(account) {
   });
 }
 
+async function getHiveContentBeneficiaries(author, permlink) {
+  return new Promise((resolve, reject) => {
+    hive.api.getContent(author, permlink, function (err, result) {
+      if (err) {
+        return reject(err);
+      } else if (typeof result === "string") {
+        const data = JSON.parse(result);
+        if (data.result !== undefined && data.result.length === 0) {
+          return reject("No data found on hive chain");
+        } else if (
+          data.result.beneficiaries !== undefined &&
+          Array.isArray(data.result.beneficiaries)
+        ) {
+          return resolve(data.result.beneficiaries);
+        } else {
+          return reject("No data found on hive chain");
+        }
+      } else if (result.result !== undefined && result.result.length === 0) {
+        return reject("No data found on hive chain");
+      } else if (
+        result.beneficiaries !== undefined &&
+        Array.isArray(result.beneficiaries)
+      ) {
+        return resolve(result.beneficiaries);
+      } else {
+        return reject("No data found on hive chain");
+      }
+    });
+  });
+}
+
+async function validateBeneficiaries(video) {
+  try {
+    const beneficiaries = await getHiveContentBeneficiaries(video.owner, video.permlink);
+    const fromMobile = video.fromMobile;
+    if (fromMobile !== undefined && fromMobile !== null && fromMobile === true) {
+      const sagar = beneficiaries.filter((o) =>  o.account === "sagarkothari88");
+      const spkBeneficiary = beneficiaries.filter((o) => o.account === "spk.beneficiary");
+      const threespeakleader = beneficiaries.filter((o) => o.account === "threespeakleader");
+      if (sagar.length === 0 || threespeakleader.length === 0 || threespeakleader.length === 0) return false;
+      const sagarBenWeight = sagar[0].weight;
+      const spkBeneficiaryWeight = spkBeneficiary[0].weight;
+      const threespeakleaderWeight = threespeakleader[0].weight;
+      if (sagarBenWeight === undefined || spkBeneficiaryWeight === undefined || threespeakleaderWeight === undefined || sagarBenWeight === null || spkBeneficiaryWeight === null || threespeakleaderWeight === null) return false;
+      if (sagarBenWeight < 100 || spkBeneficiaryWeight < 850 || threespeakleaderWeight < 100) return false;
+      return true;
+    } else {
+      const spkBeneficiary = beneficiaries.filter((o) => o.account === "spk.beneficiary");
+      const threespeakleader = beneficiaries.filter((o) => o.account === "threespeakleader");
+      if (threespeakleader.length === 0 || threespeakleader.length === 0) return false;
+      const spkBeneficiaryWeight = spkBeneficiary[0].weight;
+      const threespeakleaderWeight = threespeakleader[0].weight;
+      if (spkBeneficiaryWeight === undefined || threespeakleaderWeight === undefined || spkBeneficiaryWeight === null || threespeakleaderWeight === null) return false;
+      if (spkBeneficiaryWeight < 900 || threespeakleaderWeight < 100) return false;
+      return true;
+    }
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
 function processTags(tags) {
   const fallback = ['threespeak', 'video'];
 
@@ -360,6 +422,26 @@ async function shouldSkip(video) {
   }
 }
 
+async function isVideoAlreadyPostedOnHive(video) {
+  if (video.status === 'publish_manual') {
+    if (video.fromMobile === true ) {
+      try {
+        let doWeHavePostingAuthority = await hasPostingAuthority(video.owner);
+        if (doWeHavePostingAuthority === false) {
+          return true;
+        }
+        return false;
+      }  catch (err) {
+        console.error(err + ' - Error while getting account info for ' + video.owner);
+        return true;
+      }
+    } else {
+      // video not posted from mobile app. do nothing for now.
+      return true;
+    }
+  }
+}
+
 module.exports = {
   getOperations,
   sleep,
@@ -369,4 +451,5 @@ module.exports = {
   delegateHP,
   hasPostingAuthority,
   shouldSkip,
+  validateBeneficiaries,
 }
