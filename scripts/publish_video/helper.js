@@ -422,26 +422,6 @@ async function shouldSkip(video) {
   }
 }
 
-async function isVideoAlreadyPostedOnHive(video) {
-  if (video.status === 'publish_manual') {
-    if (video.fromMobile === true ) {
-      try {
-        let doWeHavePostingAuthority = await hasPostingAuthority(video.owner);
-        if (doWeHavePostingAuthority === false) {
-          return true;
-        }
-        return false;
-      }  catch (err) {
-        console.error(err + ' - Error while getting account info for ' + video.owner);
-        return true;
-      }
-    } else {
-      // video not posted from mobile app. do nothing for now.
-      return true;
-    }
-  }
-}
-
 module.exports = {
   getOperations,
   sleep,
