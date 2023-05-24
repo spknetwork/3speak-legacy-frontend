@@ -17,8 +17,7 @@ global.APP_BUNNY_IPFS_CDN = 'https://ipfs-3speak.b-cdn.net'
 
 global.APP_PAGE_PROTOCOL = process.env.PROTOCOL || 'https';
 
-// global.HIVE_DEFAULT_NODE = 'api.deathwing.me';
-global.HIVE_DEFAULT_NODE = 'techcoderx.com';
+global.HIVE_DEFAULT_NODE = 'api.deathwing.me';
 global.HIVE_SECONDARY_NODE = 'fin.hive.3speak.co';
 global.HIVE_DEFAULT_NODE_PREFIX = 'https';
 global.HIVE_SECURE_NODE_PREFIX = 'https';

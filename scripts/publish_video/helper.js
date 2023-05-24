@@ -244,7 +244,7 @@ async function buildCommentOptions(video) {
   // sample value - [{"account":"actifit-he","weight":100,"src":"ENCODER_PAY"},{"account":"sagarkothari88","weight":100,"src":"MOBILE_APP_PAY"}] // MOBILE_APP_PAY_AND_ENCODER_PAY
   if (video.fromMobile === true)  {
     if (videoBenefs.filter((ben) =>  ben.account === 'sagarkothari88' && (ben.src === "MOBILE_APP_PAY" || ben.src === "MOBILE_APP_PAY_AND_ENCODER_PAY")).length === 0) {
-      videoBenefs = [...videoBenefs, {account: 'sagarkothari88', weight: 200, src: 'MOBILE_APP_PAY'}];
+      videoBenefs = [...videoBenefs, {account: 'sagarkothari88', weight: 100, src: 'MOBILE_APP_PAY'}];
     }
   }
 
