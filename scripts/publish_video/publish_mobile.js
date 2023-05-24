@@ -27,7 +27,7 @@ const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require
 
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
-        video.description = `${video.description}\n\n[![appStore](https://i.imgur.com/enwTLng.png)](https://apps.apple.com/us/app/3speak/id1614771373) | [![GooglePlayStore](https://i.imgur.com/6K5fgGX.png)](https://play.google.com/store/apps/details?id=tv.threespeak.app) | [![Support @sagarkothari88](https://i.imgur.com/bTdSCuq.png)](https://hivesigner.com/sign/account-witness-vote?witness=sagarkothari88&approve=1) | [![Support @threespeak](https://i.imgur.com/2cEH8bp.png)](https://hivesigner.com/sign/account-witness-vote?witness=threespeak&approve=1)`;
+        video.description = `${video.description}\n\n[![appStore](https://i.imgur.com/enwTLng.png)](https://apps.apple.com/us/app/3speak/id1614771373) | [![GooglePlayStore](https://i.imgur.com/6K5fgGX.png)](https://play.google.com/store/apps/details?id=tv.threespeak.app) | [![Support @threespeak](https://i.imgur.com/2cEH8bp.png)](https://hivesigner.com/sign/account-witness-vote?witness=threespeak&approve=1) | [![Support @sagarkothari88](https://i.imgur.com/bTdSCuq.png)](https://hivesigner.com/sign/account-witness-vote?witness=sagarkothari88&approve=1)`;
         const operations = await getOperations(video)
         const publishAttempt = await tryPublish(operations)
 
@@ -55,14 +55,10 @@ const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require
           video.description = oldDescription;
           video.lowRc = isLowRc;
           video.publishFailed = blockSizeExceeded || missingAuthority || titleException || paidForbidden || commentBeneficiaries
-
           await video.save()
-
           console.log('## ERROR:', publishAttempt.message, video.permlink)
         }
-
       } else {
-        video.description = oldDescription;
         video.steemPosted = true;
         await video.save();
         console.log('## SKIPPED. ALREADY PUBLISHED!')
