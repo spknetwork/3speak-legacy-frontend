@@ -24,6 +24,7 @@ const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require
     console.log('===============================')
     console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
     video.description = `${video.description}\n\n[![appStore](https://i.imgur.com/enwTLng.png)](https://apps.apple.com/us/app/3speak/id1614771373) | [![GooglePlayStore](https://i.imgur.com/6K5fgGX.png)](https://play.google.com/store/apps/details?id=tv.threespeak.app) | [![Support @sagarkothari88](https://i.imgur.com/bTdSCuq.png)](https://hivesigner.com/sign/account-witness-vote?witness=sagarkothari88&approve=1) | [![Support @threespeak](https://i.imgur.com/2cEH8bp.png)](https://hivesigner.com/sign/account-witness-vote?witness=threespeak&approve=1)`;
+    await video.save();
 
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
