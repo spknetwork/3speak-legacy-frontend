@@ -60,6 +60,7 @@ const launchDate = '2023-06-15';
         }
       } else {
         video.steemPosted = true;
+        video.status = 'published';
         await video.save();
         console.log('## SKIPPED. ALREADY PUBLISHED!')
       }
