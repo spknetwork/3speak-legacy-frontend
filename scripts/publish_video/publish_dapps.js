@@ -23,11 +23,9 @@ const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require
     }
     console.log('===============================')
     console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
-    const oldDescription = video.description;
 
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
-        video.description = `${video.description}\n\n[![appStore](https://i.imgur.com/enwTLng.png)](https://apps.apple.com/us/app/3speak/id1614771373) | [![GooglePlayStore](https://i.imgur.com/6K5fgGX.png)](https://play.google.com/store/apps/details?id=tv.threespeak.app) | [![Support @threespeak](https://i.imgur.com/2cEH8bp.png)](https://hivesigner.com/sign/account-witness-vote?witness=threespeak&approve=1) | [![Support @sagarkothari88](https://i.imgur.com/bTdSCuq.png)](https://hivesigner.com/sign/account-witness-vote?witness=sagarkothari88&approve=1)`;
         const operations = await getOperations(video)
         const publishAttempt = await tryPublish(operations)
 
@@ -52,7 +50,6 @@ const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require
           const titleException = publishAttempt.message && publishAttempt.message.indexOf('Title size limit exceeded.') > -1;
           const paidForbidden = publishAttempt.message && publishAttempt.message.indexOf('Updating parameters for comment that is paid out is forbidden') > -1;
           const commentBeneficiaries = publishAttempt.message && publishAttempt.message.indexOf('Comment already has beneficiaries specified') > -1;
-          video.description = oldDescription;
           video.lowRc = isLowRc;
           video.publishFailed = blockSizeExceeded || missingAuthority || titleException || paidForbidden || commentBeneficiaries
           await video.save()
