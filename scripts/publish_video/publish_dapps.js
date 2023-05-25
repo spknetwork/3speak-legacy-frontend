@@ -2,12 +2,15 @@ require('../../page_conf')
 const { mongo } = require('../../helper');
 const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require('./helper');
 
+const launchDate = '2023-06-15';
+
 (async() => {
 
   console.log('===============================')
 
   const videos = await mongo.Video.find({
     status: { $in: ['publish_manual'] },
+    created: { $gte:  launchDate },
     title: { $ne: null }
   }).sort('-created');
   console.log('## Videos to publish:', videos.length)
