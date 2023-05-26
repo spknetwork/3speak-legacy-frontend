@@ -1,8 +1,9 @@
 require('../../page_conf')
 const { mongo } = require('../../helper');
 const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require('./helper');
+const moment = require('moment');
 
-const launchDate = '2023-06-15';
+const launchDate = '2023-06-15T00:00:00.000Z';
 
 (async() => {
 
@@ -10,7 +11,6 @@ const launchDate = '2023-06-15';
 
   const videos = await mongo.Video.find({
     status: { $in: ['publish_manual'] },
-    created: { $gte:  launchDate },
     title: { $ne: null }
   }).sort('-created');
   console.log('## Videos to publish:', videos.length)
@@ -24,11 +24,15 @@ const launchDate = '2023-06-15';
     if (shouldWeSkip) {
       continue;
     }
-    console.log('===============================')
-    console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
 
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
+        const isAfterLaunchDate = moment(video.created).isAfter(launchDate); // example - 2023-05-20T21:13:49.691+00:00
+        if (!isAfterLaunchDate) {
+          continue;
+        }
+        console.log('===============================')
+        console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
         const operations = await getOperations(video)
         const publishAttempt = await tryPublish(operations)
 
