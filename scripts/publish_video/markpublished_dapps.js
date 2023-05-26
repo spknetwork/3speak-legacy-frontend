@@ -1,13 +1,6 @@
 require("../../page_conf");
 const { mongo } = require("../../helper");
-const {
-  getOperations,
-  sleep,
-  steemPostExist,
-  tryPublish,
-  shouldSkip,
-} = require("./helper");
-const moment = require("moment");
+const { sleep, steemPostExist } = require("./helper");
 
 (async () => {
   console.log("===============================");
@@ -16,7 +9,6 @@ const moment = require("moment");
     status: { $in: ["publish_manual"] },
     title: { $ne: null },
   }).sort("-created");
-  console.log("## Videos to publish:", videos.length);
 
   if (videos.length === 0) {
     await sleep(5000);
@@ -25,9 +17,9 @@ const moment = require("moment");
   for (const video of videos) {
     try {
       if (await steemPostExist(video.owner, video.permlink)) {
+        console.log(`## Videos already published: @${video.owner}/${video.permlink}`);
         video.steemPosted = true;
         video.lowRc = false;
-        video.needsHiveUpdate = !!video.ipfs;
         video.status = "published";
         await video.save();
       }
