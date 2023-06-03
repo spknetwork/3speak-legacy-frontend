@@ -85,7 +85,7 @@ global.SOCIAL_TELEGRAM_LINK = 'https://t.me/threespeak?utm_source=3speak.tv';
 global.SOCIAL_DISCORD_LINK = 'https://discord.gg/NSFS2VGj83';
 global.SOCIAL_TWITTER_LINK = 'https://twitter.com/3speakonline?utm_source=3speak.tv';
 global.SOCIAL_BLOG_LINK = 'https://hive.blog/@threespeak';
-global.IOS_APP_LINK = 'https://testflight.apple.com/join/0tipqwsZ';
+global.IOS_APP_LINK = 'https://apps.apple.com/us/app/3speak/id1614771373';
 global.ANDROID_APP_LINK = 'https://play.google.com/store/apps/details?id=tv.threespeak.app';
 global.ANDROID_VIA_DROPBOX = 'https://www.dropbox.com/sh/a0q5u7l3j9ygzty/AABAqtxnLrPBYbk4q5H9BBWja?dl=0';
 
