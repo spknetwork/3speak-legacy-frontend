@@ -15,6 +15,7 @@ const { sleep, steemPostExist } = require("./helper");
   }
 
   for (const video of videos) {
+    await sleep(1000);
     try {
       if (await steemPostExist(video.owner, video.permlink)) {
         console.log(`## Videos already published: @${video.owner}/${video.permlink}`);
