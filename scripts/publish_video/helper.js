@@ -359,7 +359,7 @@ async function steemPostExist(author, permlink) {
       return !!content.body
     }
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return false;
   }
 }
