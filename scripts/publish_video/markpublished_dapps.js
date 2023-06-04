@@ -18,11 +18,13 @@ const { sleep, steemPostExist } = require("./helper");
     await sleep(1000);
     try {
       if (await steemPostExist(video.owner, video.permlink)) {
-        console.log(`## Videos already published: @${video.owner}/${video.permlink}`);
+        console.log(`## Video already published: @${video.owner}/${video.permlink}`);
         video.steemPosted = true;
         video.lowRc = false;
         video.status = "published";
         await video.save();
+      } else {
+        console.log(`## Video is NOT YET published: @${video.owner}/${video.permlink}`);
       }
     } catch (ex) {
       console.log(ex);
