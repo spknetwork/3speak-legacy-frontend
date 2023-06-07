@@ -23,8 +23,6 @@ const { sleep, steemPostExist } = require("./helper");
         video.lowRc = false;
         video.status = "published";
         await video.save();
-      } else {
-        console.log(`## Video is NOT YET published: @${video.owner}/${video.permlink}`);
       }
     } catch (ex) {
       console.log(ex);
