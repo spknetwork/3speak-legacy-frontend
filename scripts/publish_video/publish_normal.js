@@ -1,13 +1,13 @@
 require('../../page_conf')
 const { mongo } = require('../../helper');
-const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require('./helper');
+const { getOperations, sleep, steemPostExist, tryPublish } = require('./helper');
 
 (async() => {
 
   console.log('===============================')
 
   const videos = await mongo.Video.find({
-    status: { $in: ['published', 'publish_manual'] },
+    status: 'published',
     publishFailed: { $ne: true },
     lowRc: { $ne: true },
     owner: { $ne: 'guest-account' },
@@ -23,13 +23,7 @@ const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require
   }
 
   for (const video of videos) {
-    const shouldSkip = await shouldSkip(video);
-    if (shouldSkip) {
-      continue;
-    } else if (video.status === 'publish_manual') {
-      video.status = 'published';
-      await video.save();
-    }
+
     console.log('===============================')
     console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
 
