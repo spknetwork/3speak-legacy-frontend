@@ -11,6 +11,7 @@ const launchDate = '2023-06-15T00:00:00.000Z';
 
   const videos = await mongo.Video.find({
     status: { $in: ['publish_manual'] },
+    created: { $gte:  launchDate },
     title: { $ne: null }
   }).sort('-created');
   console.log('## Videos to publish:', videos.length)
@@ -25,22 +26,12 @@ const launchDate = '2023-06-15T00:00:00.000Z';
       continue;
     }
 
-    const oldDescription = video.description;
-
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
-        const isAfterLaunchDate = moment(video.created).isAfter(launchDate); // example - 2023-05-20T21:13:49.691+00:00
-        if (!isAfterLaunchDate) {
-          continue;
-        }
         console.log('===============================')
         console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
-        if (video.fromMobile) {
-          video.description = `${video.description}\n\n[![appStore](https://i.imgur.com/enwTLng.png)](https://apps.apple.com/us/app/3speak/id1614771373) | [![GooglePlayStore](https://i.imgur.com/6K5fgGX.png)](https://play.google.com/store/apps/details?id=tv.threespeak.app) | [![Support @threespeak](https://i.imgur.com/2cEH8bp.png)](https://hivesigner.com/sign/account-witness-vote?witness=threespeak&approve=1) | [![Support @sagarkothari88](https://i.imgur.com/bTdSCuq.png)](https://hivesigner.com/sign/account-witness-vote?witness=sagarkothari88&approve=1)`;
-        }
         const operations = await getOperations(video)
         const publishAttempt = await tryPublish(operations)
-        video.description = oldDescription;
         if (publishAttempt.id) {
 
           video.steemPosted = true;
