@@ -11,7 +11,7 @@ const launchDate = '2023-06-15T00:00:00.000Z';
 
   const videos = await mongo.Video.find({
     status: { $in: ['publish_manual'] },
-    created: { $gte:  launchDate },
+    created: { $gte:  new Date(launchDate) },
     title: { $ne: null }
   }).sort('-created');
   console.log('## Videos to publish:', videos.length)
