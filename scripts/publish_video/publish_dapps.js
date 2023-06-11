@@ -1,19 +1,17 @@
 require('../../page_conf')
 const { mongo } = require('../../helper');
-const { getOperations, sleep, steemPostExist, tryPublish } = require('./helper');
+const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require('./helper');
+const moment = require('moment');
+
+const launchDate = '2023-06-15T00:00:00.000Z';
 
 (async() => {
 
   console.log('===============================')
 
   const videos = await mongo.Video.find({
-    status: 'published',
-    publishFailed: { $ne: true },
-    lowRc: { $ne: true },
-    owner: { $ne: 'guest-account' },
-    $or: [
-      { steemPosted: { $exists: false } }, { steemPosted: false }
-    ],
+    status: { $in: ['publish_manual'] },
+    created: { $gte:  new Date(launchDate) },
     title: { $ne: null }
   }).sort('-created');
   console.log('## Videos to publish:', videos.length)
@@ -23,23 +21,23 @@ const { getOperations, sleep, steemPostExist, tryPublish } = require('./helper')
   }
 
   for (const video of videos) {
-
-    console.log('===============================')
-    console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
+    const shouldWeSkip = await shouldSkip(video);
+    if (shouldWeSkip) {
+      continue;
+    }
 
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
-
+        console.log('===============================')
+        console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
         const operations = await getOperations(video)
-
         const publishAttempt = await tryPublish(operations)
-
         if (publishAttempt.id) {
 
           video.steemPosted = true;
           video.lowRc = false;
           video.needsHiveUpdate = !!video.ipfs;
-
+          video.status = 'published';
           await video.save();
 
           let creator = await mongo.ContentCreator.findOne({ username: video.owner });
@@ -55,17 +53,14 @@ const { getOperations, sleep, steemPostExist, tryPublish } = require('./helper')
           const titleException = publishAttempt.message && publishAttempt.message.indexOf('Title size limit exceeded.') > -1;
           const paidForbidden = publishAttempt.message && publishAttempt.message.indexOf('Updating parameters for comment that is paid out is forbidden') > -1;
           const commentBeneficiaries = publishAttempt.message && publishAttempt.message.indexOf('Comment already has beneficiaries specified') > -1;
-
           video.lowRc = isLowRc;
           video.publishFailed = blockSizeExceeded || missingAuthority || titleException || paidForbidden || commentBeneficiaries
-
           await video.save()
-
           console.log('## ERROR:', publishAttempt.message, video.permlink)
         }
-
       } else {
         video.steemPosted = true;
+        video.status = 'published';
         await video.save();
         console.log('## SKIPPED. ALREADY PUBLISHED!')
       }

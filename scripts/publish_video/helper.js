@@ -240,7 +240,15 @@ async function buildCommentOptions(video) {
     }
   }
 
-  benefactor_global[0][1].beneficiaries = benefactor_global[0][1].beneficiaries.concat(JSON.parse(video.beneficiaries))
+  let videoBenefs = JSON.parse(video.beneficiaries);
+  // sample value - [{"account":"actifit-he","weight":100,"src":"ENCODER_PAY"},{"account":"sagarkothari88","weight":100,"src":"MOBILE_APP_PAY"}] // MOBILE_APP_PAY_AND_ENCODER_PAY
+  if (video.fromMobile === true)  {
+    if (videoBenefs.filter((ben) =>  ben.account === 'sagarkothari88' && (ben.src === "MOBILE_APP_PAY" || ben.src === "MOBILE_APP_PAY_AND_ENCODER_PAY")).length === 0) {
+      videoBenefs = [...videoBenefs, {account: 'sagarkothari88', weight: 100, src: 'MOBILE_APP_PAY'}];
+    }
+  }
+
+  benefactor_global[0][1].beneficiaries = benefactor_global[0][1].beneficiaries.concat(videoBenefs);
 
   benefactor_global[0][1].beneficiaries = benefactor_global[0][1].beneficiaries.filter((bene, index) => {
     const _bene = bene.account;
@@ -351,7 +359,7 @@ async function steemPostExist(author, permlink) {
       return !!content.body
     }
   } catch (e) {
-    console.log(e)
+    // console.log(e)
     return false;
   }
 }
