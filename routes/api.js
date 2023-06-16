@@ -569,6 +569,8 @@ function formatFeeds(feeds) {
       playUrl: v.playUrl,
       ipfs: v.ipfs ? v.ipfs : null,
       isShorts: v.isReel === true,
+      width: v.width,
+      height: v.height,
       images: {
         ipfs_thumbnail: v.ipfs ? `/ipfs/${v.ipfs}/thumbnail.png` : null,
         thumbnail: v.baseThumbUrl,
