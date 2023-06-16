@@ -27,6 +27,7 @@ const launchDate = '2023-06-15T00:00:00.000Z';
     }
 
     try {
+      console.log(`Checking for @${video.owner}/${video.permlink}`)
       if (!(await steemPostExist(video.owner, video.permlink))) {
         console.log('===============================')
         console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)

@@ -6,7 +6,17 @@ hive.api.setOptions({
   rebranded_api: true,
   url: `${HIVE_DEFAULT_NODE_PREFIX}://${HIVE_DEFAULT_NODE}`
 });
-const client = new dhive.Client('https://hive-api.3speak.tv');
+const client = new dhive.Client([
+  "https://api.deathwing.me",
+  "https://hive-api.arcange.eu",
+  "https://hived.emre.sh",
+  "https://api.openhive.network",
+  "https://rpc.ausbit.dev",
+  "https://rpc.mahdiyari.info",
+  "https://hive-api.3speak.tv",
+  "https://techcoderx.com",
+  'https://hive-api.3speak.tv',
+]);
 hive.config.set('rebranded_api','true');
 hive.broadcast.updateOperations();
 
@@ -349,17 +359,12 @@ function sleep(time) {
 
 async function steemPostExist(author, permlink) {
   try {
-    let content = await hive.api.getContentAsync(author, permlink);
-
-    //Apparently Hive API returns a string when post is empty and object when post exists! :shrug:
-    if(typeof content === "string") {
-      return JSON.parse(content).result.length !== 0;
-    } else {
-      //Just to be sure there is actual content
-      return !!content.body
-    }
+    const data = await client.call("bridge", "get_post_header", {
+      author: author,
+      permlink: permlink,
+    });
+    return data != null;
   } catch (e) {
-    // console.log(e)
     return false;
   }
 }
