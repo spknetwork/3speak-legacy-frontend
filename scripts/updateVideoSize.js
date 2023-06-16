@@ -1,24 +1,29 @@
 require("../page_conf");
 const { default: PQueue } = require("p-queue");
 const { mongo } = require("../helper");
-const shell = require("shelljs");
 
-const queue = new PQueue({ concurrency: 40 });
+const queue = new PQueue({ concurrency: 100 });
+
+const axios = require('axios');
 
 async function getVideoSize(url) {
-  return new Promise((resolve, reject) => {
-    const command = `ffprobe -i  ${url} -show_entries stream=width,height -of json=compact=1 -v error`;
-    shell.exec(command, { async: false }, (code, stdout, stderr) => {
-      const result = JSON.parse(stdout.toString());
-      if (result.streams === undefined) {
-        throw new Error(`Didn't find data for video ${url}`);
-      }
-      return resolve({
-        width: result.streams[0].width,
-        height: result.streams[0].height,
-      });
-    });
-  });
+  const text = await axios.get(url);
+  console.log("================================================");
+  const textData = text.data;
+  console.log(textData);
+  let regex = /RESOLUTION=(.+),/g;
+  let found = textData.match(regex);
+  if (found === null || found.length === 0) {
+    regex = /RESOLUTION=(.+)\n/g;
+    found = textData.match(regex);
+  }
+  const size = found[0].replace('RESOLUTION=', '').replace(',', '').replace('\n', '');
+  console.log(`Size ${size}`);
+  const sizeComps = size.split(`x`);
+  return {
+    width: parseInt(sizeComps[0]),
+    height: parseInt(sizeComps[1]),
+  }
 }
 
 function getVideoPlayUrl(video) {
@@ -31,7 +36,8 @@ function getVideoPlayUrl(video) {
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.permlink}/default.m3u8`;
   }
-  playUrl = playUrl.replace("manifest.m3u8", "480p/index.m3u8");
+  console.log(playUrl);
+  // playUrl = playUrl.replace("manifest.m3u8", "480p/index.m3u8");
   return playUrl;
 }
 
@@ -60,7 +66,7 @@ async function updateVideoSizeTask(video) {
     width: { $eq: null },
     height: { $eq: null },
   })
-    .limit(1000)
+    .limit(10000)
     .sort("-created");
 
   for (const video of videos) {
