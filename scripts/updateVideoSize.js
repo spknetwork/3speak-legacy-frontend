@@ -60,7 +60,7 @@ async function updateVideoSizeTask(video) {
     width: { $eq: null },
     height: { $eq: null },
   })
-    .limit(20)
+    .limit(30)
     .sort("-created");
 
   for (const video of videos) {
