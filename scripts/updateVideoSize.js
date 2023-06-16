@@ -3,7 +3,7 @@ const { default: PQueue } = require("p-queue");
 const { mongo } = require("../helper");
 const shell = require("shelljs");
 
-const queue = new PQueue({ concurrency: 1 });
+const queue = new PQueue({ concurrency: 10 });
 
 async function getVideoSize(url) {
   return new Promise((resolve, reject) => {
@@ -60,11 +60,10 @@ async function updateVideoSizeTask(video) {
     width: { $eq: null },
     height: { $eq: null },
   })
-    .limit(1000)
+    .limit(20)
     .sort("-created");
 
   for (const video of videos) {
-    await updateVideoSizeTask(video);
+    queue.add(updateVideoSizeTask(video));
   }
-  process.exit(0);
 })();
