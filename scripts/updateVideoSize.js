@@ -21,7 +21,7 @@ async function generateThumb(url, author, permlink) {
     width: { $eq: null },
     height: { $eq: null },
   })
-    .limit(1)
+    .limit(1000)
     .sort("-created");
 
   for (const video of videos) {
