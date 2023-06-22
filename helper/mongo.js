@@ -216,6 +216,9 @@ const VideoSchema = new mongoose.Schema({
   podcast_transfered: {type: Boolean},
   fromMobile: {type: Boolean, default: false},
   isReel: {type: Boolean, default: false},
+  app: {type: String},
+  width: {type: Number, default: null, required: false},     
+  height: {type: Number, default: null, required: false},
 });
 const PodcastSchema = new mongoose.Schema({
   filename: {type: String, required: true},
