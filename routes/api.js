@@ -21,7 +21,7 @@ router.post('/toggle_dark_mode', requireLogin, async(req, res) => {
 
 function normaliseTags(tags) {
 
-  tags = tags.split(',');
+  tags = tags?.split(',') || [];
 
   const cleanedTags = [];
 
