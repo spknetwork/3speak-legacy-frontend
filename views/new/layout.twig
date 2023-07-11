@@ -237,10 +237,12 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="/communities">
-                Communities
+              <div class="nav_icons">
+                {{ 'shake-hands.svg'|menuIcon(user.darkMode) }}
+              </div>
+              Communities
             </a>
           </li>
-          
           <li class="nav-item">
             <a class="nav-link" href="/leaderboard">
               <div class="nav_icons">{{ 'icon_leaderboard.svg'|menuIcon(user.darkMode) }}</div>
