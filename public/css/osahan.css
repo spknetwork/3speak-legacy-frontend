@@ -1697,7 +1697,6 @@ Version: 1.0
 #stripes {
     height: 60px;
     width: 100%;
-    background: url(https://assets.3speak.co/stripes.png);
     background-size: contain;
 }
 

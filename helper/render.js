@@ -1,8 +1,6 @@
 const HiveContentRenderer = require('hive-content-renderer');
 
 const SECURE_HOSTS = [
-  '3speak.co',
-  '3Speak.online',
   'medium.com',
   'hive.blog',
   'peakd.com',

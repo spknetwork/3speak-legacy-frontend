@@ -65,7 +65,7 @@
                     branding: true,
                     qualities: [],
                     title: "Powered by 3Speak",
-                    destination: "https://3speak.co",
+                    destination: "https://3speak.tv",
                     destinationTarget: "_blank"
                 };
 

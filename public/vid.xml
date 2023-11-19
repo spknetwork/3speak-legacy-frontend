@@ -2,7 +2,7 @@
 <VAST version="3.0">
     <Ad id="9f32ede9fc5842d5c47cf196bb990974">
         <InLine>
-            <AdSystem>3speak.co</AdSystem>
+            <AdSystem>3speak.tv</AdSystem>
             <AdTitle>test vast</AdTitle>
             <Creatives>
                 <Creative id="164" AdID="164">

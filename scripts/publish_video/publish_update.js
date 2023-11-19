@@ -45,7 +45,7 @@ const {getOperations, sleep, steemPostExist, tryPublish } = require('./helper');
           creator.hidden = false;
           await creator.save();
         }
-        console.log('## Published:', 'https://hiveblocks.com/tx/' + publishAttempt.id, 'https://3speak.co/watch?v=' + video.owner + '/' + video.permlink)
+        console.log('## Published:', 'https://hiveblocks.com/tx/' + publishAttempt.id, 'https://3speak.tv/watch?v=' + video.owner + '/' + video.permlink)
       } else {
         console.log('## ERROR:', publishAttempt.message)
       }
