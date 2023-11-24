@@ -45,7 +45,7 @@ const launchDate = '2023-06-15T00:00:00.000Z';
             creator.hidden = false;
             await creator.save();
           }
-          console.log('## Published:', 'https://hiveblocks.com/tx/' + publishAttempt.id, 'https://3speak.co/watch?v=' + video.owner + '/' + video.permlink)
+          console.log('## Published:', 'https://hiveblocks.com/tx/' + publishAttempt.id, 'https://3speak.tv/watch?v=' + video.owner + '/' + video.permlink)
         } else {
           const isLowRc = publishAttempt.message && publishAttempt.message.indexOf('power up') > -1;
           const blockSizeExceeded = publishAttempt.message && publishAttempt.message.indexOf('maximum_block_size') > -1;
