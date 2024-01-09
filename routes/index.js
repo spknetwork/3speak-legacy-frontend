@@ -710,25 +710,31 @@ router.get('/watch', getVideo, async (req, res, next) => {
 
   let playUrl;
   if(req.video.upload_type === "ipfs") {
-
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.video_v2.replace('ipfs://', '')}`
+    req.video.isPodcastEpisode = false;
+  } else if (req.video.enclosureUrl !== undefined && req.video.enclosureUrl !== null && req.video.enclosureUrl.length > 0) {
+    playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.enclosureUrl.replace('ipfs://', '')}`
+    playback = null
+    req.video.baseThumbUrl = req.video.thumbnail;
+    req.video.isPodcastEpisode = true;
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${req.video.permlink}/default.m3u8`
+    req.video.isPodcastEpisode = false;
   }
 
   req.video.playUrl = playUrl;
 
   video = helper.processFeed([req.video])[0]
 
-  if(video.podcast_transfered) {
-    video.downloadUrl = `https://s3.us-west-1.wasabisys.com/podcast-data/${ video.permlink }/main.mp4`
-  } else {
-    if(video.filename.startsWith('ipfs://')) {
-      video.downloadUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.filename.replace('ipfs://', '')}`
-    } else {
-      video.downloadUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.filename}`
-    }
-  }
+  // if(video.podcast_transfered) {
+  //   video.downloadUrl = `https://s3.us-west-1.wasabisys.com/podcast-data/${ video.permlink }/main.mp4`
+  // } else {
+  //   if(video.filename.startsWith('ipfs://')) {
+  //     video.downloadUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.filename.replace('ipfs://', '')}`
+  //   } else {
+  //     video.downloadUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.filename}`
+  //   }
+  // }
 
   video.playUrl = playUrl;
   res.render('new/watch', {
@@ -743,11 +749,12 @@ router.get('/watch', getVideo, async (req, res, next) => {
     noAds: true,
     noTopAd: true,
     demoAd,
-    playback,
-    m3u8: playback.file,
+    playback: null,
+    m3u8: null,
     autoplayNext,
     post,
-    donations: actualDonations
+    donations: actualDonations,
+    isPodcastEpisode: req.video.isPodcastEpisode,
   })
 });
 
