@@ -1245,7 +1245,12 @@ router.get('/embed', async (req, res, next) => {
       video_v2: 1,
       upload_type: 1
     });
-    if (!video) {
+    let audio = await mongo.PodcastEpisode.findOne({
+      owner: req.query.v.split('/')[0],
+      permlink: req.query.v.split('/')[1],
+      status: 'published'
+  });
+    if (!video && !audio) {
       try {
         const [author, permlink] = req.query.v.split('/')
         const post = await hiveClient.database.call('get_content', [author, permlink])
@@ -1263,12 +1268,20 @@ router.get('/embed', async (req, res, next) => {
           tags: json_metadata.tags,
           status: 'published',
           playUrl: `https://ipfs.3speak.tv/ipfs/${ipfsUrl.host}${ipfsUrl.pathname}`,
-          imageUrl: helper.processFeed(video)[0].thumbUrl
+          imageUrl: helper.processFeed(video)[0].thumbUrl,
+          isPodcastEpisode: false,
         }
       } catch (ex) {
         console.log(ex)
       }
+    
     } else {
+      if (!video) {
+        video = audio;
+        video.isPodcastEpisode = true;
+      } else {
+        video.isPodcastEpisode = false;
+      }
       req.video = video;
       if(req.video.ipfs) {
         req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.ipfs}/default.m3u8`
@@ -1276,6 +1289,9 @@ router.get('/embed', async (req, res, next) => {
       } else if(req.video.upload_type === "ipfs") {
         req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace('ipfs://', '')}`
         req.video.imageUrl = helper.processFeed([video])[0].thumbUrl
+      } else if (req.video.enclosureUrl !== undefined && req.video.enclosureUrl !== null && req.video.enclosureUrl.length > 0) {
+        req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.enclosureUrl.replace('ipfs://', '')}`
+        req.video.imageUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.thumbnail.replace('ipfs://', '')}`
       } else {
         req.video.playUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.permlink}/default.m3u8`
         req.video.imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
@@ -1328,7 +1344,8 @@ router.get('/embed', async (req, res, next) => {
         status: req.video.status,
         title: req.video.title,
         playUrl: xss(req.video.playUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
-        imageUrl: xss(helper.processFeed([req.video])[0].thumbUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true })
+        imageUrl: xss(req.video.isPodcastEpisode ? helper.processFeed([req.video])[0].thumbUrl : req.video.imageUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
+        isPodcastEpisode: req.video.isPodcastEpisode,
       }
     }
   }

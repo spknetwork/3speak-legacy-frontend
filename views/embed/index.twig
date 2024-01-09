@@ -94,52 +94,61 @@
           const permlink = '{{ v.permlink }}';
           const imageUrl = '{{ v.imageUrl }}';
           const playUrl = '{{ v.playUrl }}';
-          
-          const player = jwplayer('player').setup({
-            image: imageUrl,
-            playlist: [{
-              title: '{{ v.title|escape }}',
-              matomoTitle: "[Embed] {{ v.title|escape }}",
+          let player = null;
+          if ({{v.isPodcastEpisode}} === true) {
+            player = jwplayer('player').setup({
+              file: '{{v.playUrl}}?filename=bla.m4a',
+              image: "{{ v.imageUrl }}",
+              autostart: autoplay,
+              muted: false,
+            })
+          } else {
+            player = jwplayer('player').setup({
               image: imageUrl,
-              sources: [
-                {
-                  file: playUrl,
-                  type: "application/x-mpegURL"
-                }
-              ]
-            }],
-            playbackRateControls: [0.75, 1, 1.15, 1.25, 1.5, 2],
-            autostart: autoplay,
-            /*"advertising": {
-              "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.tv%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
-              "client": "googima",
-              "vpaidmode": "insecure"
-            },*/
-            related: {
-              onclick: 'play',
-              oncomplete: 'autoplay',
-              //file: '/apiv2/recommended?v={{ v.author }}/{{ v.permlink }}&embed=on'
-            },
-            abouttext: "Powered by 3Speak",
-            aboutlink: "https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}&utm_source=player_context",
-            cast: {},
-            ga: {},
-            preload: "none",
-            floating: {
-              dismissible: true
-            },
-            logo: {
-              "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
-              "link": "https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}&utm_souce=player_brand",
-              "hide": "true",
-              "position": "top-left"
-            },
-            sharing: {
-              code: '<iframe width="560" height="315" src="https://{{ APP_PAGE_DOMAIN }}/embed?v={{ v.author }}/{{ v.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-              sites: ["facebook", "twitter", "reddit", "email"],
-              link: 'https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}'
-            }
-          });
+              playlist: [{
+                title: '{{ v.title|escape }}',
+                matomoTitle: "[Embed] {{ v.title|escape }}",
+                image: imageUrl,
+                sources: [
+                  {
+                    file: playUrl,
+                    type: "application/x-mpegURL"
+                  }
+                ]
+              }],
+              playbackRateControls: [0.75, 1, 1.15, 1.25, 1.5, 2],
+              autostart: autoplay,
+              /*"advertising": {
+                "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.tv%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
+                "client": "googima",
+                "vpaidmode": "insecure"
+              },*/
+              related: {
+                onclick: 'play',
+                oncomplete: 'autoplay',
+                //file: '/apiv2/recommended?v={{ v.author }}/{{ v.permlink }}&embed=on'
+              },
+              abouttext: "Powered by 3Speak",
+              aboutlink: "https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}&utm_source=player_context",
+              cast: {},
+              ga: {},
+              preload: "none",
+              floating: {
+                dismissible: true
+              },
+              logo: {
+                "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
+                "link": "https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}&utm_souce=player_brand",
+                "hide": "true",
+                "position": "top-left"
+              },
+              sharing: {
+                code: '<iframe width="560" height="315" src="https://{{ APP_PAGE_DOMAIN }}/embed?v={{ v.author }}/{{ v.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+                sites: ["facebook", "twitter", "reddit", "email"],
+                link: 'https://{{ APP_PAGE_DOMAIN }}/watch?v={{ v.author }}/{{ v.permlink }}'
+              }
+            });
+          }
           
 
           let watched = false;
