@@ -714,7 +714,7 @@ router.get('/watch', getVideo, async (req, res, next) => {
     req.video.isPodcastEpisode = false;
   } else if (req.video.enclosureUrl !== undefined && req.video.enclosureUrl !== null && req.video.enclosureUrl.length > 0) {
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.enclosureUrl.replace('ipfs://', '')}`
-    playback = null
+    playback.file = playUrl;
     req.video.baseThumbUrl = req.video.thumbnail;
     req.video.isPodcastEpisode = true;
   } else {
@@ -749,8 +749,8 @@ router.get('/watch', getVideo, async (req, res, next) => {
     noAds: true,
     noTopAd: true,
     demoAd,
-    playback: null,
-    m3u8: null,
+    playback,
+    m3u8: playback.file,
     autoplayNext,
     post,
     donations: actualDonations,

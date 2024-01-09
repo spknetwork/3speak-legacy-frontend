@@ -880,13 +880,13 @@
       initVoting();
       getCommunity();
 
-      console.log("Play URL is - " + video.playUrl);
       let player = null;
-      if (video.isPodcastEpisode) {
+      if ({{isPodcastEpisode}} === true) {
         player = jwplayer('player').setup({
-          file: '{{video.playUrl}}',
-          "width": 640,
-          "height": 40
+          file: '{{video.playUrl}}?filename=bla.m4a',
+          image: "{{ video.baseThumbUrl }}",
+          autostart: true,
+          muted: false,
         })
       } else {
         player = jwplayer('player').setup({
