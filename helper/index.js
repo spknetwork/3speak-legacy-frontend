@@ -15,10 +15,6 @@ function processFeed(videoFeed) {
       if(video?.thumbnail?.includes('ipfs://')) {
         baseUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.thumbnail.replace('ipfs://', '')}/`;
       } else {
-        /*if(video.ipfs) {
-          baseUrl = binary_to_base58(Buffer.from(`${APP_BUNNY_IPFS_CDN}/ipfs/${video.ipfs}/thumbnail.png`));
-        } else {
-        }*/
         baseUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/thumbnails/default.png`;
       }
     }

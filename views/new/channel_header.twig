@@ -38,17 +38,14 @@
           <a class="nav-link" href="/user/{{ channel.username }}">Videos <span
               class="sr-only">(current)</span></a>
         </li>
+        <li class="nav-item {% if active_menu == 'podcast' %}active{% endif %}">
+          <a class="nav-link" href="/user/{{ channel.username }}/podcast">Podcast</a>
+        </li>
         <li class="nav-item {% if active_menu == 'earnings' %}active{% endif %}">
           <a class="nav-link" href="/user/{{ channel.username }}/earnings">Earnings</a>
         </li>
-{#        <li class="nav-item {% if active_menu == 'blog' %}active{% endif %}">#}
-{#          <a class="nav-link" href="/user/{{ channel.username }}/blog">Blog</a>#}
-{#        </li>#}
         <li class="nav-item {% if active_menu == 'about' %}active{% endif %}">
           <a class="nav-link" href="/user/{{ channel.username }}/about">About</a>
-        </li>
-        <li class="nav-item {% if active_menu == 'live' %}active{% endif %}">
-          <a class="nav-link" href="/user/{{ channel.username }}/live">Livestream</a>
         </li>
         <li class="nav-item {% if active_menu == 'achievements' %}active{% endif %}">
           <a class="nav-link" href="/user/{{ channel.username }}/achievements">Achievements</a>

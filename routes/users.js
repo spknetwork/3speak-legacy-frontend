@@ -484,6 +484,44 @@ router.get('/:username', setSessionReturn, async(req, res, next) => {
 
 });
 
+router.get('/:username/podcast', setSessionReturn, async(req, res, next) => {
+  const user = await mongo.ContentCreator.findOne({banned: false, username: req.params.username});
+  if (user === null) {
+    return res.render('new/no_channel')
+  }
+  let subscribed = false;
+  let notifications = false;
+  if (req.user) {
+    let sub = await mongo.Subscription.findOne({
+      channel: req.params.username,
+      userId: req.user.user_id
+    });
+    if (sub !== null) {
+      subscribed = true;
+    }
+  }
+  let audios = await mongo.PodcastEpisode.find({
+    status: 'published',
+    owner: user.username
+  }).sort('-created');
+  let all = [];
+  for (const audio of audios) {
+    audio.thumbnail = `${APP_BUNNY_IPFS_CDN}/ipfs/${audio.thumbnail.replace('ipfs://', '')}/`;
+    console.log(`Audio thumb url is - ${audio.thumbnail}`);
+    all.push(audio)
+  }
+  res.render('new/channel_podcast', {
+    channel: user,
+    audios: all,
+    subscribed,
+    notifications,
+    active_menu: 'podcast',
+    noTopAd: true,
+    hideMenu: false
+  })
+
+});
+
 function* createPermlink(title, author, parent_author, parent_permlink) {
 
   let permlink;

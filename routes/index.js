@@ -186,6 +186,12 @@ router.get('/', async (req, res, next) => {
       subchannels.push(subs[i].channel)
     }
 
+    const audios = await mongo.PodcastEpisode.find({
+      status: 'published',
+      owner: { $in: subchannels },
+    }, null, { limit: 64 }).sort('-created');
+    pinned.concat(audios);
+
     feed = pinned.concat(await mongo.Video.find({
       status: 'published',
       pinned: false,
