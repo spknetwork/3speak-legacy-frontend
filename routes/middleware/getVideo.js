@@ -9,11 +9,6 @@ module.exports = async(req, res, next) => {
             permlink: req.query.v.split('/')[1],
             status: 'published'
         });
-        let audio = await mongo.PodcastEpisode.findOne({
-            owner: req.query.v.split('/')[0],
-            permlink: req.query.v.split('/')[1],
-            status: 'published'
-        });
 
 
         if (video === null) {
@@ -71,11 +66,7 @@ module.exports = async(req, res, next) => {
 
         }
 
-        if (video === null && audio !== null && audio !== undefined) {
-            req.video = audio;
-        } else {
-            req.video = video;
-        }
+        req.video = video;
 
     } else {
 
