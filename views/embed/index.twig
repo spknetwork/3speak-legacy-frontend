@@ -97,7 +97,7 @@
           let player = null;
           if ({{v.isPodcastEpisode}} === true) {
             player = jwplayer('player').setup({
-              file: '{{v.playUrl}}?filename=bla.m4a',
+              file: '{{v.playUrl}}',
               image: "{{ v.imageUrl }}",
               autostart: autoplay,
               muted: false,

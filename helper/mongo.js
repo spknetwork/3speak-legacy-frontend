@@ -219,6 +219,7 @@ const VideoSchema = new mongoose.Schema({
   app: {type: String},
   width: {type: Number, default: null, required: false},     
   height: {type: Number, default: null, required: false},
+  isAudio: {type: Boolean, default: false},
 });
 const PodcastSchema = new mongoose.Schema({
   filename: {type: String, required: true},
@@ -249,36 +250,6 @@ const PodcastSchema = new mongoose.Schema({
   app: {type: String, required: true, default: 'threespeak'},
   hasTorrent: {type: Boolean, required: true, default: false},
   receipt: String
-});
-
-const PodcastEpisodeSchema = new mongoose.Schema({
-  owner: { type: String, required: true },
-  permlink: { type: String, required: true },
-  originalFilename: { type: String, required: false },
-  title: { type: String, required: true },
-  description: { type: String, required: true },
-  thumbnail: { type: String, required: true },
-  enclosureUrl: { type: String, required: true },
-  duration: { type: Number, required: true },
-  size: { type: Number, required: false },
-  firstPodcastEpisode: { type: Number, required: false },
-  created: { type: Date, required: true, default: Date.now() },
-  community: { type: String, required: false },
-  isNsfwContent: {type: Boolean, default: false},
-  language: {type: String, required: false, default: "en"},
-  status: {
-    type: String,
-    enum: [
-      "uploaded",
-      "published",
-      "deleted",
-      "publish_manual",
-      "self_deleted",
-      "beneficiary_check_failed",
-    ],
-    default: "uploaded",
-    required: true,
-  },
 });
 
 const LanguageSchema = new mongoose.Schema({
@@ -673,8 +644,6 @@ const Balance = mongoose.model('Balance', BalanceSchema);
 const Transaction = mongoose.model('Transaction', TransactionSchema);
 const EmailNotification = mongoose.model('EmailNotification', EmailNotificationSchema);
 const Video = mongoose.model('Video', VideoSchema);
-//const Podcast = mongoose.model('Podcast', PodcastSchema);
-const PodcastEpisode = mongoose.model('PodcastEpisode', PodcastEpisodeSchema);
 const View = mongoose.model('View', ViewSchema);
 const LiveView = mongoose.model('LiveView', LiveViewSchema);
 const Subscription = mongoose.model('Subscription', SubscriptionSchema);
@@ -837,7 +806,6 @@ module.exports = {
   ContentCreator,
   CreatorVote,
   Video,
-  PodcastEpisode,
   Subscription,
   Transaction,
   Notification,

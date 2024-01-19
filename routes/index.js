@@ -711,17 +711,10 @@ router.get('/watch', getVideo, async (req, res, next) => {
   let playUrl;
   if(req.video.upload_type === "ipfs") {
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.video_v2.replace('ipfs://', '')}`
-    req.video.isPodcastEpisode = false;
-  } else if (req.video.enclosureUrl !== undefined && req.video.enclosureUrl !== null && req.video.enclosureUrl.length > 0) {
-    playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.enclosureUrl.replace('ipfs://', '')}`
-    playback.file = playUrl;
-    req.video.baseThumbUrl = req.video.thumbnail;
-    req.video.isPodcastEpisode = true;
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${req.video.permlink}/default.m3u8`
-    req.video.isPodcastEpisode = false;
   }
-
+  req.video.isPodcastEpisode = req.video.isAudio;
   req.video.playUrl = playUrl;
 
   video = helper.processFeed([req.video])[0]
@@ -1245,12 +1238,7 @@ router.get('/embed', async (req, res, next) => {
       video_v2: 1,
       upload_type: 1
     });
-    let audio = await mongo.PodcastEpisode.findOne({
-      owner: req.query.v.split('/')[0],
-      permlink: req.query.v.split('/')[1],
-      status: 'published'
-  });
-    if (!video && !audio) {
+    if (!video) {
       try {
         const [author, permlink] = req.query.v.split('/')
         const post = await hiveClient.database.call('get_content', [author, permlink])
@@ -1276,12 +1264,6 @@ router.get('/embed', async (req, res, next) => {
       }
     
     } else {
-      if (!video) {
-        video = audio;
-        video.isPodcastEpisode = true;
-      } else {
-        video.isPodcastEpisode = false;
-      }
       req.video = video;
       if(req.video.ipfs) {
         req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.ipfs}/default.m3u8`
@@ -1289,9 +1271,6 @@ router.get('/embed', async (req, res, next) => {
       } else if(req.video.upload_type === "ipfs") {
         req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace('ipfs://', '')}`
         req.video.imageUrl = helper.processFeed([video])[0].thumbUrl
-      } else if (req.video.enclosureUrl !== undefined && req.video.enclosureUrl !== null && req.video.enclosureUrl.length > 0) {
-        req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.enclosureUrl.replace('ipfs://', '')}`
-        req.video.imageUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.thumbnail.replace('ipfs://', '')}`
       } else {
         req.video.playUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.permlink}/default.m3u8`
         req.video.imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
@@ -1344,8 +1323,8 @@ router.get('/embed', async (req, res, next) => {
         status: req.video.status,
         title: req.video.title,
         playUrl: xss(req.video.playUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
-        imageUrl: xss(req.video.isPodcastEpisode ? helper.processFeed([req.video])[0].thumbUrl : req.video.imageUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
-        isPodcastEpisode: req.video.isPodcastEpisode,
+        imageUrl: xss(helper.processFeed([req.video])[0].thumbUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
+        isPodcastEpisode: req.video.isAudio,
       }
     }
   }

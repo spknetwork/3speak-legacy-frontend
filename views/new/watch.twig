@@ -883,7 +883,7 @@
       let player = null;
       if ({{isPodcastEpisode}} === true) {
         player = jwplayer('player').setup({
-          file: '{{video.playUrl}}?filename=bla.m4a',
+          file: '{{video.playUrl}}',
           image: "{{ video.baseThumbUrl }}",
           autostart: true,
           muted: false,
