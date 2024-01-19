@@ -13,6 +13,9 @@ function processFeed(videoFeed) {
   const bugFix = JSON.parse(JSON.stringify(videoFeed));
   let out = [];
   for (let video of bugFix) {
+    if (!(video.status !== undefined && video.status !== null && (video.status === 'published' || video.status === 'scheduled' || video.status === 'publish_manual'))) {
+      continue;
+    }
     let baseUrl;
     if(video.upload_type === 'ipfs') {
       baseUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.thumbnail.replace('ipfs://', '')}/`;
