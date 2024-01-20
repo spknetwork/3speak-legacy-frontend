@@ -710,10 +710,12 @@ router.get('/watch', getVideo, async (req, res, next) => {
 
   let playUrl;
   if(req.video.upload_type === "ipfs") {
+
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.video_v2.replace('ipfs://', '')}`
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${req.video.permlink}/default.m3u8`
   }
+
   req.video.playUrl = playUrl;
 
   video = helper.processFeed([req.video])[0]
@@ -745,7 +747,7 @@ router.get('/watch', getVideo, async (req, res, next) => {
     m3u8: playback.file,
     autoplayNext,
     post,
-    donations: actualDonations,
+    donations: actualDonations
   })
 });
 
@@ -1254,7 +1256,7 @@ router.get('/embed', async (req, res, next) => {
           tags: json_metadata.tags,
           status: 'published',
           playUrl: `https://ipfs.3speak.tv/ipfs/${ipfsUrl.host}${ipfsUrl.pathname}`,
-          imageUrl: helper.processFeed(video)[0].thumbUrl,
+          imageUrl: helper.processFeed(video)[0].thumbUrl
         }
       } catch (ex) {
         console.log(ex)

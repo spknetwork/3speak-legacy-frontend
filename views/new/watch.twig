@@ -880,6 +880,7 @@
       initVoting();
       getCommunity();
 
+
       const player = jwplayer('player').setup({
         file: '{{video.playUrl}}',
         //file: {% if video.ipfs %}JSON.parse(localStorage.getItem('ipfsToggle_v2')) ? `https://ipfs-3speak.b-cdn.net/ipfs/{{video.ipfs}}/default.m3u8` : {% endif %}`{{APP_VIDEO_CDN_DOMAIN}}/{{video.permlink}}/default.m3u8`,

@@ -642,6 +642,7 @@ const ProxyAccount = mongoose.model('ProxyAccount', ProxyAccountSchema);
 const ProxyUser = mongoose.model('ProxyUser', ProxyUserSchema);
 const Balance = mongoose.model('Balance', BalanceSchema);
 const Transaction = mongoose.model('Transaction', TransactionSchema);
+//const Podcast = mongoose.model('Podcast', PodcastSchema);
 const EmailNotification = mongoose.model('EmailNotification', EmailNotificationSchema);
 const Video = mongoose.model('Video', VideoSchema);
 const View = mongoose.model('View', ViewSchema);
