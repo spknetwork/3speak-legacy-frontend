@@ -880,53 +880,44 @@
       initVoting();
       getCommunity();
 
-      let player = null;
-      if ({{isPodcastEpisode}} === true) {
-        player = jwplayer('player').setup({
-          file: '{{video.playUrl}}',
-          image: "{{ video.baseThumbUrl }}",
-          autostart: true,
-          muted: false,
-        })
-      } else {
-        player = jwplayer('player').setup({
-          file: '{{video.playUrl}}',
-          //file: {% if video.ipfs %}JSON.parse(localStorage.getItem('ipfsToggle_v2')) ? `https://ipfs-3speak.b-cdn.net/ipfs/{{video.ipfs}}/default.m3u8` : {% endif %}`{{APP_VIDEO_CDN_DOMAIN}}/{{video.permlink}}/default.m3u8`,
-          image: "{{ video.baseThumbUrl }}",
-          playbackRateControls: [0.75, 1, 1.25, 1.5, 1.75, 2],
-          autostart: true,
-          muted: true,
-          {% if user.nickname != 'threespeak' %}
-          /*"advertising": {
-            "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.tv%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
-            "client": "googima",
-            "vpaidmode": "insecure"
-          },*/
-          {% endif %}
-          abouttext: "Powered by 3Speak",
-          aboutlink: "https://3speak.tv/?utm_source=player_context",
-          cast: {},
-          ga: {},
-          floating: {
-            dismissible: true
-          },
-          related: {
-            onclick: 'link',
-            oncomplete: 'show',
-            //file: '/apiv2/recommended?v={{ video.owner }}/{{ video.permlink }}'
-          },
-          logo: {
-            "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
-            "link": "https://3speak.tv/?utm_souce=player_brand",
-            "hide": "true",
-            "position": "top-left"
-          },
-          sharing: {
-            code: '<iframe width="560" height="315" src="https://3speak.tv/embed?v={{ video.owner }}/{{ video.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
-            sites: ["facebook", "twitter", "reddit", "email"]
-          }
-        });
-      }
+      const player = jwplayer('player').setup({
+        file: '{{video.playUrl}}',
+        //file: {% if video.ipfs %}JSON.parse(localStorage.getItem('ipfsToggle_v2')) ? `https://ipfs-3speak.b-cdn.net/ipfs/{{video.ipfs}}/default.m3u8` : {% endif %}`{{APP_VIDEO_CDN_DOMAIN}}/{{video.permlink}}/default.m3u8`,
+        image: "{{ video.baseThumbUrl }}",
+        playbackRateControls: [0.75, 1, 1.25, 1.5, 1.75, 2],
+        autostart: true,
+        muted: true,
+        {% if user.nickname != 'threespeak' %}
+        /*"advertising": {
+          "tag": "https://pubads.g.doubleclick.net/gampad/live/ads?iu=/269933763/3speak&description_url=https%3A%2F%2F3speak.tv%2F&tfcd=0&npa=0&sz=640x480&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=",
+          "client": "googima",
+          "vpaidmode": "insecure"
+        },*/
+        {% endif %}
+        abouttext: "Powered by 3Speak",
+        aboutlink: "https://3speak.tv/?utm_source=player_context",
+        cast: {},
+        ga: {},
+        floating: {
+          dismissible: true
+        },
+        related: {
+          onclick: 'link',
+          oncomplete: 'show',
+          //file: '/apiv2/recommended?v={{ video.owner }}/{{ video.permlink }}'
+        },
+        logo: {
+          "file": "https://s3.eu-central-1.wasabisys.com/data.int/logo_player.png",
+          "link": "https://3speak.tv/?utm_souce=player_brand",
+          "hide": "true",
+          "position": "top-left"
+        },
+        sharing: {
+          code: '<iframe width="560" height="315" src="https://3speak.tv/embed?v={{ video.owner }}/{{ video.permlink }}" frameborder="0"  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+          sites: ["facebook", "twitter", "reddit", "email"]
+        }
+      });
+      
       window.player = player;
       const author = '{{ video.owner }}';
       const permlink = '{{ video.permlink }}'

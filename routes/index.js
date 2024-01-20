@@ -714,7 +714,6 @@ router.get('/watch', getVideo, async (req, res, next) => {
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${req.video.permlink}/default.m3u8`
   }
-  req.video.isPodcastEpisode = req.video.isAudio;
   req.video.playUrl = playUrl;
 
   video = helper.processFeed([req.video])[0]
@@ -747,7 +746,6 @@ router.get('/watch', getVideo, async (req, res, next) => {
     autoplayNext,
     post,
     donations: actualDonations,
-    isPodcastEpisode: req.video.isPodcastEpisode,
   })
 });
 
@@ -1257,24 +1255,27 @@ router.get('/embed', async (req, res, next) => {
           status: 'published',
           playUrl: `https://ipfs.3speak.tv/ipfs/${ipfsUrl.host}${ipfsUrl.pathname}`,
           imageUrl: helper.processFeed(video)[0].thumbUrl,
-          isPodcastEpisode: false,
         }
       } catch (ex) {
         console.log(ex)
       }
     
     } else {
-      req.video = video;
-      if(req.video.ipfs) {
-        req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.ipfs}/default.m3u8`
-        req.video.imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
-      } else if(req.video.upload_type === "ipfs") {
-        req.video.playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace('ipfs://', '')}`
-        req.video.imageUrl = helper.processFeed([video])[0].thumbUrl
+      let playUrl;
+      let imageUrl;
+      if(video.ipfs) {
+        playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.ipfs}/default.m3u8`
+        imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
+      } else if(video.upload_type === "ipfs") {
+        playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace('ipfs://', '')}`
+        imageUrl = helper.processFeed([video])[0].thumbUrl
       } else {
-        req.video.playUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.permlink}/default.m3u8`
-        req.video.imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
+        playUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.permlink}/default.m3u8`
+        imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
       }
+      video.playUrl = playUrl;
+      video.imageUrl = imageUrl;
+      req.video = video;
     }
   } else {
     req.video = null;
@@ -1323,8 +1324,7 @@ router.get('/embed', async (req, res, next) => {
         status: req.video.status,
         title: req.video.title,
         playUrl: xss(req.video.playUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
-        imageUrl: xss(helper.processFeed([req.video])[0].thumbUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
-        isPodcastEpisode: req.video.isAudio,
+        imageUrl: xss(req.video.imageUrl, { whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: true }),
       }
     }
   }
