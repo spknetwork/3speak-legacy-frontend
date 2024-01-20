@@ -718,15 +718,15 @@ router.get('/watch', getVideo, async (req, res, next) => {
 
   video = helper.processFeed([req.video])[0]
 
-  // if(video.podcast_transfered) {
-  //   video.downloadUrl = `https://s3.us-west-1.wasabisys.com/podcast-data/${ video.permlink }/main.mp4`
-  // } else {
-  //   if(video.filename.startsWith('ipfs://')) {
-  //     video.downloadUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.filename.replace('ipfs://', '')}`
-  //   } else {
-  //     video.downloadUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.filename}`
-  //   }
-  // }
+  if(video.podcast_transfered) {
+    video.downloadUrl = `https://s3.us-west-1.wasabisys.com/podcast-data/${ video.permlink }/main.mp4`
+  } else {
+    if(video.filename.startsWith('ipfs://')) {
+      video.downloadUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.filename.replace('ipfs://', '')}`
+    } else {
+      video.downloadUrl = `${APP_VIDEO_CDN_DOMAIN}/${video.filename}`
+    }
+  }
 
   video.playUrl = playUrl;
   res.render('new/watch', {
