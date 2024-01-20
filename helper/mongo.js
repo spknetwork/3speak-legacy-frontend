@@ -219,6 +219,7 @@ const VideoSchema = new mongoose.Schema({
   app: {type: String},
   width: {type: Number, default: null, required: false},     
   height: {type: Number, default: null, required: false},
+  isAudio: {type: Boolean, default: false},
 });
 const PodcastSchema = new mongoose.Schema({
   filename: {type: String, required: true},
@@ -250,6 +251,7 @@ const PodcastSchema = new mongoose.Schema({
   hasTorrent: {type: Boolean, required: true, default: false},
   receipt: String
 });
+
 const LanguageSchema = new mongoose.Schema({
   code: {type: String, required: true},
   language: {type: String, required: true}
@@ -640,9 +642,9 @@ const ProxyAccount = mongoose.model('ProxyAccount', ProxyAccountSchema);
 const ProxyUser = mongoose.model('ProxyUser', ProxyUserSchema);
 const Balance = mongoose.model('Balance', BalanceSchema);
 const Transaction = mongoose.model('Transaction', TransactionSchema);
+//const Podcast = mongoose.model('Podcast', PodcastSchema);
 const EmailNotification = mongoose.model('EmailNotification', EmailNotificationSchema);
 const Video = mongoose.model('Video', VideoSchema);
-//const Podcast = mongoose.model('Podcast', PodcastSchema);
 const View = mongoose.model('View', ViewSchema);
 const LiveView = mongoose.model('LiveView', LiveViewSchema);
 const Subscription = mongoose.model('Subscription', SubscriptionSchema);

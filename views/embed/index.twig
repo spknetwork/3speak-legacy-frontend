@@ -94,19 +94,14 @@
           const permlink = '{{ v.permlink }}';
           const imageUrl = '{{ v.imageUrl }}';
           const playUrl = '{{ v.playUrl }}';
-          
+
           const player = jwplayer('player').setup({
             image: imageUrl,
             playlist: [{
               title: '{{ v.title|escape }}',
               matomoTitle: "[Embed] {{ v.title|escape }}",
               image: imageUrl,
-              sources: [
-                {
-                  file: playUrl,
-                  type: "application/x-mpegURL"
-                }
-              ]
+              file: playUrl,
             }],
             playbackRateControls: [0.75, 1, 1.15, 1.25, 1.5, 2],
             autostart: autoplay,
