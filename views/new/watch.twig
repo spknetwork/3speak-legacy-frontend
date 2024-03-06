@@ -14,7 +14,7 @@
   
 
   <meta name="twitter:card" content="player">
-  <meta name="twitter:site" content="@3speakonline">
+  <meta name="twitter:site" content="@3speaktv">
   <meta name="twitter:title" content="{{ video.title|escape }}">
   <meta name="twitter:description" content="{{ video.description|escape|substr(0,128) }}">
   <meta name="twitter:image" content="{{ video.baseThumbUrl }}">
@@ -786,7 +786,7 @@
             return '<i class="fab fa-instagram"></i></i>';
           }
           if (provider.indexOf("twitter") > -1) {
-            return '<i class="fab fa-twitter-square"></i>';
+            return '<i class="fa-brands fa-square-x-twitter"></i>';
           }
           if (provider.indexOf("google") > -1) {
             return '<i class="fab fa-google-plus-square"></i>';
@@ -800,7 +800,7 @@
           return '<i class="fab fa-instagram"></i></i>';
         }
         if (provider === "twitter") {
-          return '<i class="fab fa-twitter-square"></i>';
+          return '<i class="fa-brands fa-square-x-twitter"></i>';
         }
         if (provider === "google") {
           return '<i class="fab fa-google-plus-square"></i>';

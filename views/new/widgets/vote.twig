@@ -1,8 +1,8 @@
 <li class="list-inline-item">
-  <i data-vote="{{ post.author }}/{{ post.permlink }}" class="fa{% if post.active_votes|hasVoted(user) %}s{% else %}l{% endif%} fa-thumbs-up" style="cursor: pointer;"></i> <b class="p-2" style="cursor: pointer;" data-popover-id="up-{{ post.popoverId }}" data-title="Upvotes for @{{ post.author }}" data-toggle="popover" rel="popover">{{ post.active_votes|upvotes|length }}</b>
+  <i data-vote="{{ post.author }}/{{ post.permlink }}" class="fa-{% if post.active_votes|hasVoted(user) %}solid{% else %}regular{% endif%} fa-thumbs-up" style="cursor: pointer;"></i> <b class="p-2" style="cursor: pointer;" data-popover-id="up-{{ post.popoverId }}" data-title="Upvotes for @{{ post.author }}" data-toggle="popover" rel="popover">{{ post.active_votes|upvotes|length }}</b>
 </li>
 <li class="list-inline-item">
-  <i data-downvote="{{ post.author }}/{{ post.permlink }}" class="fa{% if post.active_votes|hasDownvoted(user) %}s{% else %}l{% endif%} fa-thumbs-down" style="cursor: pointer;"></i> <b class="p-2" style="cursor: pointer;" data-popover-id="down-{{ post.popoverId }}" data-title="Downvotes for @{{ post.author }}" data-toggle="popover" rel="popover">{{ post.active_votes|downvotes|length }}</b>
+  <i data-downvote="{{ post.author }}/{{ post.permlink }}" class="fa-{% if post.active_votes|hasDownvoted(user) %}solid{% else %}regular{% endif%} fa-thumbs-down" style="cursor: pointer;"></i> <b class="p-2" style="cursor: pointer;" data-popover-id="down-{{ post.popoverId }}" data-title="Downvotes for @{{ post.author }}" data-toggle="popover" rel="popover">{{ post.active_votes|downvotes|length }}</b>
 </li>
 <li class="list-inline-item">
   <span title="Payout value">
