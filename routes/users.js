@@ -749,7 +749,7 @@ router.post('/api/comment', requireLogin, async(req, res) => {
     }, {posting: THREESPEAK_POSTING_WIF}, async(err, result) => {
 
       if (err) {
-
+        console.error(`752 - Error occurred when adding a comment - ${err.toString()}`);
         return res.status(500).json({
           error: 'Error broadcasting using comment proxy. Please contact the support: ' + err.message
         });
@@ -831,6 +831,7 @@ router.post('/api/vote', requireLogin, async(req, res) => {
   }, {posting: THREESPEAK_POSTING_WIF}, async(err, result) => {
 
     if (err) {
+      console.error(`834 - Error occurred when adding a comment - ${err.toString()}`);
       return res.status(500).json({
         error: 'Error broadcasting using comment proxy. Please contact the support: ' + err.message
       });
