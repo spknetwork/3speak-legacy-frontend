@@ -19,6 +19,11 @@ const {getOperations, sleep, steemPostExist, tryPublish, hasDelegation, delegate
 
   for (const video of videos) {
 
+    if (video.duration < 5) {
+      console.log(`${video.owner}/${video.permlink} - video length less than 5 seconds not allowed to be published`);
+      continue;
+    }
+
     console.log('===============================')
     console.log('## Publishing Video to HIVE:', video.owner, video.permlink, ' -- ', video.title)
 
