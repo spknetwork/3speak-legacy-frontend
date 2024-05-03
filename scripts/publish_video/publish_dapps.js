@@ -3,7 +3,7 @@ const { mongo } = require('../../helper');
 const { getOperations, sleep, steemPostExist, tryPublish, shouldSkip } = require('./helper');
 const moment = require('moment');
 
-const launchDate = '2023-06-15T00:00:00.000Z';
+const launchDate = '2024-05-03T00:00:00.000Z';
 
 (async() => {
 
