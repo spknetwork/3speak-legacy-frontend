@@ -27,6 +27,10 @@ const { sleep, validateBeneficiaries } = require('./helper');
   }
 
   for (const video of videos) {
+    if (video.duration < 5) {
+      console.log(`${video.owner}/${video.permlink} - video length less than 5 seconds not allowed to be published`);
+      continue;
+    }
     const doesPostHaveValidBeneficiaries = await validateBeneficiaries(video);
     if (doesPostHaveValidBeneficiaries) {
       video.steemPosted = true;

@@ -710,7 +710,6 @@ router.get('/watch', getVideo, async (req, res, next) => {
 
   let playUrl;
   if(req.video.upload_type === "ipfs") {
-
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.video_v2.replace('ipfs://', '')}`
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${req.video.permlink}/default.m3u8`
