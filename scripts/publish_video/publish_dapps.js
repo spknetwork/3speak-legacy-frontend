@@ -25,6 +25,10 @@ const launchDate = '2023-06-15T00:00:00.000Z';
     if (shouldWeSkip) {
       continue;
     }
+    
+    if (video.description.includes("Uploaded using 3Speak Mobile App") == false) {
+      continue;
+    }
 
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
