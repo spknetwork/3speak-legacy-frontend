@@ -20,8 +20,8 @@ global.APP_PAGE_PROTOCOL = process.env.PROTOCOL || 'https';
 // global.HIVE_DEFAULT_NODE = 'hive-api.web3telekom.xyz';
 // global.HIVE_SECONDARY_NODE = 'hive-api.3speak.tv';
 
-global.HIVE_DEFAULT_NODE = 'api.openhive.network';
-global.HIVE_SECONDARY_NODE = 'hive-api.arcange.eu';
+global.HIVE_DEFAULT_NODE = 'techcoderx.com';
+global.HIVE_SECONDARY_NODE = 'rpc.ausbit.dev';
 
 global.HIVE_DEFAULT_NODE_PREFIX = 'https';
 global.HIVE_SECURE_NODE_PREFIX = 'https';
