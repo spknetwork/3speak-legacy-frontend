@@ -30,11 +30,6 @@ const launchDate = '2024-05-03T00:00:00.000Z';
       continue;
     }
 
-    if (video.duration < 5) {
-      console.log(`${video.owner}/${video.permlink} - video length less than 5 seconds not allowed to be published`);
-      continue;
-    }
-
     try {
       if (!(await steemPostExist(video.owner, video.permlink))) {
         console.log('===============================')
