@@ -97,22 +97,17 @@ async function validateBeneficiaries(video) {
     if (fromMobile !== undefined && fromMobile !== null && fromMobile === true) {
       const sagar = beneficiaries.filter((o) =>  o.account === "sagarkothari88");
       const spkBeneficiary = beneficiaries.filter((o) => o.account === "spk.beneficiary");
-      const threespeakleader = beneficiaries.filter((o) => o.account === "threespeakleader");
-      if (sagar.length === 0 || threespeakleader.length === 0 || threespeakleader.length === 0) return false;
+      if (sagar.length === 0) return false;
       const sagarBenWeight = sagar[0].weight;
       const spkBeneficiaryWeight = spkBeneficiary[0].weight;
-      const threespeakleaderWeight = threespeakleader[0].weight;
-      if (sagarBenWeight === undefined || spkBeneficiaryWeight === undefined || threespeakleaderWeight === undefined || sagarBenWeight === null || spkBeneficiaryWeight === null || threespeakleaderWeight === null) return false;
-      if (sagarBenWeight < 100 || spkBeneficiaryWeight < 850 || threespeakleaderWeight < 100) return false;
+      if (sagarBenWeight === undefined || spkBeneficiaryWeight === undefined || sagarBenWeight === null || spkBeneficiaryWeight === null) return false;
+      if (sagarBenWeight < 100 || spkBeneficiaryWeight < 1000) return false;
       return true;
     } else {
       const spkBeneficiary = beneficiaries.filter((o) => o.account === "spk.beneficiary");
-      const threespeakleader = beneficiaries.filter((o) => o.account === "threespeakleader");
-      if (threespeakleader.length === 0 || threespeakleader.length === 0) return false;
       const spkBeneficiaryWeight = spkBeneficiary[0].weight;
-      const threespeakleaderWeight = threespeakleader[0].weight;
-      if (spkBeneficiaryWeight === undefined || threespeakleaderWeight === undefined || spkBeneficiaryWeight === null || threespeakleaderWeight === null) return false;
-      if (spkBeneficiaryWeight < 900 || threespeakleaderWeight < 100) return false;
+      if (spkBeneficiaryWeight === undefined || spkBeneficiaryWeight === null) return false;
+      if (spkBeneficiaryWeight < 1000) return false;
       return true;
     }
   } catch (e) {
@@ -206,7 +201,7 @@ function buildJSONMetadata(video) {
 
 async function buildCommentOptions(video) {
   let benefactor_global = [
-    [0, {beneficiaries: [{account: "threespeakleader", weight: 100}, {account: 'spk.beneficiary', weight: video.upload_type === "ipfs" ? 900 : 1000}]}]
+    [0, {beneficiaries: [{account: 'spk.beneficiary', weight: 1000}]}]
   ];
   let [account] = await hive.api.getAccountsAsync([video.owner]);
   if (account && account.json_metadata) {
