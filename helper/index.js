@@ -10,7 +10,7 @@ function processFeed(videoFeed) {
     }
     let baseUrl;
     let playUrl;
-    if(video.upload_type === 'ipfs') {
+    if(video.upload_type === 'ipfs' && video.thumbnail !== undefined && video.video_v2 !== undefined) {
       baseUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.thumbnail.replace('ipfs://', '')}/`;
       playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace('ipfs://', '')}`;
     } else {
