@@ -709,7 +709,7 @@ router.get('/watch', getVideo, async (req, res, next) => {
   }
 
   let playUrl;
-  if(req.video.upload_type === "ipfs") {
+  if(req.video.upload_type === "ipfs"&& req.video.video_v2 !== undefined) {
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${req.video.video_v2.replace('ipfs://', '')}`
   } else {
     playUrl = `${APP_VIDEO_CDN_DOMAIN}/${req.video.permlink}/default.m3u8`
@@ -1267,7 +1267,7 @@ router.get('/embed', async (req, res, next) => {
       if(video.ipfs) {
         playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.ipfs}/default.m3u8`
         imageUrl = `${APP_IMAGE_CDN_DOMAIN}/${video.permlink}/poster.png`
-      } else if(video.upload_type === "ipfs") {
+      } else if(video.upload_type === "ipfs" && video.video_v2 !== undefined) {
         playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace('ipfs://', '')}`
         imageUrl = helper.processFeed([video])[0].thumbUrl
       } else {

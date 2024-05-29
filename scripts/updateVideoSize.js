@@ -28,7 +28,7 @@ async function getVideoSize(url) {
 
 function getVideoPlayUrl(video) {
   let playUrl;
-  if (video.upload_type === "ipfs") {
+  if (video.upload_type === "ipfs" && video.video_v2 !== undefined) {
     playUrl = `${APP_BUNNY_IPFS_CDN}/ipfs/${video.video_v2.replace(
       "ipfs://",
       ""
