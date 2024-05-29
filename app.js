@@ -62,9 +62,9 @@ const sess = {
   proxy: true,
   resave: false,
   saveUninitialized: false,
-  // store: new MemcachedStore({
-  //   hosts: [host]
-  // })
+  store: new MemcachedStore({
+    hosts: [host]
+  })
 };
 app.set('etag', false)
 
