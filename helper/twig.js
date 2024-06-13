@@ -300,7 +300,7 @@ return '';
   });
   twig.extendFilter('toFixed', (value, params) => {
     let decimals = params === undefined ? 0 : params[0] === undefined ? 0 : params[0];
-    return value.toFixed(decimals)
+    return parseFloat(value).toFixed(decimals)
   });
 
 
