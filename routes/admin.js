@@ -63,28 +63,22 @@ router.get('/api/verification/complete', async(req, res) => {
 });
 
 router.get('/curation', requireAdmin, async(req, res) => {
-
     const date = new Date();
     date.setDate(date.getDate() - 1);
     date.setHours(date.getHours() -6);
-
     const query = {
       status: 'published',
       curationComplete: {$ne: true},
       created: {$gte: date}
     };
-
     if (req.query.user) {
-
       query.owner = req.query.user;
-
-}
+    }
+    if (req.query.excludeLeo) {
+      query.owner = { $not: /leoshort.+/ };
+    }
     const videos = await mongo.Video.find(query).sort('-created').limit(12);
-
-    //const allAccountsList = await allAccounts();
-
     res.render('new/admin_curation', {title: 'Express', videos, allAccountsList: []})
-
 });
 
 router.get('/banlist', requireAdmin, async(req, res) => {
