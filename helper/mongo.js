@@ -220,6 +220,7 @@ const VideoSchema = new mongoose.Schema({
   width: {type: Number, default: null, required: false},     
   height: {type: Number, default: null, required: false},
   isAudio: {type: Boolean, default: false},
+  jsonMetaDataAppName: {type: String, default: null, required: false},
 });
 const PodcastSchema = new mongoose.Schema({
   filename: {type: String, required: true},
