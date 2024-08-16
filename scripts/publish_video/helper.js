@@ -162,9 +162,14 @@ function buildJSONMetadata(video) {
     videoTags = videoTags.split(",")
   }
 
+  let appName = '3speak/0.3.0';
+  if (video.jsonMetaDataAppName !== null && typeof video.jsonMetaDataAppName === "string" && video.jsonMetaDataAppName.length > 0) {
+    appName = jsonMetaDataAppName;
+  }
+
   return {
     tags: processTags(videoTags),
-    app: '3speak/0.3.0',
+    app: appName,
     type: '3speak/video',
     image: [
       imageUrl
