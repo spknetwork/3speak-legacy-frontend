@@ -17,7 +17,7 @@ global.APP_BUNNY_IPFS_CDN = 'https://ipfs-3speak.b-cdn.net'
 
 global.APP_PAGE_PROTOCOL = process.env.PROTOCOL || 'https';
 
-global.HIVE_DEFAULT_NODE = 'Hive-api.dlux.io';
+global.HIVE_DEFAULT_NODE = 'hive-api.3speak.tv';
 global.HIVE_SECONDARY_NODE = 'hive-api.3speak.tv';
 
 // global.HIVE_DEFAULT_NODE = 'techcoderx.com';
