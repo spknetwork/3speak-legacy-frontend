@@ -2,6 +2,8 @@ let mongoose = require('mongoose');
 const mongooseCache = require('mongoose-redis');
 const cachegoose = require('recachegoose');
 
+require('dotenv').config()
+
 console.log(process.env.ENV)
 if(process.env.ENV !== "dev") {
   mongooseCache(mongoose, APP_REDIS_HOST)
@@ -11,10 +13,7 @@ cachegoose(mongoose, {
 });
 }
 
-const host = APP_MONGO_HOST;
-
-
-const connection = mongoose.connect('mongodb://' + host, {
+const connection = mongoose.connect(process.env.MONGO_HOST, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true
