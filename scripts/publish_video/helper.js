@@ -164,7 +164,7 @@ function buildJSONMetadata(video) {
 
   let appName = '3speak/0.3.0';
   if (video.jsonMetaDataAppName !== null && typeof video.jsonMetaDataAppName === "string" && video.jsonMetaDataAppName.length > 0) {
-    appName = jsonMetaDataAppName;
+    appName = video.jsonMetaDataAppName;
   }
 
   return {
