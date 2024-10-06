@@ -6,7 +6,7 @@ hive.api.setOptions({
   rebranded_api: true,
   url: `${HIVE_DEFAULT_NODE_PREFIX}://${HIVE_DEFAULT_NODE}`
 });
-const client = new dhive.Client('https://hive-api.web3telekom.xyz');
+const client = new dhive.Client('https://hive-api.3speak.tv');
 hive.config.set('rebranded_api','true');
 hive.broadcast.updateOperations();
 
