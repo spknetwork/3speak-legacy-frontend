@@ -209,6 +209,15 @@ async function buildCommentOptions(video) {
     [0, {beneficiaries: [{account: 'spk.beneficiary', weight: 1000}]}]
   ];
   let [account] = await hive.api.getAccountsAsync([video.owner]);
+  // inserting community beneficiaries
+  const communityId = video.hasOwnProperty("hive") ? video.hive : 'hive-181335';
+  const [community] = await hive.api.getAccountsAsync([communityId]);
+  if (community.hasOwnProperty("posting_json_metadata")) {
+    const communityPostingJsonMetadata = JSON.parse(community.posting_json_metadata);
+    if (communityPostingJsonMetadata.hasOwnProperty("beneficiary")) {
+      benefactor_global[0][1].beneficiaries.push(communityPostingJsonMetadata.beneficiary);
+    }
+  }
   if (account && account.json_metadata) {
     let json = JSON.parse(account.json_metadata)
     if (json.beneficiaries) {
@@ -243,8 +252,8 @@ async function buildCommentOptions(video) {
   let videoBenefs = JSON.parse(video.beneficiaries);
   if (typeof videoBenefs === 'string') {
     videoBenefs = JSON.parse(videoBenefs);
-    videoBenefs = videoBenefs.filter(e => e.account !== 'spk.beneficiary');
   }
+  videoBenefs = videoBenefs.filter(e => e.account !== 'spk.beneficiary');
   // sample value - [{"account":"actifit-he","weight":100,"src":"ENCODER_PAY"},{"account":"sagarkothari88","weight":100,"src":"MOBILE_APP_PAY"}] // MOBILE_APP_PAY_AND_ENCODER_PAY
   if (video.fromMobile === true)  {
     if (videoBenefs.filter((ben) =>  ben.account === 'sagarkothari88' && (ben.src === "MOBILE_APP_PAY" || ben.src === "MOBILE_APP_PAY_AND_ENCODER_PAY")).length === 0) {
