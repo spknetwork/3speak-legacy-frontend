@@ -214,7 +214,11 @@ async function buildCommentOptions(video) {
   const [community] = await hive.api.getAccountsAsync([communityId]);
   if (community.hasOwnProperty("posting_json_metadata")) {
     const communityPostingJsonMetadata = JSON.parse(community.posting_json_metadata);
-    if (communityPostingJsonMetadata.hasOwnProperty("profile") && communityPostingJsonMetadata.profile.hasOwnProperty("beneficiary")) {
+    if (communityPostingJsonMetadata.hasOwnProperty("profile") 
+      && communityPostingJsonMetadata.profile.hasOwnProperty("beneficiary")
+      && communityPostingJsonMetadata.profile.beneficiary.hasOwnProperty("weight")
+      && communityPostingJsonMetadata.profile.beneficiary.hasOwnProperty("account")
+      ) {
       benefactor_global[0][1].beneficiaries.push(communityPostingJsonMetadata.profile.beneficiary);
     }
   }
