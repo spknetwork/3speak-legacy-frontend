@@ -210,7 +210,7 @@ async function buildCommentOptions(video) {
   ];
   let [account] = await hive.api.getAccountsAsync([video.owner]);
   // inserting community beneficiaries
-  const communityId = video.hive ?? 'hive-181335';
+  let communityId = video.hive === null || video.hive === '' || video.hive === 'hive-100421' ? 'hive-181335' : video.hive.startsWith('hive-') ? video.hive : 'hive-181335';
   const [community] = await hive.api.getAccountsAsync([communityId]);
   if (community.hasOwnProperty("posting_json_metadata")) {
     const communityPostingJsonMetadata = JSON.parse(community.posting_json_metadata);
